@@ -1,2 +1,2 @@
-pub mod personne;
 pub mod adhesion;
+pub mod personne;

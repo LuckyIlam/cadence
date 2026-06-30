@@ -72,9 +72,7 @@ pub async fn obtenir_personne(
 }
 
 #[tauri::command]
-pub async fn lister_personnes(
-    state: State<'_, AppState>,
-) -> Result<Vec<Personne>, String> {
+pub async fn lister_personnes(state: State<'_, AppState>) -> Result<Vec<Personne>, String> {
     repositories::personne_repo::list_all(&state.pool)
         .await
         .map_err(|e| e.to_string())

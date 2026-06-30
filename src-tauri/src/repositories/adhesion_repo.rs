@@ -18,7 +18,11 @@ pub async fn create(pool: &SqlitePool, input: CreateAdhesion) -> Result<Adhesion
     Ok(row)
 }
 
-pub async fn update(pool: &SqlitePool, id: i64, input: UpdateAdhesion) -> Result<Adhesion, sqlx::Error> {
+pub async fn update(
+    pool: &SqlitePool,
+    id: i64,
+    input: UpdateAdhesion,
+) -> Result<Adhesion, sqlx::Error> {
     let row = sqlx::query_as::<_, Adhesion>(
         "UPDATE adhesions
          SET reglee = ?, note_paiement = ?
@@ -34,7 +38,10 @@ pub async fn update(pool: &SqlitePool, id: i64, input: UpdateAdhesion) -> Result
     Ok(row)
 }
 
-pub async fn list_by_personne(pool: &SqlitePool, personne_id: i64) -> Result<Vec<Adhesion>, sqlx::Error> {
+pub async fn list_by_personne(
+    pool: &SqlitePool,
+    personne_id: i64,
+) -> Result<Vec<Adhesion>, sqlx::Error> {
     let rows = sqlx::query_as::<_, Adhesion>(
         "SELECT * FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
     )

@@ -3,8 +3,8 @@ mod domain;
 mod infrastructure;
 mod repositories;
 
-use tauri::Manager;
 use infrastructure::db::{init_pool, AppState};
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

@@ -20,7 +20,11 @@ pub async fn create(pool: &SqlitePool, input: CreatePersonne) -> Result<Personne
     Ok(row)
 }
 
-pub async fn update(pool: &SqlitePool, id: i64, input: UpdatePersonne) -> Result<Personne, sqlx::Error> {
+pub async fn update(
+    pool: &SqlitePool,
+    id: i64,
+    input: UpdatePersonne,
+) -> Result<Personne, sqlx::Error> {
     let row = sqlx::query_as::<_, Personne>(
         "UPDATE personnes_physiques
          SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
@@ -41,22 +45,19 @@ pub async fn update(pool: &SqlitePool, id: i64, input: UpdatePersonne) -> Result
 }
 
 pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Personne>, sqlx::Error> {
-    let row = sqlx::query_as::<_, Personne>(
-        "SELECT * FROM personnes_physiques WHERE id = ?",
-    )
-    .bind(id)
-    .fetch_optional(pool)
-    .await?;
+    let row = sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques WHERE id = ?")
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
 
     Ok(row)
 }
 
 pub async fn list_all(pool: &SqlitePool) -> Result<Vec<Personne>, sqlx::Error> {
-    let rows = sqlx::query_as::<_, Personne>(
-        "SELECT * FROM personnes_physiques ORDER BY nom, prenom",
-    )
-    .fetch_all(pool)
-    .await?;
+    let rows =
+        sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques ORDER BY nom, prenom")
+            .fetch_all(pool)
+            .await?;
 
     Ok(rows)
 }

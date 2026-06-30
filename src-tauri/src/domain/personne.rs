@@ -46,8 +46,7 @@ pub fn est_mineur(date_naissance: NaiveDate) -> bool {
 }
 
 pub fn valider_date_naissance(date_naissance: NaiveDate) -> Result<(), String> {
-    let min_date = chrono::NaiveDate::from_ymd_opt(1920, 1, 1)
-        .ok_or("Date minimale invalide")?;
+    let min_date = chrono::NaiveDate::from_ymd_opt(1920, 1, 1).ok_or("Date minimale invalide")?;
     let aujourd_hui = chrono::Local::now().naive_local().date();
 
     if date_naissance < min_date {
