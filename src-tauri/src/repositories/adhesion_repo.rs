@@ -34,17 +34,6 @@ pub async fn update(pool: &SqlitePool, id: i64, input: UpdateAdhesion) -> Result
     Ok(row)
 }
 
-pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Adhesion>, sqlx::Error> {
-    let row = sqlx::query_as::<_, Adhesion>(
-        "SELECT * FROM adhesions WHERE id = ?",
-    )
-    .bind(id)
-    .fetch_optional(pool)
-    .await?;
-
-    Ok(row)
-}
-
 pub async fn list_by_personne(pool: &SqlitePool, personne_id: i64) -> Result<Vec<Adhesion>, sqlx::Error> {
     let rows = sqlx::query_as::<_, Adhesion>(
         "SELECT * FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",

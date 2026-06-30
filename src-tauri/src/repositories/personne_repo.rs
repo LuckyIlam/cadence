@@ -10,10 +10,10 @@ pub async fn create(pool: &SqlitePool, input: CreatePersonne) -> Result<Personne
     )
     .bind(&input.nom)
     .bind(&input.prenom)
-    .bind(&input.date_naissance)
+    .bind(input.date_naissance)
     .bind(&input.email)
     .bind(&input.telephone)
-    .bind(&input.responsable_id)
+    .bind(input.responsable_id)
     .fetch_one(pool)
     .await?;
 
@@ -29,10 +29,10 @@ pub async fn update(pool: &SqlitePool, id: i64, input: UpdatePersonne) -> Result
     )
     .bind(&input.nom)
     .bind(&input.prenom)
-    .bind(&input.date_naissance)
+    .bind(input.date_naissance)
     .bind(&input.email)
     .bind(&input.telephone)
-    .bind(&input.responsable_id)
+    .bind(input.responsable_id)
     .bind(id)
     .fetch_one(pool)
     .await?;
