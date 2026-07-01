@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Adhesion, CreateAdhesion, UpdateAdhesion } from "../types";
+import { Adhesion, CreateAdhesion, UpdateAdhesion, getCurrentAnneeScolaire } from "../types";
 
 interface Props {
   personneId: number;
@@ -15,8 +15,7 @@ export default function AdhesionForm({
   onClose,
   onSaved,
 }: Props) {
-  const currentYear = new Date().getFullYear();
-  const defaultAnnee = `${currentYear}-${currentYear + 1}`;
+  const defaultAnnee = getCurrentAnneeScolaire();
 
   const [anneeScolaire, setAnneeScolaire] = useState(
     adhesion?.annee_scolaire ?? defaultAnnee

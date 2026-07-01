@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { Personne, Adhesion, ageFromDateNaissance, formatDate, getCurrentAnneeScolaire } from "../types";
+import { Personne, PersonneDetail, Adhesion, ageFromDateNaissance, formatDate, getCurrentAnneeScolaire } from "../types";
 import PersonneForm from "../components/PersonneForm";
 import AdhesionForm from "../components/AdhesionForm";
 
@@ -10,20 +10,22 @@ export default function DetailPersonne() {
   const [personne, setPersonne] = useState<Personne | null>(null);
   const [responsable, setResponsable] = useState<Personne | null>(null);
   const [adhesions, setAdhesions] = useState<Adhesion[]>([]);
+  const [aAdhesionEnCours, setAAdhesionEnCours] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showAdhesionForm, setShowAdhesionForm] = useState(false);
 
   const anneeEnCours = getCurrentAnneeScolaire();
-  const aAdhesionEnCours = adhesions.some((a) => a.annee_scolaire === anneeEnCours);
 
-  const chargerPersonne = useCallback(async () => {
+  const chargerDetail = useCallback(async () => {
     if (!id) return;
     try {
-      const p = await invoke<Personne>("obtenir_personne", { id: Number(id) });
-      setPersonne(p);
-      if (p?.responsable_id) {
+      const detail = await invoke<PersonneDetail>("obtenir_detail_personne", { id: Number(id) });
+      setPersonne(detail.personne);
+      setAdhesions(detail.adhesions);
+      setAAdhesionEnCours(detail.a_adhesion_annee_cours);
+      if (detail.personne.responsable_id) {
         const r = await invoke<Personne>("obtenir_personne", {
-          id: p.responsable_id,
+          id: detail.personne.responsable_id,
         });
         setResponsable(r);
       } else {
@@ -34,22 +36,9 @@ export default function DetailPersonne() {
     }
   }, [id]);
 
-  const chargerAdhesions = useCallback(async () => {
-    if (!id) return;
-    try {
-      const result = await invoke<Adhesion[]>("lister_adhesions_personne", {
-        personneId: Number(id),
-      });
-      setAdhesions(result);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [id]);
-
   useEffect(() => {
-    chargerPersonne();
-    chargerAdhesions();
-  }, [chargerPersonne, chargerAdhesions]);
+    chargerDetail();
+  }, [chargerDetail]);
 
   if (!personne) {
     return <p className="text-gray-500">Chargement...</p>;
@@ -120,7 +109,7 @@ export default function DetailPersonne() {
           onClose={() => setShowEditForm(false)}
           onSaved={() => {
             setShowEditForm(false);
-            chargerPersonne();
+            chargerDetail();
           }}
         />
       )}
@@ -150,7 +139,7 @@ export default function DetailPersonne() {
             onClose={() => setShowAdhesionForm(false)}
             onSaved={() => {
               setShowAdhesionForm(false);
-              chargerAdhesions();
+              chargerDetail();
             }}
           />
         )}
