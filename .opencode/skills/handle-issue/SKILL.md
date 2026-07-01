@@ -21,21 +21,27 @@ gh issue view <issue-number>
 
 Parse title, description, labels, and comments. Understand the problem and the expected behavior.
 
-### 2. Explore the codebase
+### 2. Create a branch
+
+```bash
+git checkout -b fix/issue-<issue-number>
+```
+
+### 3. Explore the codebase
 
 Search for relevant files using grep, glob, and read to understand the current implementation. Identify all files that need to change.
 
-### 3. Propose a solution
+### 4. Propose a solution
 
 Summarize the problem and your proposed solution to the user. Wait for their approval before implementing.
 
-### 4. Implement the changes
+### 5. Implement the changes
 
 Make the necessary code changes following project conventions:
 - Rust backend: domain → repositories → commands → lib.rs
 - Frontend: types → components → pages
 
-### 5. Verify
+### 6. Verify
 
 Run all checks sequentially. If any fails, stop and fix.
 
@@ -60,7 +66,17 @@ npm run typecheck
 npm run build
 ```
 
-### 6. Comment the issue
+### 7. Commit and push
+
+Stage all changed files, write a concise commit message describing the fix, then push:
+
+```bash
+git add -A
+git commit -m "<description of the fix>"
+git push -u origin fix/issue-<issue-number>
+```
+
+### 8. Comment the issue
 
 Write a summary of changes and post it on the issue:
 
@@ -73,13 +89,14 @@ The comment should include:
 - List of modified files with brief descriptions
 - Benefits of the change
 
-### 7. Propose to close
+### 9. Propose to close
 
 Ask the user if they want to close the issue.
 
 ## Execution
 
-- After step 1, present the issue summary to the user
-- After step 3, wait for user approval before implementing
+- After step 1, present the issue summary to the user and create the fix branch
+- After step 4, wait for user approval before implementing
 - If any verification step fails, report the error and fix before continuing
+- Commit with a descriptive message, not "fix" — explain what and why
 - Always get user confirmation before closing the issue
