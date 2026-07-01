@@ -31,6 +31,7 @@ pub fn run() {
             commands::personne_commands::creer_personne,
             commands::personne_commands::modifier_personne,
             commands::personne_commands::obtenir_personne,
+            commands::personne_commands::obtenir_detail_personne,
             commands::personne_commands::lister_personnes,
             commands::personne_commands::rechercher_personnes,
             commands::adhesion_commands::creer_adhesion,

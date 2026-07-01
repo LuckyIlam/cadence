@@ -46,6 +46,12 @@ export interface UpdateAdhesion {
   note_paiement: string | null;
 }
 
+export interface PersonneDetail {
+  personne: Personne;
+  adhesions: Adhesion[];
+  a_adhesion_annee_cours: boolean;
+}
+
 export function ageFromDateNaissance(dateNaissance: string): number {
   const today = new Date();
   const birth = new Date(dateNaissance);

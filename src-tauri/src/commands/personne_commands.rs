@@ -1,7 +1,8 @@
 use tauri::State;
 
 use crate::domain::personne::{
-    est_mineur, valider_date_naissance, CreatePersonne, Personne, UpdatePersonne,
+    current_annee_scolaire, est_mineur, valider_date_naissance, CreatePersonne, Personne,
+    PersonneDetail, UpdatePersonne,
 };
 use crate::infrastructure::db::AppState;
 use crate::repositories;
@@ -69,6 +70,30 @@ pub async fn obtenir_personne(
     repositories::personne_repo::find_by_id(&state.pool, id)
         .await
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn obtenir_detail_personne(
+    state: State<'_, AppState>,
+    id: i64,
+) -> Result<PersonneDetail, String> {
+    let personne = repositories::personne_repo::find_by_id(&state.pool, id)
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| "Personne introuvable".to_string())?;
+
+    let adhesions = repositories::adhesion_repo::list_by_personne(&state.pool, id)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let annee_scolaire = current_annee_scolaire();
+    let a_adhesion_annee_cours = adhesions.iter().any(|a| a.annee_scolaire == annee_scolaire);
+
+    Ok(PersonneDetail {
+        personne,
+        adhesions,
+        a_adhesion_annee_cours,
+    })
 }
 
 #[tauri::command]
