@@ -87,9 +87,7 @@ pub async fn obtenir_detail_personne(
         .map_err(|e| e.to_string())?;
 
     let annee_scolaire = current_annee_scolaire();
-    let a_adhesion_annee_cours = adhesions
-        .iter()
-        .any(|a| a.annee_scolaire == annee_scolaire);
+    let a_adhesion_annee_cours = adhesions.iter().any(|a| a.annee_scolaire == annee_scolaire);
 
     Ok(PersonneDetail {
         personne,
