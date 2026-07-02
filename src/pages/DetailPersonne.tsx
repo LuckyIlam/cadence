@@ -13,6 +13,7 @@ export default function DetailPersonne() {
   const [aAdhesionEnCours, setAAdhesionEnCours] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showAdhesionForm, setShowAdhesionForm] = useState(false);
+  const [editingAdhesion, setEditingAdhesion] = useState<Adhesion | null>(null);
 
   const anneeEnCours = getCurrentAnneeScolaire();
 
@@ -119,7 +120,7 @@ export default function DetailPersonne() {
           <h3 className="text-lg font-semibold text-gray-900">Adhésions</h3>
           <div className="relative group">
             <button
-              onClick={() => !aAdhesionEnCours && setShowAdhesionForm(true)}
+              onClick={() => !aAdhesionEnCours && (setEditingAdhesion(null), setShowAdhesionForm(true))}
               disabled={aAdhesionEnCours}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
@@ -136,9 +137,14 @@ export default function DetailPersonne() {
         {showAdhesionForm && (
           <AdhesionForm
             personneId={personne.id}
-            onClose={() => setShowAdhesionForm(false)}
+            adhesion={editingAdhesion ?? undefined}
+            onClose={() => {
+              setShowAdhesionForm(false);
+              setEditingAdhesion(null);
+            }}
             onSaved={() => {
               setShowAdhesionForm(false);
+              setEditingAdhesion(null);
               chargerDetail();
             }}
           />
@@ -162,11 +168,22 @@ export default function DetailPersonne() {
                     {a.reglee ? "Réglée" : "En attente"}
                   </span>
                 </div>
-                {a.note_paiement && (
-                  <span className="text-sm text-gray-500">
-                    {a.note_paiement}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {a.note_paiement && (
+                    <span className="text-sm text-gray-500">
+                      {a.note_paiement}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setEditingAdhesion(a);
+                      setShowAdhesionForm(true);
+                    }}
+                    className="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                  >
+                    Modifier
+                  </button>
+                </div>
               </div>
             ))}
           </div>
