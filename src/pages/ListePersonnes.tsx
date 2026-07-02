@@ -12,7 +12,7 @@ export default function ListePersonnes() {
 
   const chargerPersonnes = useCallback(async () => {
     try {
-      const result = await invoke<Personne[]>("lister_personnes");
+      const result = await invoke<Personne[]>("rechercher_personnes", { query: null });
       setPersonnes(result);
     } catch (e) {
       console.error(e);

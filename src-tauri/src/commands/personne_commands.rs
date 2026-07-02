@@ -97,18 +97,13 @@ pub async fn obtenir_detail_personne(
 }
 
 #[tauri::command]
-pub async fn lister_personnes(state: State<'_, AppState>) -> Result<Vec<Personne>, String> {
-    repositories::personne_repo::list_all(&state.pool)
-        .await
-        .map_err(|e| e.to_string())
-}
-
-#[tauri::command]
 pub async fn rechercher_personnes(
     state: State<'_, AppState>,
-    query: String,
+    query: Option<String>,
 ) -> Result<Vec<Personne>, String> {
-    repositories::personne_repo::search(&state.pool, &query)
-        .await
-        .map_err(|e| e.to_string())
+    match query {
+        None => repositories::personne_repo::list_all(&state.pool).await,
+        Some(q) => repositories::personne_repo::search(&state.pool, &q).await,
+    }
+    .map_err(|e| e.to_string())
 }

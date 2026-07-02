@@ -35,7 +35,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    invoke<Personne[]>("lister_personnes").then(setToutLeMonde).catch(() => {});
+    invoke<Personne[]>("rechercher_personnes", { query: null }).then(setToutLeMonde).catch(() => {});
   }, []);
 
   useEffect(() => {
