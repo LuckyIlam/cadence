@@ -66,7 +66,11 @@ npm run typecheck
 npm run build
 ```
 
-### 7. Commit and push
+### 7. Update functional documentation
+
+If the issue changes any functional behavior (new feature, modified rule, UI change), update the corresponding file in `docs/fonctionnel/` to reflect the change. This keeps the user-facing documentation in sync with the code.
+
+### 8. Commit and push
 
 Stage all changed files, write a concise commit message describing the fix, then push:
 
@@ -76,7 +80,7 @@ git commit -m "<description of the fix>"
 git push -u origin fix/issue-<issue-number>
 ```
 
-### 8. Comment the issue
+### 9. Comment the issue
 
 Write a summary of changes and post it on the issue:
 
@@ -89,7 +93,7 @@ The comment should include:
 - List of modified files with brief descriptions
 - Benefits of the change
 
-### 9. Propose to close
+### 10. Propose to close
 
 Ask the user if they want to close the issue.
 
@@ -98,5 +102,6 @@ Ask the user if they want to close the issue.
 - After step 1, present the issue summary to the user and create the fix branch
 - After step 4, wait for user approval before implementing
 - If any verification step fails, report the error and fix before continuing
+- Step 7: only update `docs/fonctionnel/` if the issue impacts functional behavior; skip otherwise
 - Commit with a descriptive message, not "fix" — explain what and why
 - Always get user confirmation before closing the issue

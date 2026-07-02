@@ -59,6 +59,10 @@ cadence/
 └── package.json
 ```
 
+## Documentation fonctionnelle
+
+→ [docs/fonctionnel/](docs/fonctionnel/README.md) — Documentation destinée aux utilisateurs de l'application (bénévoles, secrétaires, trésoriers).
+
 ## Modèle de données
 
 - **personnes_physiques** : identité de base (nom, prénom, date naissance, email, téléphone, responsable_id)
