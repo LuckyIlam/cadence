@@ -1,0 +1,11 @@
+[advisories]
+ignore = [
+    # quick-xml: bloqué par plist v1.9.0 qui impose ^0.39.2.
+    # Supprimer quand plist publiera >=1.10.0 avec quick-xml >=0.41.0.
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+    # rsa: pas dans l'arbre de compilation réel.
+    # Dépendance optionnelle inutilisée de sqlx-postgres (seulement sqlite activé).
+    # Aucun fix disponible.
+    "RUSTSEC-2023-0071",
+]
