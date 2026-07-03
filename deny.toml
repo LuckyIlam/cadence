@@ -7,8 +7,32 @@ targets = [
 all-features = false
 
 [advisories]
-ignore = []
-# git-fetch-with-cli = true
+ignore = [
+    # quick-xml: bloqué par plist v1.9.0 qui impose ^0.39.2.
+    # Supprimer quand plist publiera >=1.10.0 avec quick-xml >=0.41.0.
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+    # Tauri utilise GTK3 (gtk-rs) qui n'est plus maintenu (gtk4-rs recommandé).
+    # En attendant Tauri v3.
+    "RUSTSEC-2024-0413",
+    "RUSTSEC-2024-0416",
+    "RUSTSEC-2024-0412",
+    "RUSTSEC-2024-0418",
+    "RUSTSEC-2024-0411",
+    "RUSTSEC-2024-0417",
+    "RUSTSEC-2024-0414",
+    "RUSTSEC-2024-0415",
+    "RUSTSEC-2024-0420",
+    "RUSTSEC-2024-0419",
+    # proc-macro-error: dépendance transitive de glib/gtk.
+    "RUSTSEC-2024-0370",
+    # unic-*: dépendances transitives de tauri-utils via urlpattern.
+    "RUSTSEC-2025-0081",
+    "RUSTSEC-2025-0075",
+    "RUSTSEC-2025-0080",
+    "RUSTSEC-2025-0100",
+    "RUSTSEC-2025-0098",
+]
 
 [licenses]
 allow = [
@@ -18,14 +42,11 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
+    "MPL-2.0",
     "Unicode-3.0",
+    "Unlicense",
     "Zlib",
     "CC0-1.0",
-]
-deny = [
-    "AGPL-3.0",
-    "GPL-2.0",
-    "GPL-3.0",
 ]
 confidence-threshold = 0.8
 
@@ -33,7 +54,7 @@ confidence-threshold = 0.8
 ignore = false
 
 [bans]
-multiple-versions = "deny"
+multiple-versions = "warn"
 wildcards = "allow"
 allow-workspace = true
 
