@@ -52,6 +52,23 @@ export interface PersonneDetail {
   a_adhesion_annee_cours: boolean;
 }
 
+export interface CriteresRecherchePersonnes {
+  texte_libre: string | null;
+  adherent_uniquement: boolean;
+}
+
+export interface Pagination {
+  page: number;
+  par_page: number;
+}
+
+export interface ResultatRecherchePersonnes {
+  donnees: Personne[];
+  total: number;
+  page: number;
+  pages: number;
+}
+
 export function ageFromDateNaissance(dateNaissance: string): number {
   const today = new Date();
   const birth = new Date(dateNaissance);
