@@ -36,6 +36,16 @@ pub fn run() {
             commands::adhesion_commands::creer_adhesion,
             commands::adhesion_commands::modifier_adhesion,
             commands::adhesion_commands::lister_adhesions_personne,
+            commands::activite_commands::creer_activite,
+            commands::activite_commands::modifier_activite,
+            commands::activite_commands::obtenir_activite,
+            commands::activite_commands::obtenir_detail_activite,
+            commands::activite_commands::lister_annees_activites,
+            commands::activite_commands::lister_activites,
+            commands::activite_commands::definir_tarif_activite,
+            commands::activite_commands::ajouter_personne_activite,
+            commands::activite_commands::retirer_personne_activite,
+            commands::activite_commands::lister_activites_personne,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

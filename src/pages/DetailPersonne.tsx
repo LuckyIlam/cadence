@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import AdhesionForm from "../components/AdhesionForm";
 import PersonneForm from "../components/PersonneForm";
 import {
+  type ActivitePersonne,
   type Adhesion,
   ageFromDateNaissance,
   formatDate,
@@ -18,6 +19,7 @@ export default function DetailPersonne() {
   const [responsable, setResponsable] = useState<Personne | null>(null);
   const [adhesions, setAdhesions] = useState<Adhesion[]>([]);
   const [aAdhesionEnCours, setAAdhesionEnCours] = useState(false);
+  const [activitesPersonne, setActivitesPersonne] = useState<ActivitePersonne[]>([]);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showAdhesionForm, setShowAdhesionForm] = useState(false);
   const [editingAdhesion, setEditingAdhesion] = useState<Adhesion | null>(null);
@@ -39,6 +41,10 @@ export default function DetailPersonne() {
       } else {
         setResponsable(null);
       }
+      const activites = await invoke<ActivitePersonne[]>("lister_activites_personne", {
+        personneId: Number(id),
+      });
+      setActivitesPersonne(activites);
     } catch (e) {
       console.error(e);
     }
@@ -187,6 +193,39 @@ export default function DetailPersonne() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Activités</h3>
+        {activitesPersonne.length === 0 ? (
+          <p className="text-gray-500 text-center py-4">Aucune activité</p>
+        ) : (
+          <div>
+            {["encadrant", "participant"].map((role) => {
+              const filtered = activitesPersonne.filter((ap) => ap.role === role);
+              if (filtered.length === 0) return null;
+              return (
+                <div key={role} className="mb-3">
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">
+                    {role === "encadrant" ? "En tant qu'encadrant·e" : "En tant que participant·e"}
+                  </h4>
+                  <div className="divide-y divide-gray-200">
+                    {filtered.map((ap) => (
+                      <div key={ap.activite.id} className="py-2">
+                        <Link
+                          to={`/activites/${ap.activite.id}?annee=${getCurrentAnneeScolaire()}`}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          {ap.activite.nom}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
