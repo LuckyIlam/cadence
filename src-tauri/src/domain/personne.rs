@@ -41,6 +41,26 @@ pub struct PersonneDetail {
     pub a_adhesion_annee_cours: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CriteresRecherchePersonnes {
+    pub texte_libre: Option<String>,
+    pub adherent_uniquement: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Pagination {
+    pub page: u32,
+    pub par_page: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResultatRecherchePersonnes {
+    pub donnees: Vec<Personne>,
+    pub total: u32,
+    pub page: u32,
+    pub pages: u32,
+}
+
 /// Retourne l'année scolaire courante au format "YYYY-YYYY".
 /// Septembre (mois >= 9) démarre une nouvelle année scolaire.
 pub fn current_annee_scolaire() -> String {

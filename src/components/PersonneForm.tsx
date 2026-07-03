@@ -4,6 +4,7 @@ import {
   Personne,
   CreatePersonne,
   UpdatePersonne,
+  ResultatRecherchePersonnes,
   estMineur,
   dateNaissanceEstValide,
   ageFromDateNaissance,
@@ -35,7 +36,10 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    invoke<Personne[]>("rechercher_personnes", { query: null }).then(setToutLeMonde).catch(() => {});
+    invoke<ResultatRecherchePersonnes>("rechercher_personnes", {
+      criteres: { texte_libre: null, adherent_uniquement: false },
+      pagination: { page: 1, par_page: 0 },
+    }).then((r) => setToutLeMonde(r.donnees)).catch(() => {});
   }, []);
 
   useEffect(() => {
