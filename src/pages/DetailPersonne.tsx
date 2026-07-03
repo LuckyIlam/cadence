@@ -64,6 +64,7 @@ export default function DetailPersonne() {
             {personne.nom} {personne.prenom}
           </h2>
           <button
+            type="button"
             onClick={() => setShowEditForm(true)}
             className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
           >
@@ -119,7 +120,13 @@ export default function DetailPersonne() {
           <h3 className="text-lg font-semibold text-gray-900">Adhésions</h3>
           <div className="relative group">
             <button
-              onClick={() => !aAdhesionEnCours && (setEditingAdhesion(null), setShowAdhesionForm(true))}
+              type="button"
+              onClick={() => {
+                if (!aAdhesionEnCours) {
+                  setEditingAdhesion(null);
+                  setShowAdhesionForm(true);
+                }
+              }}
               disabled={aAdhesionEnCours}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
@@ -168,6 +175,7 @@ export default function DetailPersonne() {
                 <div className="flex items-center gap-2">
                   {a.note_paiement && <span className="text-sm text-gray-500">{a.note_paiement}</span>}
                   <button
+                    type="button"
                     onClick={() => {
                       setEditingAdhesion(a);
                       setShowAdhesionForm(true);

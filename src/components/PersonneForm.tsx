@@ -129,8 +129,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+            <label htmlFor="personne-nom" className="block text-sm font-medium text-gray-700 mb-1">
+              Nom *
+            </label>
             <input
+              id="personne-nom"
               type="text"
               value={nom}
               onChange={(e) => setNom(e.target.value)}
@@ -139,8 +142,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
+            <label htmlFor="personne-prenom" className="block text-sm font-medium text-gray-700 mb-1">
+              Prénom *
+            </label>
             <input
+              id="personne-prenom"
               type="text"
               value={prenom}
               onChange={(e) => setPrenom(e.target.value)}
@@ -149,8 +155,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance *</label>
+            <label htmlFor="personne-date-naissance" className="block text-sm font-medium text-gray-700 mb-1">
+              Date de naissance *
+            </label>
             <input
+              id="personne-date-naissance"
               type="date"
               value={dateNaissance}
               onChange={(e) => setDateNaissance(e.target.value)}
@@ -159,8 +168,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+            <label htmlFor="personne-telephone" className="block text-sm font-medium text-gray-700 mb-1">
+              Téléphone
+            </label>
             <input
+              id="personne-telephone"
               type="tel"
               value={telephone}
               onChange={(e) => setTelephone(e.target.value)}
@@ -168,8 +180,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="personne-email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
             <input
+              id="personne-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -177,10 +192,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div className="md:col-span-2 relative" ref={dropdownRef}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="personne-responsable" className="block text-sm font-medium text-gray-700 mb-1">
               {isMineur ? "Responsable légal * (mineur obligatoire)" : "Responsable légal"}
             </label>
             <input
+              id="personne-responsable"
               type="text"
               value={responsableNom || rechercheResponsable}
               onChange={(e) => {
