@@ -108,13 +108,13 @@ export function estAnneeScolaireValide(annee: string): boolean {
 export function dateEstValide(dateIso: string): boolean {
   if (!dateIso) return false;
   const d = new Date(dateIso);
-  return !isNaN(d.getTime());
+  return !Number.isNaN(d.getTime());
 }
 
 export function dateNaissanceEstValide(dateIso: string): { valide: boolean; erreur?: string } {
   if (!dateIso) return { valide: false, erreur: "Date requise" };
   const d = new Date(dateIso);
-  if (isNaN(d.getTime())) return { valide: false, erreur: "Date invalide" };
+  if (Number.isNaN(d.getTime())) return { valide: false, erreur: "Date invalide" };
   const annee = d.getFullYear();
   if (annee < 1920) return { valide: false, erreur: "La date doit être après 1920" };
   if (d > new Date()) return { valide: false, erreur: "La date ne peut pas être dans le futur" };

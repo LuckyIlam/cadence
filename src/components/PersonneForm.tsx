@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Personne,
-  CreatePersonne,
-  UpdatePersonne,
-  ResultatRecherchePersonnes,
-  estMineur,
-  dateNaissanceEstValide,
   ageFromDateNaissance,
+  type CreatePersonne,
+  dateNaissanceEstValide,
+  estMineur,
+  type Personne,
+  type ResultatRecherchePersonnes,
+  type UpdatePersonne,
 } from "../types";
 
 interface Props {
@@ -19,14 +19,10 @@ interface Props {
 export default function PersonneForm({ personne, onClose, onSaved }: Props) {
   const [nom, setNom] = useState(personne?.nom ?? "");
   const [prenom, setPrenom] = useState(personne?.prenom ?? "");
-  const [dateNaissance, setDateNaissance] = useState(
-    personne?.date_naissance ?? ""
-  );
+  const [dateNaissance, setDateNaissance] = useState(personne?.date_naissance ?? "");
   const [email, setEmail] = useState(personne?.email ?? "");
   const [telephone, setTelephone] = useState(personne?.telephone ?? "");
-  const [responsableId, setResponsableId] = useState<number | null>(
-    personne?.responsable_id ?? null
-  );
+  const [responsableId, setResponsableId] = useState<number | null>(personne?.responsable_id ?? null);
   const [responsableNom, setResponsableNom] = useState("");
   const [toutLeMonde, setToutLeMonde] = useState<Personne[]>([]);
   const [rechercheResponsable, setRechercheResponsable] = useState("");
@@ -39,7 +35,9 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
     invoke<ResultatRecherchePersonnes>("rechercher_personnes", {
       criteres: { texte_libre: null, adherent_uniquement: false },
       pagination: { page: 1, par_page: 0 },
-    }).then((r) => setToutLeMonde(r.donnees)).catch(() => {});
+    })
+      .then((r) => setToutLeMonde(r.donnees))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -61,16 +59,13 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
 
   const majeurs = useMemo(
     () => toutLeMonde.filter((p) => !estMineur(p.date_naissance) && p.id !== personne?.id),
-    [toutLeMonde, personne]
+    [toutLeMonde, personne],
   );
 
   const majeursFiltres = useMemo(() => {
     if (!rechercheResponsable.trim()) return majeurs;
     const q = rechercheResponsable.toLowerCase();
-    return majeurs.filter(
-      (p) =>
-        p.nom.toLowerCase().includes(q) || p.prenom.toLowerCase().includes(q)
-    );
+    return majeurs.filter((p) => p.nom.toLowerCase().includes(q) || p.prenom.toLowerCase().includes(q));
   }, [majeurs, rechercheResponsable]);
 
   const isMineur = dateNaissance && estMineur(dateNaissance);
@@ -130,15 +125,11 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
       >
-        <h3 className="text-lg font-semibold mb-4">
-          {personne ? "Modifier la personne" : "Nouvelle personne"}
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">{personne ? "Modifier la personne" : "Nouvelle personne"}</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nom *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
             <input
               type="text"
               value={nom}
@@ -148,9 +139,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Prénom *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
             <input
               type="text"
               value={prenom}
@@ -160,9 +149,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date de naissance *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance *</label>
             <input
               type="date"
               value={dateNaissance}
@@ -172,9 +159,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Téléphone
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
             <input
               type="tel"
               value={telephone}
@@ -183,9 +168,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -195,9 +178,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
           </div>
           <div className="md:col-span-2 relative" ref={dropdownRef}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {isMineur
-                ? "Responsable légal * (mineur obligatoire)"
-                : "Responsable légal"}
+              {isMineur ? "Responsable légal * (mineur obligatoire)" : "Responsable légal"}
             </label>
             <input
               type="text"
@@ -230,9 +211,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
                       className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors"
                     >
                       {p.prenom} {p.nom}
-                      <span className="text-gray-400 ml-2">
-                        {ageFromDateNaissance(p.date_naissance)} ans
-                      </span>
+                      <span className="text-gray-400 ml-2">{ageFromDateNaissance(p.date_naissance)} ans</span>
                     </button>
                   ))
                 )}
@@ -242,9 +221,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
         )}
 
         <div className="flex justify-end gap-3">
