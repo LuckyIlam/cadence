@@ -1,9 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { Personne, PersonneDetail, Adhesion, ageFromDateNaissance, formatDate, getCurrentAnneeScolaire } from "../types";
-import PersonneForm from "../components/PersonneForm";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import AdhesionForm from "../components/AdhesionForm";
+import PersonneForm from "../components/PersonneForm";
+import {
+  type Adhesion,
+  ageFromDateNaissance,
+  formatDate,
+  getCurrentAnneeScolaire,
+  type Personne,
+  type PersonneDetail,
+} from "../types";
 
 export default function DetailPersonne() {
   const { id } = useParams<{ id: string }>();
@@ -47,10 +54,7 @@ export default function DetailPersonne() {
 
   return (
     <div>
-      <Link
-        to="/"
-        className="text-blue-600 hover:text-blue-800 mb-4 inline-block"
-      >
+      <Link to="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
         &larr; Retour à la liste
       </Link>
 
@@ -74,9 +78,7 @@ export default function DetailPersonne() {
           </div>
           <div>
             <span className="text-gray-500">Âge :</span>
-            <span className="ml-2">
-              {ageFromDateNaissance(personne.date_naissance)} ans
-            </span>
+            <span className="ml-2">{ageFromDateNaissance(personne.date_naissance)} ans</span>
           </div>
           {personne.email && (
             <div>
@@ -93,10 +95,7 @@ export default function DetailPersonne() {
           {responsable && (
             <div className="md:col-span-2">
               <span className="text-gray-500">Responsable légal :</span>
-              <Link
-                to={`/personnes/${responsable.id}`}
-                className="ml-2 text-blue-600 hover:text-blue-800"
-              >
+              <Link to={`/personnes/${responsable.id}`} className="ml-2 text-blue-600 hover:text-blue-800">
                 {responsable.nom} {responsable.prenom}
               </Link>
             </div>
@@ -160,20 +159,14 @@ export default function DetailPersonne() {
                   <span className="font-medium">{a.annee_scolaire}</span>
                   <span
                     className={`ml-3 px-2 py-0.5 rounded text-xs ${
-                      a.reglee
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
+                      a.reglee ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
                     {a.reglee ? "Réglée" : "En attente"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {a.note_paiement && (
-                    <span className="text-sm text-gray-500">
-                      {a.note_paiement}
-                    </span>
-                  )}
+                  {a.note_paiement && <span className="text-sm text-gray-500">{a.note_paiement}</span>}
                   <button
                     onClick={() => {
                       setEditingAdhesion(a);

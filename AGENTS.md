@@ -24,5 +24,15 @@ Toujours exécuter avant de proposer le travail :
 1. `cargo check` (dans `src-tauri/`)
 2. `cargo clippy -- -D warnings`
 3. `cargo fmt --check`
-4. `npm run typecheck`
-5. `npm run build`
+4. `cargo audit`
+5. `cargo deny check`
+6. `npm run typecheck`
+7. `npm run lint`
+8. `npm run build`
+
+## Couverture de code
+
+```powershell
+# Installer (une fois) : cargo install cargo-llvm-cov --locked
+cargo llvm-cov --html  # dans src-tauri/
+```

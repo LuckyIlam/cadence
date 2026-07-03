@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PersonneForm from "../components/PersonneForm";
 import {
   ageFromDateNaissance,
-  CriteresRecherchePersonnes,
-  Pagination,
-  ResultatRecherchePersonnes,
+  type CriteresRecherchePersonnes,
+  type Pagination,
+  type ResultatRecherchePersonnes,
 } from "../types";
-import PersonneForm from "../components/PersonneForm";
 
 export default function ListePersonnes() {
   const [resultat, setResultat] = useState<ResultatRecherchePersonnes | null>(null);
@@ -18,26 +18,20 @@ export default function ListePersonnes() {
   const navigate = useNavigate();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const chargerPersonnes = useCallback(
-    async (criteres: CriteresRecherchePersonnes, pagination: Pagination) => {
-      try {
-        const r = await invoke<ResultatRecherchePersonnes>("rechercher_personnes", {
-          criteres,
-          pagination,
-        });
-        setResultat(r);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    []
-  );
+  const chargerPersonnes = useCallback(async (criteres: CriteresRecherchePersonnes, pagination: Pagination) => {
+    try {
+      const r = await invoke<ResultatRecherchePersonnes>("rechercher_personnes", {
+        criteres,
+        pagination,
+      });
+      setResultat(r);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   useEffect(() => {
-    chargerPersonnes(
-      { texte_libre: null, adherent_uniquement: false },
-      { page: 1, par_page: 20 }
-    );
+    chargerPersonnes({ texte_libre: null, adherent_uniquement: false }, { page: 1, par_page: 20 });
   }, [chargerPersonnes]);
 
   useEffect(() => {
@@ -49,7 +43,7 @@ export default function ListePersonnes() {
           texte_libre: texteLibre.trim() || null,
           adherent_uniquement: adherentUniquement,
         },
-        { page: 1, par_page: 20 }
+        { page: 1, par_page: 20 },
       );
     }, 300);
     return () => {
@@ -63,9 +57,9 @@ export default function ListePersonnes() {
         texte_libre: texteLibre.trim() || null,
         adherent_uniquement: adherentUniquement,
       },
-      { page, par_page: 20 }
+      { page, par_page: 20 },
     );
-  }, [page]);
+  }, [page, texteLibre.trim, chargerPersonnes, adherentUniquement]);
 
   const handleTexteLibreChange = (value: string) => {
     setTexteLibre(value);
@@ -128,7 +122,7 @@ export default function ListePersonnes() {
                 texte_libre: texteLibre.trim() || null,
                 adherent_uniquement: adherentUniquement,
               },
-              { page: 1, par_page: 20 }
+              { page: 1, par_page: 20 },
             );
           }}
         />
@@ -146,21 +140,13 @@ export default function ListePersonnes() {
                 <span className="font-semibold text-gray-900">
                   {p.nom} {p.prenom}
                 </span>
-                <span className="text-gray-500 ml-3">
-                  {ageFromDateNaissance(p.date_naissance)} ans
-                </span>
+                <span className="text-gray-500 ml-3">{ageFromDateNaissance(p.date_naissance)} ans</span>
               </div>
-              <div className="text-sm text-gray-500">
-                {p.email && <span>{p.email}</span>}
-              </div>
+              <div className="text-sm text-gray-500">{p.email && <span>{p.email}</span>}</div>
             </div>
           </div>
         ))}
-        {personnes.length === 0 && (
-          <p className="text-center text-gray-500 py-8">
-            Aucune personne trouvée
-          </p>
-        )}
+        {personnes.length === 0 && <p className="text-center text-gray-500 py-8">Aucune personne trouvée</p>}
       </div>
 
       {pages > 1 && (
@@ -178,9 +164,7 @@ export default function ListePersonnes() {
               key={n}
               onClick={() => setPage(n)}
               className={`px-3 py-1 rounded border transition-colors ${
-                n === page
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-gray-300 hover:bg-gray-100"
+                n === page ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-100"
               }`}
             >
               {n}

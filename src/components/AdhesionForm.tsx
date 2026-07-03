@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Adhesion, CreateAdhesion, UpdateAdhesion, getCurrentAnneeScolaire } from "../types";
+import { useState } from "react";
+import { type Adhesion, type CreateAdhesion, getCurrentAnneeScolaire, type UpdateAdhesion } from "../types";
 
 interface Props {
   personneId: number;
@@ -9,21 +9,12 @@ interface Props {
   onSaved: () => void;
 }
 
-export default function AdhesionForm({
-  personneId,
-  adhesion,
-  onClose,
-  onSaved,
-}: Props) {
+export default function AdhesionForm({ personneId, adhesion, onClose, onSaved }: Props) {
   const defaultAnnee = getCurrentAnneeScolaire();
 
-  const [anneeScolaire, setAnneeScolaire] = useState(
-    adhesion?.annee_scolaire ?? defaultAnnee
-  );
+  const [anneeScolaire, setAnneeScolaire] = useState(adhesion?.annee_scolaire ?? defaultAnnee);
   const [reglee, setReglee] = useState(adhesion?.reglee ?? false);
-  const [notePaiement, setNotePaiement] = useState(
-    adhesion?.note_paiement ?? ""
-  );
+  const [notePaiement, setNotePaiement] = useState(adhesion?.note_paiement ?? "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -69,15 +60,11 @@ export default function AdhesionForm({
   return (
     <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
       <form onSubmit={handleSubmit}>
-        <h4 className="font-medium text-gray-900 mb-3">
-          {adhesion ? "Modifier l'adhésion" : "Nouvelle adhésion"}
-        </h4>
+        <h4 className="font-medium text-gray-900 mb-3">{adhesion ? "Modifier l'adhésion" : "Nouvelle adhésion"}</h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Année scolaire *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Année scolaire *</label>
             <input
               type="text"
               value={anneeScolaire}
@@ -100,9 +87,7 @@ export default function AdhesionForm({
             </label>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Note de paiement
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Note de paiement</label>
             <input
               type="text"
               value={notePaiement}
@@ -115,9 +100,7 @@ export default function AdhesionForm({
         </div>
 
         {error && (
-          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
+          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
         )}
 
         <div className="flex justify-end gap-3">

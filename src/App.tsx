@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import ListePersonnes from "./pages/ListePersonnes";
 import DetailPersonne from "./pages/DetailPersonne";
+import ListePersonnes from "./pages/ListePersonnes";
 
 export default function App() {
   return (

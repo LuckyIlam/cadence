@@ -32,9 +32,17 @@ jobs:
         working-directory: src-tauri
       - run: cargo fmt --check
         working-directory: src-tauri
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - run: cargo audit
+        working-directory: src-tauri
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+      - run: cargo deny check
+        working-directory: src-tauri
 
   js-check:
-    name: JS typecheck + build
+    name: JS typecheck + lint + build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +51,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run lint
       - run: npm run build
 
   test:
@@ -69,4 +78,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: cargo build
+        working-directory: src-tauri
+      - run: cargo test
         working-directory: src-tauri
