@@ -120,3 +120,55 @@ export function dateNaissanceEstValide(dateIso: string): { valide: boolean; erre
   if (d > new Date()) return { valide: false, erreur: "La date ne peut pas être dans le futur" };
   return { valide: true };
 }
+
+export interface Activite {
+  id: number;
+  nom: string;
+  description: string | null;
+  capacite_max: number | null;
+}
+
+export interface CreateActivite {
+  nom: string;
+  description: string | null;
+  capacite_max: number | null;
+  annee_scolaire: string | null;
+  tarif: number | null;
+}
+
+export interface UpdateActivite {
+  nom: string;
+  description: string | null;
+  capacite_max: number | null;
+}
+
+export interface CreateTarifActivite {
+  activite_id: number;
+  annee_scolaire: string;
+  tarif: number;
+}
+
+export interface CreateLiaisonActivitePersonne {
+  activite_id: number;
+  personne_id: number;
+  annee_scolaire: string;
+  role: "encadrant" | "participant";
+}
+
+export interface PersonneActivite {
+  id: number;
+  nom: string;
+  prenom: string;
+}
+
+export interface DetailActivite {
+  activite: Activite;
+  tarif: number | null;
+  encadrants: PersonneActivite[];
+  participants: PersonneActivite[];
+}
+
+export interface ActivitePersonne {
+  activite: Activite;
+  role: string;
+}

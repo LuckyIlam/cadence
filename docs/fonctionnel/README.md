@@ -12,6 +12,7 @@ Cette documentation s'adresse aux **utilisateurs de l'application** (bénévoles
 |--------|-------------|
 | [Personnes](personnes.md) | Gestion des personnes physiques (adhérents, responsables légaux) |
 | [Adhésions](adhesions.md) | Gestion des adhésions annuelles |
+| [Activités](activites.md) | Gestion des activités de l'association (participants, encadrants, tarifs) |
 
 ## Concepts généraux
 
@@ -25,3 +26,5 @@ Cette documentation s'adresse aux **utilisateurs de l'application** (bénévoles
 1. **Créer une personne** → renseigner son identité
 2. **Ajouter une adhésion** → associer une cotisation pour l'année en cours
 3. **Suivre les règlements** → marquer les adhésions comme réglées et ajouter des notes de paiement
+4. **Créer une activité** → définir un nom, un tarif pour l'année
+5. **Inscrire des personnes** → ajouter des participants et des encadrants aux activités
