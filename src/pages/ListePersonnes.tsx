@@ -86,6 +86,7 @@ export default function ListePersonnes() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Personnes</h2>
         <button
+          type="button"
           onClick={() => setShowForm(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -130,10 +131,11 @@ export default function ListePersonnes() {
 
       <div className="grid gap-3">
         {personnes.map((p) => (
-          <div
+          <button
             key={p.id}
+            type="button"
             onClick={() => navigate(`/personnes/${p.id}`)}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer"
+            className="block w-full text-left bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -144,7 +146,7 @@ export default function ListePersonnes() {
               </div>
               <div className="text-sm text-gray-500">{p.email && <span>{p.email}</span>}</div>
             </div>
-          </div>
+          </button>
         ))}
         {personnes.length === 0 && <p className="text-center text-gray-500 py-8">Aucune personne trouvée</p>}
       </div>
@@ -152,6 +154,7 @@ export default function ListePersonnes() {
       {pages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6 text-sm">
           <button
+            type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
             className="px-3 py-1 rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
@@ -162,6 +165,7 @@ export default function ListePersonnes() {
           {numerosPages().map((n) => (
             <button
               key={n}
+              type="button"
               onClick={() => setPage(n)}
               className={`px-3 py-1 rounded border transition-colors ${
                 n === page ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-100"
@@ -172,6 +176,7 @@ export default function ListePersonnes() {
           ))}
 
           <button
+            type="button"
             onClick={() => setPage((p) => Math.min(pages, p + 1))}
             disabled={page >= pages}
             className="px-3 py-1 rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"

@@ -64,8 +64,11 @@ export default function AdhesionForm({ personneId, adhesion, onClose, onSaved }:
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Année scolaire *</label>
+            <label htmlFor="annee-scolaire" className="block text-sm font-medium text-gray-700 mb-1">
+              Année scolaire *
+            </label>
             <input
+              id="annee-scolaire"
               type="text"
               value={anneeScolaire}
               onChange={(e) => setAnneeScolaire(e.target.value)}
@@ -87,8 +90,11 @@ export default function AdhesionForm({ personneId, adhesion, onClose, onSaved }:
             </label>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Note de paiement</label>
+            <label htmlFor="note-paiement" className="block text-sm font-medium text-gray-700 mb-1">
+              Note de paiement
+            </label>
             <input
+              id="note-paiement"
               type="text"
               value={notePaiement}
               onChange={(e) => setNotePaiement(e.target.value)}
