@@ -48,18 +48,31 @@ Le système SHALL permettre de modifier les champs d'une personne existante.
 - **THEN** le système refuse la modification avec un message d'erreur explicite
 
 ### Requirement: Lister les personnes
-Le système SHALL retourner la liste des personnes physiques, triée par nom puis prénom.
+Le système SHALL retourner la liste des personnes physiques, triée par nom puis prénom, avec pagination.
 
-#### Scenario: Liste complète
+#### Scenario: Première page
 - **WHEN** l'utilisateur consulte la liste des personnes
-- **THEN** le système retourne toutes les personnes triées par nom, prénom
+- **THEN** le système retourne les 20 premières personnes triées par nom, prénom
+- **THEN** le système indique le nombre total de résultats et le nombre de pages
+
+#### Scenario: Navigation entre pages
+- **WHEN** l'utilisateur clique sur un numéro de page ou sur « Suivant » / « Précédent »
+- **THEN** le système retourne les résultats de la page demandée
 
 ### Requirement: Rechercher une personne
-Le système SHALL permettre une recherche textuelle insensible à la casse sur le nom et le prénom.
+Le système SHALL permettre une recherche textuelle insensible à la casse sur le nom, le prénom, l'email et le téléphone.
 
 #### Scenario: Recherche par nom
 - **WHEN** l'utilisateur tape "dup" dans le champ de recherche
 - **THEN** le système retourne les personnes dont le nom ou prénom contient "dup" (ex: Dupont, Dupuis)
+
+#### Scenario: Recherche par email
+- **WHEN** l'utilisateur tape "gmail" dans le champ de recherche
+- **THEN** le système retourne les personnes dont l'email contient "gmail"
+
+#### Scenario: Recherche par téléphone
+- **WHEN** l'utilisateur tape "0612" dans le champ de recherche
+- **THEN** le système retourne les personnes dont le téléphone contient "0612"
 
 #### Scenario: Recherche insensible à la casse
 - **WHEN** l'utilisateur tape "DUP" ou "dup"
@@ -68,6 +81,25 @@ Le système SHALL permettre une recherche textuelle insensible à la casse sur l
 #### Scenario: Aucun résultat
 - **WHEN** la recherche ne correspond à aucune personne
 - **THEN** le système retourne une liste vide
+
+#### Scenario: Pagination réinitialisée sur recherche
+- **WHEN** l'utilisateur modifie le texte de recherche
+- **THEN** le système repasse à la page 1 des résultats
+
+### Requirement: Filtrer par statut d'adhésion
+Le système SHALL permettre de filtrer la liste pour n'afficher que les personnes ayant une adhésion pour l'année scolaire courante.
+
+#### Scenario: Filtre adhérent activé
+- **WHEN** l'utilisateur coche « Adhérent·e·s uniquement »
+- **THEN** le système ne retourne que les personnes avec une adhésion pour l'année scolaire en cours
+
+#### Scenario: Filtre adhérent désactivé
+- **WHEN** l'utilisateur décoche « Adhérent·e·s uniquement »
+- **THEN** le système retourne toutes les personnes correspondant aux autres critères
+
+#### Scenario: Combinaison texte libre + filtre adhérent
+- **WHEN** l'utilisateur tape un texte de recherche ET coche « Adhérent·e·s uniquement »
+- **THEN** le système applique les deux filtres simultanément
 
 ### Requirement: Consulter le détail d'une personne
 Le système SHALL afficher toutes les informations d'une personne, y compris son responsable légal si applicable. Les dates MUST être affichées au format JJ/MM/AAAA.

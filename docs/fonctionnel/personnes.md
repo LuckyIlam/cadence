@@ -34,17 +34,33 @@ Si l'âge ou le responsable légal est modifié, la cohérence est revérifiée 
 
 ## Rechercher une personne
 
-La recherche s'effectue sur le **nom** et le **prénom**, sans tenir compte de la casse (majuscules/minuscules) ni des accents.
+La recherche s'effectue sur le **nom**, le **prénom**, l'**email** et le **téléphone**, sans tenir compte de la casse (majuscules/minuscules).
 
 Exemples :
 - taper `dup` trouve *Dupont*, *Dupuis*
-- taper `DUP` donne les mêmes résultats que `dup`
+- taper `gmail` trouve les personnes dont l'email contient *gmail*
+- taper `0612` trouve les personnes dont le téléphone contient *0612*
 
-Si aucun résultat ne correspond, la liste est vide.
+### Filtrer par adhésion
+
+Une case à cocher **« Adhérent·e·s uniquement »** permet de filtrer la liste pour ne voir que les personnes ayant une adhésion pour l'année scolaire en cours.
+
+### Pagination
+
+La liste des résultats est paginée (20 résultats par page). Une barre de navigation en bas de page permet de circuler entre les pages :
+
+| Élément | Comportement |
+|---------|-------------|
+| Numéros de page | Cliquer sur un numéro affiche la page correspondante |
+| ← Précédent | Page précédente (désactivé sur la première page) |
+| Suivant → | Page suivante (désactivé sur la dernière page) |
+| Indicateur | Affiche « Page X/Y — Z résultats » |
+
+La pagination se réinitialise à la page 1 à chaque changement de critère de recherche.
 
 ## Lister les personnes
 
-La liste complète est triée par **nom** puis **prénom**, dans l'ordre alphabétique.
+La liste est triée par **nom** puis **prénom**, dans l'ordre alphabétique. Par défaut, toutes les personnes sont affichées (page 1, 20 résultats par page).
 
 ## Consulter le détail d'une personne
 
