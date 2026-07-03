@@ -1,8 +1,9 @@
 use tauri::State;
 
 use crate::domain::personne::{
-    current_annee_scolaire, est_mineur, valider_date_naissance, CreatePersonne, Personne,
-    PersonneDetail, UpdatePersonne,
+    current_annee_scolaire, est_mineur, valider_date_naissance, CreatePersonne,
+    CriteresRecherchePersonnes, Pagination, Personne, PersonneDetail, ResultatRecherchePersonnes,
+    UpdatePersonne,
 };
 use crate::infrastructure::db::AppState;
 use crate::repositories;
@@ -99,11 +100,10 @@ pub async fn obtenir_detail_personne(
 #[tauri::command]
 pub async fn rechercher_personnes(
     state: State<'_, AppState>,
-    query: Option<String>,
-) -> Result<Vec<Personne>, String> {
-    match query {
-        None => repositories::personne_repo::list_all(&state.pool).await,
-        Some(q) => repositories::personne_repo::search(&state.pool, &q).await,
-    }
-    .map_err(|e| e.to_string())
+    criteres: CriteresRecherchePersonnes,
+    pagination: Pagination,
+) -> Result<ResultatRecherchePersonnes, String> {
+    repositories::personne_repo::rechercher(&state.pool, criteres, pagination)
+        .await
+        .map_err(|e| e.to_string())
 }
