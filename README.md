@@ -43,20 +43,28 @@ cadence/
 │   ├── types.ts
 │   ├── pages/
 │   │   ├── ListePersonnes.tsx
-│   │   └── DetailPersonne.tsx
+│   │   ├── DetailPersonne.tsx
+│   │   ├── Activites.tsx
+│   │   └── DetailActivite.tsx
 │   └── components/
+│       ├── Nav.tsx
 │       ├── PersonneForm.tsx
 │       └── AdhesionForm.tsx
 ├── src-tauri/              # Backend Rust
 │   ├── src/
-│   │   ├── main.rs / lib.rs
+│   │   ├── main.rs
+│   │   ├── lib.rs
 │   │   ├── domain/        # Types métier
 │   │   ├── repositories/  # Accès BDD (SQLx)
 │   │   ├── commands/      # IPC Tauri
 │   │   └── infrastructure/ # Pool, migrations
 │   └── migrations/        # SQL versionné
 ├── openspec/               # Spécifications et changements
-└── package.json
+├── docs/                   # Documentation
+├── scripts/                # Scripts utilitaires
+├── public/                 # Assets statiques
+├── package.json
+└── vite.config.ts
 ```
 
 ## Documentation fonctionnelle
