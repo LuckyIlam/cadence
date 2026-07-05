@@ -6,22 +6,35 @@ mod repositories;
 use infrastructure::db::{init_pool, AppState};
 use tauri::Manager;
 
+fn write_crash_log(msg: &str) {
+    let paths = [
+        std::env::current_dir()
+            .ok()
+            .map(|p| p.join("cadence_crash.log")),
+        Some(std::env::temp_dir().join("cadence_crash.log")),
+    ];
+    for path in paths.into_iter().flatten() {
+        let _ = std::fs::write(&path, msg);
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let result = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             let app_dir = app
                 .path()
                 .app_data_dir()
-                .expect("failed to get app data dir");
-            std::fs::create_dir_all(&app_dir).expect("failed to create app data dir");
+                .map_err(|e| format!("échec du dossier de données : {e}"))?;
+            std::fs::create_dir_all(&app_dir)
+                .map_err(|e| format!("échec création dossier {} : {e}", app_dir.display()))?;
 
             let db_path = app_dir.join("cadence.db");
             let database_url = format!("sqlite:{}?mode=rwc", db_path.to_string_lossy());
 
             let pool = tauri::async_runtime::block_on(init_pool(&database_url))
-                .expect("failed to initialize database");
+                .map_err(|e| format!("échec base de données {} : {e}", db_path.display()))?;
 
             app.manage(AppState { pool });
 
@@ -47,6 +60,12 @@ pub fn run() {
             commands::activite_commands::retirer_personne_activite,
             commands::activite_commands::lister_activites_personne,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .run(tauri::generate_context!());
+
+    if let Err(e) = result {
+        let msg = format!("Cadence — erreur fatale : {e}");
+        write_crash_log(&msg);
+        eprintln!("{msg}");
+        panic!("{msg}");
+    }
 }
