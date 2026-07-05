@@ -30,6 +30,15 @@ Toujours exécuter avant de proposer le travail :
 7. `npm run lint`
 8. `npm run build`
 
+## Gestion des erreurs
+
+- **Jamais de `.expect()` ni `.unwrap()` dans le code de production** — uniquement dans les tests
+- Utiliser l'opérateur `?` pour propager les erreurs
+- Pour les erreurs fatales au démarrage (dans `setup()`), écrire un fichier `cadence_crash.log` via `write_crash_log()` défini dans `lib.rs` avant de panic
+- Tenir compte de `windows_subsystem = "windows"` (pas de console visible en release) : toujours enregistrer les erreurs fatales dans un fichier
+- `write_crash_log()` écrit dans deux emplacements : le répertoire courant et `%TEMP%`
+- Ne jamais laisser une erreur utilisateur sans message ou log exploitable
+
 ## Couverture de code
 
 ```powershell

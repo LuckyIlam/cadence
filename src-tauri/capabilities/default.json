@@ -1,0 +1,9 @@
+{
+  "identifier": "default",
+  "description": "Capabilités par défaut de Cadence",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open"
+  ]
+}
