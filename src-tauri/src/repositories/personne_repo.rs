@@ -94,7 +94,7 @@ pub async fn rechercher(
         where_clause
     );
 
-    let mut count_query = sqlx::query_scalar::<_, i64>(&count_sql);
+    let mut count_query = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(count_sql.as_str()));
 
     if let Some(ref p) = pattern {
         count_query = count_query.bind(p).bind(p).bind(p).bind(p);
@@ -124,7 +124,7 @@ pub async fn rechercher(
         )
     };
 
-    let mut data_query = sqlx::query_as::<_, Personne>(&data_sql);
+    let mut data_query = sqlx::query_as::<_, Personne>(sqlx::AssertSqlSafe(data_sql.as_str()));
 
     if let Some(ref p) = pattern {
         data_query = data_query.bind(p).bind(p).bind(p).bind(p);
