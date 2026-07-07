@@ -33,6 +33,7 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --no-bundle
+          uploadPlainBinary: true
 
       - name: Package portable
         shell: pwsh
