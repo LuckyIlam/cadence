@@ -4,6 +4,7 @@ import Activites from "./pages/Activites";
 import DetailActivite from "./pages/DetailActivite";
 import DetailPersonne from "./pages/DetailPersonne";
 import ListePersonnes from "./pages/ListePersonnes";
+import PlanningPage from "./pages/PlanningPage";
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
           <Route path="/personnes/:id" element={<DetailPersonne />} />
           <Route path="/activites" element={<Activites />} />
           <Route path="/activites/:id" element={<DetailActivite />} />
+          <Route path="/planning" element={<PlanningPage />} />
+          <Route path="/planning/:personneId" element={<PlanningPage />} />
         </Routes>
       </main>
     </div>
