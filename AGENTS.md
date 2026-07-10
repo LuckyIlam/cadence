@@ -45,3 +45,8 @@ Toujours exécuter avant de proposer le travail :
 # Installer (une fois) : cargo install cargo-llvm-cov --locked
 cargo llvm-cov --html  # dans src-tauri/
 ```
+
+## Documentations
+
+→ [docs/fonctionnel/](docs/fonctionnel/README.md) — Documentation fonctionnelle destinée aux utilisateurs de l'application (bénévoles, secrétaires, trésoriers).
+→ [openspec/specs/](openspec/specs/) - Specification technique rédiger par l'agent AI.
