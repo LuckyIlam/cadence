@@ -102,7 +102,7 @@ Le système SHALL permettre de filtrer la liste pour n'afficher que les personne
 - **THEN** le système applique les deux filtres simultanément
 
 ### Requirement: Consulter le détail d'une personne
-Le système SHALL afficher toutes les informations d'une personne, y compris son responsable légal si applicable. Les dates MUST être affichées au format JJ/MM/AAAA.
+Le système SHALL afficher toutes les informations d'une personne, y compris son responsable légal si applicable et ses activités (participations et encadrements). Les dates MUST être affichées au format JJ/MM/AAAA.
 
 #### Scenario: Consultation personne sans responsable
 - **WHEN** l'utilisateur clique sur une personne majeure
@@ -111,6 +111,10 @@ Le système SHALL afficher toutes les informations d'une personne, y compris son
 #### Scenario: Consultation personne avec responsable
 - **WHEN** l'utilisateur clique sur un mineur
 - **THEN** le système affiche ses informations avec le nom et prénom du responsable, les dates au format JJ/MM/AAAA
+
+#### Scenario: Consultation avec activités
+- **WHEN** l'utilisateur consulte le détail d'une personne
+- **THEN** le système affiche une section "Activités" avec deux sous-listes : "En tant qu'encadrant·e" et "En tant que participant·e"
 
 ### Requirement: Validation âge et responsable
 Le système MUST valider côté Rust et côté base de données (trigger SQLite) qu'une personne mineure a un responsable_id renseigné pointant vers une personne majeure.
@@ -133,3 +137,11 @@ Le système SHALL afficher toutes les dates au format JJ/MM/AAAA dans l'interfac
 #### Scenario: Format dans le détail
 - **WHEN** la vue détail s'affiche
 - **THEN** la date de naissance est au format JJ/MM/AAAA
+
+### Requirement: Navigation entre personnes et activités
+Le système SHALL offrir un menu de navigation permettant de basculer entre la liste des personnes et la liste des activités.
+
+#### Scenario: Menu visible
+- **WHEN** l'utilisateur ouvre l'application
+- **THEN** un menu de navigation est affiché avec les entrées "Personnes" et "Activités"
+- **THEN** l'entrée active est mise en évidence
