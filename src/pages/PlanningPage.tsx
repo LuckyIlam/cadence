@@ -2,13 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlanningHebdo from "../components/PlanningHebdo";
-import {
-  type Personne,
-  type PlanningCreneau,
-  formatDateISO,
-  getCurrentAnneeScolaire,
-  getLundiSemaine,
-} from "../types";
+import { formatDateISO, getCurrentAnneeScolaire, getLundiSemaine, type Personne, type PlanningCreneau } from "../types";
 
 export default function PlanningPage() {
   const { personneId } = useParams<{ personneId: string }>();
@@ -31,7 +25,7 @@ export default function PlanningPage() {
         if (personneId) {
           setSelectedPersonneId(Number(personneId));
         } else if (r.donnees.length > 0) {
-          setSelectedPersonneId(r.donnees[0]!.id);
+          setSelectedPersonneId(r.donnees[0]?.id ?? null);
         }
       } catch (e) {
         console.error(e);
@@ -122,11 +116,7 @@ export default function PlanningPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6">
-          {error}
-        </div>
-      )}
+      {error && <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6">{error}</div>}
 
       {loading ? (
         <p className="text-gray-500 text-center py-8">Chargement...</p>

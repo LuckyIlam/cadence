@@ -3,11 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   type Activite,
-  type CreneauActivite,
   type CreateCreneau,
   type CreateSemaineBanalisee,
-  getCurrentAnneeScolaire,
+  type CreneauActivite,
   formatDate,
+  getCurrentAnneeScolaire,
   type PersonneActivite,
   type SemaineBanalisee,
 } from "../types";
@@ -421,7 +421,8 @@ export default function DetailActivite() {
 
         {nbInscrits > 0 && (
           <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
-            Des personnes sont inscrites à cette activité pour {anneeScolaire}. Les créneaux existants sont verrouillés (modification et suppression impossible).
+            Des personnes sont inscrites à cette activité pour {anneeScolaire}. Les créneaux existants sont verrouillés
+            (modification et suppression impossible).
           </p>
         )}
 

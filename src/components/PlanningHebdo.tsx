@@ -1,4 +1,4 @@
-import { type PlanningCreneau, getNumeroSemaineISO, jourSemaineTexte } from "../types";
+import { getNumeroSemaineISO, jourSemaineTexte, type PlanningCreneau } from "../types";
 
 interface PlanningHebdoProps {
   creneaux: PlanningCreneau[];
@@ -23,7 +23,7 @@ function posY(heure: string): number {
 function hauteurBloc(debut: string, fin: string): number {
   const { h: h1, m: m1 } = parseHeure(debut);
   const { h: h2, m: m2 } = parseHeure(fin);
-  return ((h2 + m2 / 60) - (h1 + m1 / 60)) * HAUTEUR_LIGNE;
+  return (h2 + m2 / 60 - (h1 + m1 / 60)) * HAUTEUR_LIGNE;
 }
 
 export default function PlanningHebdo({
@@ -75,18 +75,12 @@ export default function PlanningHebdo({
           >
             <div />
             {[1, 2, 3, 4, 5, 6, 7].map((j) => (
-              <div
-                key={j}
-                className="text-xs font-medium text-gray-500 text-center py-2 border-b border-gray-200"
-              >
+              <div key={j} className="text-xs font-medium text-gray-500 text-center py-2 border-b border-gray-200">
                 {jourSemaineTexte(j)}
               </div>
             ))}
           </div>
-          <div
-            className="relative"
-            style={{ height: `${HEURES.length * HAUTEUR_LIGNE}px` }}
-          >
+          <div className="relative" style={{ height: `${HEURES.length * HAUTEUR_LIGNE}px` }}>
             <div
               className="absolute inset-0 grid"
               style={{
@@ -105,11 +99,8 @@ export default function PlanningHebdo({
               ))}
               {HEURES.map((h) =>
                 [1, 2, 3, 4, 5, 6, 7].map((j) => (
-                  <div
-                    key={`${h}-${j}`}
-                    className="border-r border-b border-gray-100"
-                  />
-                ))
+                  <div key={`${h}-${j}`} className="border-r border-b border-gray-100" />
+                )),
               )}
             </div>
             {creneaux.map((pc) => {
@@ -125,15 +116,12 @@ export default function PlanningHebdo({
                     top: `${y}px`,
                     height: `${h}px`,
                     minHeight: "20px",
-                    backgroundColor:
-                      pc.role === "encadrant" ? "#dbeafe" : "#dcfce7",
+                    backgroundColor: pc.role === "encadrant" ? "#dbeafe" : "#dcfce7",
                     border: `1px solid ${pc.role === "encadrant" ? "#93c5fd" : "#86efac"}`,
                   }}
                 >
                   <div className="font-medium truncate">{pc.activite.nom}</div>
-                  <div className="truncate opacity-75">
-                    {pc.role === "encadrant" ? "Encadrant" : "Participant"}
-                  </div>
+                  <div className="truncate opacity-75">{pc.role === "encadrant" ? "Encadrant" : "Participant"}</div>
                 </div>
               );
             })}
