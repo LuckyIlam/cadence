@@ -61,9 +61,5 @@ cadence/
 
 ## Documentation fonctionnelle
 
-→ [docs/fonctionnel/](docs/fonctionnel/README.md) — Documentation destinée aux utilisateurs de l'application (bénévoles, secrétaires, trésoriers).
-
-## Modèle de données
-
-- **personnes_physiques** : identité de base (nom, prénom, date naissance, email, téléphone, responsable_id)
-- **adhesions** : adhésion annuelle (personne_id, année scolaire, réglé, note paiement)
+→ [docs/fonctionnel/](docs/fonctionnel/README.md) — Documentation fonctionnelle destinée aux utilisateurs de l'application (bénévoles, secrétaires, trésoriers).
+→ [openspec/specs/](openspec/specs/) - Specification technique rédiger par l'agent AI.
