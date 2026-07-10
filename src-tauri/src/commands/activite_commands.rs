@@ -163,6 +163,25 @@ pub async fn ajouter_personne_activite(
         verifier_capacite_max(nb_participants, activite.capacite_max)?;
     }
 
+    if let Some(collision) = repositories::planning_repo::verifier_collision(
+        &state.pool,
+        input.personne_id,
+        input.activite_id,
+        &input.annee_scolaire,
+    )
+    .await
+    .map_err(|e| e.to_string())?
+    {
+        return Err(format!(
+            "Conflit d'horaire avec l'activité '{}' : jour {} ({}), {}–{}.",
+            collision.activite_conflit,
+            collision.jour_semaine,
+            crate::domain::planning::jour_semaine_texte(collision.jour_semaine),
+            collision.heure_debut,
+            collision.heure_fin,
+        ));
+    }
+
     repositories::activite_repo::ajouter_personne(&state.pool, input)
         .await
         .map_err(|e| e.to_string())?;

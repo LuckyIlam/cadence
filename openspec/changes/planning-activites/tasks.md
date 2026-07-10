@@ -698,10 +698,10 @@ const r = await invoke<PlanningCreneau[]>("planning_personne", {
 
 ## 10. Vérifications finales
 
-- [ ] 10.1 Exécuter `cargo check` dans `src-tauri/`
-- [ ] 10.2 Exécuter `cargo clippy -- -D warnings`
-- [ ] 10.3 Exécuter `cargo fmt --check`
-- [ ] 10.4 Exécuter `cargo test` pour les tests Rust
-- [ ] 10.5 Exécuter `npm run typecheck`
-- [ ] 10.6 Exécuter `npm run lint`
-- [ ] 10.7 Exécuter `npm run build`
+- [x] 10.1 Exécuter `cargo check` dans `src-tauri/`
+- [x] 10.2 Exécuter `cargo clippy -- -D warnings`
+- [x] 10.3 Exécuter `cargo fmt --check`
+- [x] 10.4 Exécuter `cargo test` pour les tests Rust
+- [x] 10.5 Exécuter `npm run typecheck`
+- [x] 10.6 Exécuter `npm run lint`
+- [x] 10.7 Exécuter `npm run build`
