@@ -59,6 +59,15 @@ pub fn run() {
             commands::activite_commands::ajouter_personne_activite,
             commands::activite_commands::retirer_personne_activite,
             commands::activite_commands::lister_activites_personne,
+            commands::planning_commands::ajouter_creneau,
+            commands::planning_commands::supprimer_creneau,
+            commands::planning_commands::modifier_creneau,
+            commands::planning_commands::lister_creneaux,
+            commands::planning_commands::ajouter_semaine_banalisee,
+            commands::planning_commands::supprimer_semaine_banalisee,
+            commands::planning_commands::lister_semaines_banalisees,
+            commands::planning_commands::planning_personne,
+            commands::planning_commands::verifier_collision,
         ])
         .run(tauri::generate_context!());
 
