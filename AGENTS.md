@@ -50,3 +50,37 @@ cargo llvm-cov --html  # dans src-tauri/
 
 → [docs/fonctionnel/](docs/fonctionnel/README.md) — Documentation fonctionnelle destinée aux utilisateurs de l'application (bénévoles, secrétaires, trésoriers).
 → [openspec/specs/](openspec/specs/) - Specification technique rédiger par l'agent AI.
+
+## Organisation de l'équipe
+
+Les skills sont organisés en deux catégories : les **outils** (skills openspec*) qui produisent des documents, et les **rôles** qui orchestrent ces outils.
+
+### Workflow
+
+```
+Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Développeur ──▶ Réviseur ──▶ Livraison
+                                │                     │              │
+                                └─────────┬───────────┘              │
+                                          ▼                         │
+                                    Documentaliste ◀────────────────┘
+```
+
+### Rôles
+
+| Rôle | Skill utilisé | Produit |
+|------|---------------|---------|
+| `architecte` | `openspec-explore` | `design.md` (goals, décisions, trade-offs) |
+| `product-manager` | `openspec-propose` + `openspec-sync-specs` | `proposal.md`, `specs/*/spec.md`, `tasks.md` |
+| `concepteur-technique` | — | Plan technique détaillé (migrations, interfaces, découpage) |
+| `developpeur` | `openspec-apply-change` | Code (Rust backend + React frontend), tests |
+| `reviseur` | — | Revue qualité + cybersécurité |
+| `documentaliste` | `openspec-sync-specs` | `docs/fonctionnel/`, specs synchronisées |
+
+### Principe
+
+- Les rôles en amont (Architecte, PM) définissent *quoi* construire
+- Le Concepteur Technique définit *comment* le construire
+- Le Développeur exécute le plan
+- Le Réviseur valide la qualité + sécurité
+- Le Documentaliste maintient la connaissance à jour
+- Chaque rôle livre un document ou un artefact au rôle suivant
