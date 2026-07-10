@@ -211,9 +211,7 @@ export interface PlanningCreneau {
   role: string;
 }
 
-const JOURS_SEMAIRE = [
-  "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche",
-] as const;
+const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
 
 export function jourSemaineTexte(jour: number): string {
   return JOURS_SEMAIRE[jour - 1] ?? `Jour ${jour}`;
@@ -237,5 +235,5 @@ export function getLundiSemaine(date: Date): Date {
 }
 
 export function formatDateISO(date: Date): string {
-  return date.toISOString().split("T")[0]!;
+  return date.toISOString().split("T")[0] ?? "";
 }
