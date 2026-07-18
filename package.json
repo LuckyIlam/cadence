@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check src/",
     "lint:fix": "biome check --write src/",
-    "format": "biome format --write src/"
+    "format": "biome format --write src/",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
@@ -26,7 +27,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
-    "@tailwindcss/postcss": "^4.3.2",
+    "lefthook": "^2.1.10",
     "typescript": "^7.0.2",
     "vite": "^8.1.4"
   }
