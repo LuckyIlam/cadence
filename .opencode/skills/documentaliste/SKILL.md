@@ -19,6 +19,7 @@ Il ne crée pas le contenu original — il le synchronise, le structure, et le m
 | Changements signalés | Développeur — fonctionnalités implémentées |
 | `docs/fonctionnel/*.md` | Documentation existante à mettre à jour |
 | `openspec/specs/*/spec.md` | Spécifications principales à synchroniser |
+| `graphify-out/graph.json` | Graphe de connaissance existant à mettre à jour |
 
 ## Documents produits / maintenus
 
@@ -26,6 +27,7 @@ Il ne crée pas le contenu original — il le synchronise, le structure, et le m
 |----------|--------|
 | `docs/fonctionnel/*.md` | Mise à jour des descriptions fonctionnelles |
 | `openspec/specs/*/spec.md` | Synchronisation delta → main via `openspec-sync-specs` |
+| `graphify-out/graph.json` | Mise à jour du graphe de connaissance via `/graphify` |
 
 ## Workflow
 
@@ -45,6 +47,16 @@ Il ne crée pas le contenu original — il le synchronise, le structure, et le m
    - Ajoute de nouveaux fichiers si un nouveau module fonctionnel est créé
 3. Vérifie que la doc est compréhensible par le public visé (bénévoles, secrétaires)
 
+### Mise à jour du graphe de connaissance
+
+Après toute modification des docs ou specs, le Documentaliste maintient le graphe de connaissance à jour :
+
+```bash
+/graphify ./docs --update
+```
+
+Cela ré-extrait uniquement les fichiers modifiés depuis le dernier build du graphe et met à jour `graphify-out/graph.json`, `GRAPH_REPORT.md` et la visualisation HTML. Le graphe reste ainsi cohérent avec l'état actuel de la documentation.
+
 ### Revue de cohérence
 
 1. Périodiquement, compare `docs/fonctionnel/` avec `openspec/specs/`
@@ -61,6 +73,7 @@ Il ne crée pas le contenu original — il le synchronise, le structure, et le m
 - `openspec/specs/*/spec.md` synchronisé (delta → main)
 - `docs/fonctionnel/*.md` à jour et cohérent avec l'état de l'application
 - Pas de décalage entre specs et documentation fonctionnelle
+- `graphify-out/` mis à jour via `/graphify ./docs --update`
 
 ## Interactions avec l'équipe
 
@@ -70,3 +83,4 @@ Il ne crée pas le contenu original — il le synchronise, le structure, et le m
 | **Développeur** | Reçoit les notifications de changements fonctionnels implémentés |
 | **Architecte** | Consulte le design.md pour comprendre l'impact des décisions sur la doc |
 | **Concepteur Technique** | Peut signaler des impacts doc lors de la conception détaillée |
+| **Graphify** | Met à jour le graphe de connaissance avec `./docs` en mode `--update` après chaque modification |

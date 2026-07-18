@@ -68,3 +68,13 @@ Cliquez sur "Retirer" à côté du nom de la personne dans la liste.
 ### Consulter les activités d'une personne
 
 Dans le détail d'une personne, une section "Activités" affiche les activités auxquelles elle participe ou qu'elle encadre, avec deux sous-listes : "En tant qu'encadrant·e" et "En tant que participant·e".
+
+### Gérer les créneaux horaires
+
+Chaque activité peut avoir un ou plusieurs créneaux horaires récurrents dans la semaine (ex: "Poterie le lundi de 14h à 16h"). La gestion des créneaux se fait depuis le détail de l'activité. Voir la section dédiée dans le [module Planning](planning.md).
+
+> ⚠️ Si des personnes sont inscrites à l'activité pour l'année, les créneaux existants sont verrouillés (modification et suppression interdites). Vous pouvez toujours ajouter de nouveaux créneaux.
+
+### Gérer les semaines banalisées
+
+Vous pouvez marquer des semaines où l'activité n'a pas lieu (vacances, ponts). Voir la section dédiée dans le [module Planning](planning.md).
