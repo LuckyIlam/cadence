@@ -88,20 +88,18 @@ export default function PlanningHebdo({
                 gridTemplateRows: `repeat(${HEURES.length}, ${HAUTEUR_LIGNE}px)`,
               }}
             >
-              {HEURES.map((h) => (
+              {HEURES.flatMap((h) => [
                 <div
-                  key={h}
+                  key={`h-${h}`}
                   className="text-xs text-gray-400 text-right pr-2 border-r border-b border-gray-100"
                   style={{ lineHeight: `${HAUTEUR_LIGNE}px` }}
                 >
                   {h}h00
-                </div>
-              ))}
-              {HEURES.map((h) =>
-                [1, 2, 3, 4, 5, 6, 7].map((j) => (
-                  <div key={`${h}-${j}`} className="border-r border-b border-gray-100" />
+                </div>,
+                ...[1, 2, 3, 4, 5, 6, 7].map((j) => (
+                  <div key={`c-${h}-${j}`} className="border-r border-b border-gray-100" />
                 )),
-              )}
+              ])}
             </div>
             {creneaux.map((pc) => {
               const y = posY(pc.creneau.heure_debut);
