@@ -1,3 +1,5 @@
+use chrono::NaiveDate;
+
 use crate::domain::personne::{
     current_annee_scolaire, est_mineur, valider_date_naissance, CreatePersonne,
     CriteresRecherchePersonnes, Pagination, Personne, PersonneDetail, ResultatRecherchePersonnes,
@@ -19,59 +21,41 @@ impl<'a, R: PersonneRepository, A: AdhesionRepository> PersonneService<'a, R, A>
         }
     }
 
+    async fn valider_responsable_legal(
+        &self,
+        date_naissance: NaiveDate,
+        responsable_id: Option<i64>,
+    ) -> Result<(), AppError> {
+        if !est_mineur(date_naissance) {
+            return Ok(());
+        }
+        let rid = responsable_id.ok_or(AppError::Validation(
+            "Un mineur doit avoir un responsable légal".into(),
+        ))?;
+        let responsable = self
+            .personne_repo
+            .find_by_id(rid)
+            .await?
+            .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
+        if est_mineur(responsable.date_naissance) {
+            return Err(AppError::Validation(
+                "Le responsable ne peut pas être mineur".into(),
+            ));
+        }
+        Ok(())
+    }
+
     pub async fn creer(&self, input: CreatePersonne) -> Result<Personne, AppError> {
         valider_date_naissance(input.date_naissance)?;
-
-        if est_mineur(input.date_naissance) {
-            match input.responsable_id {
-                None => {
-                    return Err(AppError::Validation(
-                        "Un mineur doit avoir un responsable légal".into(),
-                    ))
-                }
-                Some(rid) => {
-                    let responsable = self
-                        .personne_repo
-                        .find_by_id(rid)
-                        .await?
-                        .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
-                    if est_mineur(responsable.date_naissance) {
-                        return Err(AppError::Validation(
-                            "Le responsable ne peut pas être mineur".into(),
-                        ));
-                    }
-                }
-            }
-        }
-
+        self.valider_responsable_legal(input.date_naissance, input.responsable_id)
+            .await?;
         self.personne_repo.create(input).await
     }
 
     pub async fn modifier(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
         valider_date_naissance(input.date_naissance)?;
-
-        if est_mineur(input.date_naissance) {
-            match input.responsable_id {
-                None => {
-                    return Err(AppError::Validation(
-                        "Un mineur doit avoir un responsable légal".into(),
-                    ))
-                }
-                Some(rid) => {
-                    let responsable = self
-                        .personne_repo
-                        .find_by_id(rid)
-                        .await?
-                        .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
-                    if est_mineur(responsable.date_naissance) {
-                        return Err(AppError::Validation(
-                            "Le responsable ne peut pas être mineur".into(),
-                        ));
-                    }
-                }
-            }
-        }
-
+        self.valider_responsable_legal(input.date_naissance, input.responsable_id)
+            .await?;
         self.personne_repo.update(id, input).await
     }
 

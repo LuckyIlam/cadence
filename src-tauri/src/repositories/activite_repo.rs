@@ -9,7 +9,9 @@ use crate::error::AppError;
 
 #[async_trait]
 pub trait ActiviteRepository: Send + Sync {
+    #[allow(dead_code)]
     async fn create(&self, input: CreateActivite) -> Result<Activite, AppError>;
+    async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError>;
     async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError>;
     async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError>;
     async fn upsert_tarif(&self, input: CreateTarifActivite) -> Result<TarifActivite, AppError>;
@@ -85,6 +87,40 @@ impl ActiviteRepository for SqliteActiviteRepository {
         .await?;
 
         Ok(row)
+    }
+
+    async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError> {
+        let annee_scolaire = input.annee_scolaire.clone();
+        let tarif = input.tarif;
+
+        let mut tx = self.pool.begin().await?;
+
+        let activite = sqlx::query_as::<_, Activite>(
+            "INSERT INTO activites (nom, description, capacite_max)
+             VALUES (?, ?, ?)
+             RETURNING *",
+        )
+        .bind(&input.nom)
+        .bind(&input.description)
+        .bind(input.capacite_max)
+        .fetch_one(&mut *tx)
+        .await?;
+
+        if let Some(ref annee) = annee_scolaire {
+            sqlx::query(
+                "INSERT INTO tarifs_activites (activite_id, annee_scolaire, tarif)
+                 VALUES (?, ?, ?)
+                 ON CONFLICT(activite_id, annee_scolaire) DO UPDATE SET tarif = excluded.tarif",
+            )
+            .bind(activite.id)
+            .bind(annee)
+            .bind(tarif.unwrap_or(0.0))
+            .execute(&mut *tx)
+            .await?;
+        }
+
+        tx.commit().await?;
+        Ok(activite)
     }
 
     async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
