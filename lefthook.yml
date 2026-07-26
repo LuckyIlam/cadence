@@ -4,7 +4,7 @@ pre-commit:
     rust-fmt:
       glob: "*.rs"
       run: cargo fmt --all
-      working-directory: src-tauri
+      root: src-tauri
     ts-fmt:
       glob: "*.{ts,tsx}"
       run: npm run format

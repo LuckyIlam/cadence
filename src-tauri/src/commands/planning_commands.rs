@@ -20,6 +20,29 @@ pub async fn ajouter_creneau(
         .ok_or_else(|| "Activité introuvable".to_string())?;
     let _ = activite;
 
+    let conflits = repositories::planning_repo::verifier_conflit_creneaux(
+        &state.pool,
+        input.activite_id,
+        &input.annee_scolaire,
+        input.jour_semaine,
+        &input.heure_debut,
+        &input.heure_fin,
+        None,
+    )
+    .await
+    .map_err(|e| e.to_string())?;
+
+    if !conflits.is_empty() {
+        let c = &conflits[0];
+        return Err(format!(
+            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
+            c.jour_semaine,
+            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
+            c.heure_debut,
+            c.heure_fin,
+        ));
+    }
+
     repositories::planning_repo::creer_creneau(&state.pool, input)
         .await
         .map_err(|e| e.to_string())
@@ -71,6 +94,29 @@ pub async fn modifier_creneau(
         return Err(
             "Impossible de modifier un créneau : des personnes sont inscrites à cette activité pour cette année. Retirez d'abord les inscrits.".to_string()
         );
+    }
+
+    let conflits = repositories::planning_repo::verifier_conflit_creneaux(
+        &state.pool,
+        input.activite_id,
+        &input.annee_scolaire,
+        input.jour_semaine,
+        &input.heure_debut,
+        &input.heure_fin,
+        Some(id),
+    )
+    .await
+    .map_err(|e| e.to_string())?;
+
+    if !conflits.is_empty() {
+        let c = &conflits[0];
+        return Err(format!(
+            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
+            c.jour_semaine,
+            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
+            c.heure_debut,
+            c.heure_fin,
+        ));
     }
 
     repositories::planning_repo::modifier_creneau(&state.pool, id, input)
@@ -285,6 +331,177 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_ajouter_creneau_doublon_exact() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("premier ajout OK");
+
+        let err = ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect_err("doublon refusé");
+
+        assert!(err.contains("Conflit d'horaire"));
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_chevauchement() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("premier ajout OK");
+
+        let err = ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "11:00".to_string(),
+                heure_fin: "13:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect_err("chevauchement refusé");
+
+        assert!(err.contains("Conflit d'horaire"));
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_adjacent_accepte() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("premier créneau OK");
+
+        let c = ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "16:00".to_string(),
+                heure_fin: "18:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("créneau adjacent accepté");
+
+        assert_eq!(c.heure_debut, "16:00");
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_meme_jour_horaires_differents() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "08:00".to_string(),
+                heure_fin: "10:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("premier créneau OK");
+
+        let c = ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("deuxième créneau même jour OK");
+
+        assert_eq!(c.heure_debut, "14:00");
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_meme_heure_autre_activite() {
+        let (app, pool) = setup_app().await;
+        let a1 = seed_activite(&pool, "Poterie").await;
+        let a2 = seed_activite(&pool, "Théâtre").await;
+
+        ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("premier OK");
+
+        let c = ajouter_creneau(
+            app.state(),
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("même créneau autre activité OK");
+
+        assert_eq!(c.activite_id, a2);
+    }
+
+    #[tokio::test]
     async fn test_ajouter_creneau_validation_jour() {
         let (app, _pool) = setup_app().await;
 
@@ -427,6 +644,105 @@ mod tests {
         .await
         .expect_err("devrait être bloqué");
         assert!(err.contains("Impossible de modifier"));
+    }
+
+    #[tokio::test]
+    async fn test_modifier_creneau_conflit() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let c1 = creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let _c2 = creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Tenter de modifier c1 pour qu'il chevauche c2
+        let err = modifier_creneau(
+            app.state(),
+            c1.id,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "11:00".to_string(),
+                heure_fin: "13:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect_err("conflit refusé");
+
+        assert!(err.contains("Conflit d'horaire"));
+    }
+
+    #[tokio::test]
+    async fn test_modifier_creneau_vers_sans_conflit() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let c1 = creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let _c2 = creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 3,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Modifier c1 sans conflit avec c2 (jour différent)
+        let updated = modifier_creneau(
+            app.state(),
+            c1.id,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "16:00".to_string(),
+                heure_fin: "18:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("modification sans conflit OK");
+
+        assert_eq!(updated.heure_debut, "16:00");
+        assert_eq!(updated.heure_fin, "18:00");
     }
 
     // ── lister_creneaux ──
