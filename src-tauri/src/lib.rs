@@ -3,6 +3,7 @@ mod domain;
 mod error;
 mod infrastructure;
 mod repositories;
+mod services;
 
 use infrastructure::db::{init_app_state, init_pool};
 use tauri::Manager;
