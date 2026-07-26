@@ -4,7 +4,7 @@ mod error;
 mod infrastructure;
 mod repositories;
 
-use infrastructure::db::{init_pool, AppState};
+use infrastructure::db::{init_app_state, init_pool};
 use tauri::Manager;
 
 fn write_crash_log(msg: &str) {
@@ -37,7 +37,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(init_pool(&database_url))
                 .map_err(|e| format!("échec base de données {} : {e}", db_path.display()))?;
 
-            app.manage(AppState { pool });
+            app.manage(init_app_state(pool));
 
             Ok(())
         })

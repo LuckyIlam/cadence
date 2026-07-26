@@ -7,7 +7,7 @@ use crate::domain::personne::{
 };
 use crate::error::AppError;
 use crate::infrastructure::db::AppState;
-use crate::repositories;
+use crate::repositories::{AdhesionRepository, PersonneRepository};
 
 #[tauri::command]
 pub async fn creer_personne(
@@ -24,7 +24,9 @@ pub async fn creer_personne(
                 ))
             }
             Some(rid) => {
-                let responsable = repositories::personne_repo::find_by_id(&state.pool, rid)
+                let responsable = state
+                    .personne_repo
+                    .find_by_id(rid)
                     .await?
                     .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
                 if est_mineur(responsable.date_naissance) {
@@ -36,7 +38,7 @@ pub async fn creer_personne(
         }
     }
 
-    repositories::personne_repo::create(&state.pool, input).await
+    state.personne_repo.create(input).await
 }
 
 #[tauri::command]
@@ -55,7 +57,9 @@ pub async fn modifier_personne(
                 ))
             }
             Some(rid) => {
-                let responsable = repositories::personne_repo::find_by_id(&state.pool, rid)
+                let responsable = state
+                    .personne_repo
+                    .find_by_id(rid)
                     .await?
                     .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
                 if est_mineur(responsable.date_naissance) {
@@ -67,7 +71,7 @@ pub async fn modifier_personne(
         }
     }
 
-    repositories::personne_repo::update(&state.pool, id, input).await
+    state.personne_repo.update(id, input).await
 }
 
 #[tauri::command]
@@ -75,7 +79,7 @@ pub async fn obtenir_personne(
     state: State<'_, AppState>,
     id: i64,
 ) -> Result<Option<Personne>, AppError> {
-    repositories::personne_repo::find_by_id(&state.pool, id).await
+    state.personne_repo.find_by_id(id).await
 }
 
 #[tauri::command]
@@ -83,11 +87,13 @@ pub async fn obtenir_detail_personne(
     state: State<'_, AppState>,
     id: i64,
 ) -> Result<PersonneDetail, AppError> {
-    let personne = repositories::personne_repo::find_by_id(&state.pool, id)
+    let personne = state
+        .personne_repo
+        .find_by_id(id)
         .await?
         .ok_or(AppError::NotFound("Personne introuvable".into()))?;
 
-    let adhesions = repositories::adhesion_repo::list_by_personne(&state.pool, id).await?;
+    let adhesions = state.adhesion_repo.list_by_personne(id).await?;
 
     let annee_scolaire = current_annee_scolaire();
     let a_adhesion_annee_cours = adhesions.iter().any(|a| a.annee_scolaire == annee_scolaire);
@@ -105,5 +111,5 @@ pub async fn rechercher_personnes(
     criteres: CriteresRecherchePersonnes,
     pagination: Pagination,
 ) -> Result<ResultatRecherchePersonnes, AppError> {
-    repositories::personne_repo::rechercher(&state.pool, criteres, pagination).await
+    state.personne_repo.rechercher(criteres, pagination).await
 }
