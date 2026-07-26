@@ -4,8 +4,9 @@ use crate::domain::personne::{
     CreatePersonne, CriteresRecherchePersonnes, Pagination, Personne, ResultatRecherchePersonnes,
     UpdatePersonne,
 };
+use crate::error::AppError;
 
-pub async fn create(pool: &SqlitePool, input: CreatePersonne) -> Result<Personne, sqlx::Error> {
+pub async fn create(pool: &SqlitePool, input: CreatePersonne) -> Result<Personne, AppError> {
     let row = sqlx::query_as::<_, Personne>(
         "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id)
          VALUES (?, ?, ?, ?, ?, ?)
@@ -27,7 +28,7 @@ pub async fn update(
     pool: &SqlitePool,
     id: i64,
     input: UpdatePersonne,
-) -> Result<Personne, sqlx::Error> {
+) -> Result<Personne, AppError> {
     let row = sqlx::query_as::<_, Personne>(
         "UPDATE personnes_physiques
          SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
@@ -47,7 +48,7 @@ pub async fn update(
     Ok(row)
 }
 
-pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Personne>, sqlx::Error> {
+pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Personne>, AppError> {
     let row = sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques WHERE id = ?")
         .bind(id)
         .fetch_optional(pool)
@@ -60,7 +61,7 @@ pub async fn rechercher(
     pool: &SqlitePool,
     criteres: CriteresRecherchePersonnes,
     pagination: Pagination,
-) -> Result<ResultatRecherchePersonnes, sqlx::Error> {
+) -> Result<ResultatRecherchePersonnes, AppError> {
     let annee_scolaire = crate::domain::personne::current_annee_scolaire();
     let pattern = criteres.texte_libre.as_ref().map(|t| format!("%{}%", t));
 

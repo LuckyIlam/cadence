@@ -4,6 +4,7 @@ use crate::domain::planning::{
     est_lundi, valider_creneau, CreateCreneau, CreateSemaineBanalisee, CreneauActivite,
     PlanningCreneau, SemaineBanalisee,
 };
+use crate::error::AppError;
 use crate::infrastructure::db::AppState;
 use crate::repositories;
 
@@ -11,13 +12,12 @@ use crate::repositories;
 pub async fn ajouter_creneau(
     state: State<'_, AppState>,
     input: CreateCreneau,
-) -> Result<CreneauActivite, String> {
+) -> Result<CreneauActivite, AppError> {
     valider_creneau(&input)?;
 
     let activite = repositories::activite_repo::find_by_id(&state.pool, input.activite_id)
-        .await
-        .map_err(|e| e.to_string())?
-        .ok_or_else(|| "Activité introuvable".to_string())?;
+        .await?
+        .ok_or(AppError::NotFound("Activité introuvable".into()))?;
     let _ = activite;
 
     let conflits = repositories::planning_repo::verifier_conflit_creneaux(
@@ -29,23 +29,20 @@ pub async fn ajouter_creneau(
         &input.heure_fin,
         None,
     )
-    .await
-    .map_err(|e| e.to_string())?;
+    .await?;
 
     if !conflits.is_empty() {
         let c = &conflits[0];
-        return Err(format!(
+        return Err(AppError::Conflict(format!(
             "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
             c.jour_semaine,
             crate::domain::planning::jour_semaine_texte(c.jour_semaine),
             c.heure_debut,
             c.heure_fin,
-        ));
+        )));
     }
 
-    repositories::planning_repo::creer_creneau(&state.pool, input)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::planning_repo::creer_creneau(&state.pool, input).await
 }
 
 #[tauri::command]
@@ -54,24 +51,21 @@ pub async fn supprimer_creneau(
     id: i64,
     activite_id: i64,
     annee_scolaire: String,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
     let nb = repositories::planning_repo::compter_inscrits_activite(
         &state.pool,
         activite_id,
         &annee_scolaire,
     )
-    .await
-    .map_err(|e| e.to_string())?;
+    .await?;
 
     if nb > 0 {
-        return Err(
-            "Impossible de supprimer un créneau : des personnes sont inscrites à cette activité pour cette année. Retirez d'abord les inscrits.".to_string()
-        );
+        return Err(AppError::Validation(
+            "Impossible de supprimer un créneau : des personnes sont inscrites à cette activité pour cette année. Retirez d'abord les inscrits.".into()
+        ));
     }
 
-    repositories::planning_repo::supprimer_creneau(&state.pool, id)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::planning_repo::supprimer_creneau(&state.pool, id).await
 }
 
 #[tauri::command]
@@ -79,7 +73,7 @@ pub async fn modifier_creneau(
     state: State<'_, AppState>,
     id: i64,
     input: CreateCreneau,
-) -> Result<CreneauActivite, String> {
+) -> Result<CreneauActivite, AppError> {
     valider_creneau(&input)?;
 
     let nb = repositories::planning_repo::compter_inscrits_activite(
@@ -87,13 +81,12 @@ pub async fn modifier_creneau(
         input.activite_id,
         &input.annee_scolaire,
     )
-    .await
-    .map_err(|e| e.to_string())?;
+    .await?;
 
     if nb > 0 {
-        return Err(
-            "Impossible de modifier un créneau : des personnes sont inscrites à cette activité pour cette année. Retirez d'abord les inscrits.".to_string()
-        );
+        return Err(AppError::Validation(
+            "Impossible de modifier un créneau : des personnes sont inscrites à cette activité pour cette année. Retirez d'abord les inscrits.".into()
+        ));
     }
 
     let conflits = repositories::planning_repo::verifier_conflit_creneaux(
@@ -105,23 +98,20 @@ pub async fn modifier_creneau(
         &input.heure_fin,
         Some(id),
     )
-    .await
-    .map_err(|e| e.to_string())?;
+    .await?;
 
     if !conflits.is_empty() {
         let c = &conflits[0];
-        return Err(format!(
+        return Err(AppError::Conflict(format!(
             "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
             c.jour_semaine,
             crate::domain::planning::jour_semaine_texte(c.jour_semaine),
             c.heure_debut,
             c.heure_fin,
-        ));
+        )));
     }
 
-    repositories::planning_repo::modifier_creneau(&state.pool, id, input)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::planning_repo::modifier_creneau(&state.pool, id, input).await
 }
 
 #[tauri::command]
@@ -129,42 +119,34 @@ pub async fn lister_creneaux(
     state: State<'_, AppState>,
     activite_id: i64,
     annee_scolaire: String,
-) -> Result<Vec<CreneauActivite>, String> {
-    repositories::planning_repo::lister_creneaux(&state.pool, activite_id, &annee_scolaire)
-        .await
-        .map_err(|e| e.to_string())
+) -> Result<Vec<CreneauActivite>, AppError> {
+    repositories::planning_repo::lister_creneaux(&state.pool, activite_id, &annee_scolaire).await
 }
 
 #[tauri::command]
 pub async fn ajouter_semaine_banalisee(
     state: State<'_, AppState>,
     input: CreateSemaineBanalisee,
-) -> Result<SemaineBanalisee, String> {
+) -> Result<SemaineBanalisee, AppError> {
     est_lundi(&input.date_debut)?;
 
-    repositories::planning_repo::ajouter_semaine_banalisee(&state.pool, input)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::planning_repo::ajouter_semaine_banalisee(&state.pool, input).await
 }
 
 #[tauri::command]
 pub async fn supprimer_semaine_banalisee(
     state: State<'_, AppState>,
     id: i64,
-) -> Result<(), String> {
-    repositories::planning_repo::supprimer_semaine_banalisee(&state.pool, id)
-        .await
-        .map_err(|e| e.to_string())
+) -> Result<(), AppError> {
+    repositories::planning_repo::supprimer_semaine_banalisee(&state.pool, id).await
 }
 
 #[tauri::command]
 pub async fn lister_semaines_banalisees(
     state: State<'_, AppState>,
     activite_id: i64,
-) -> Result<Vec<SemaineBanalisee>, String> {
-    repositories::planning_repo::lister_semaines_banalisees(&state.pool, activite_id)
-        .await
-        .map_err(|e| e.to_string())
+) -> Result<Vec<SemaineBanalisee>, AppError> {
+    repositories::planning_repo::lister_semaines_banalisees(&state.pool, activite_id).await
 }
 
 #[tauri::command]
@@ -173,7 +155,7 @@ pub async fn planning_personne(
     personne_id: i64,
     date_lundi: String,
     annee_scolaire: String,
-) -> Result<Vec<PlanningCreneau>, String> {
+) -> Result<Vec<PlanningCreneau>, AppError> {
     repositories::planning_repo::planning_personne_semaine(
         &state.pool,
         personne_id,
@@ -181,7 +163,6 @@ pub async fn planning_personne(
         &annee_scolaire,
     )
     .await
-    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -190,7 +171,7 @@ pub async fn verifier_collision(
     personne_id: i64,
     activite_id: i64,
     annee_scolaire: String,
-) -> Result<Option<crate::domain::planning::Collision>, String> {
+) -> Result<Option<crate::domain::planning::Collision>, AppError> {
     repositories::planning_repo::verifier_collision(
         &state.pool,
         personne_id,
@@ -198,7 +179,6 @@ pub async fn verifier_collision(
         &annee_scolaire,
     )
     .await
-    .map_err(|e| e.to_string())
 }
 
 #[cfg(test)]
@@ -308,7 +288,7 @@ mod tests {
         .await;
 
         let err = result.expect_err("devrait échouer");
-        assert_eq!(err, "Activité introuvable");
+        assert_eq!(err.to_string(), "Activité introuvable");
     }
 
     #[tokio::test]
@@ -361,7 +341,7 @@ mod tests {
         .await
         .expect_err("doublon refusé");
 
-        assert!(err.contains("Conflit d'horaire"));
+        assert!(err.to_string().contains("Conflit d'horaire"));
     }
 
     #[tokio::test]
@@ -395,7 +375,7 @@ mod tests {
         .await
         .expect_err("chevauchement refusé");
 
-        assert!(err.contains("Conflit d'horaire"));
+        assert!(err.to_string().contains("Conflit d'horaire"));
     }
 
     #[tokio::test]
@@ -568,7 +548,7 @@ mod tests {
         let err = supprimer_creneau(app.state(), c.id, a, "2025-2026".to_string())
             .await
             .expect_err("devrait être bloqué");
-        assert!(err.contains("Impossible de supprimer"));
+        assert!(err.to_string().contains("Impossible de supprimer"));
     }
 
     // ── modifier_creneau ──
@@ -643,7 +623,7 @@ mod tests {
         )
         .await
         .expect_err("devrait être bloqué");
-        assert!(err.contains("Impossible de modifier"));
+        assert!(err.to_string().contains("Impossible de modifier"));
     }
 
     #[tokio::test]
@@ -692,7 +672,7 @@ mod tests {
         .await
         .expect_err("conflit refusé");
 
-        assert!(err.contains("Conflit d'horaire"));
+        assert!(err.to_string().contains("Conflit d'horaire"));
     }
 
     #[tokio::test]
@@ -823,7 +803,7 @@ mod tests {
         )
         .await
         .expect_err("devrait échouer");
-        assert!(err.contains("lundi"));
+        assert!(err.to_string().contains("lundi"));
     }
 
     // ── supprimer_semaine_banalisee ──

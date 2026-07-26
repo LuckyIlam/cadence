@@ -5,6 +5,7 @@ use crate::domain::personne::{
     CriteresRecherchePersonnes, Pagination, Personne, PersonneDetail, ResultatRecherchePersonnes,
     UpdatePersonne,
 };
+use crate::error::AppError;
 use crate::infrastructure::db::AppState;
 use crate::repositories;
 
@@ -12,27 +13,30 @@ use crate::repositories;
 pub async fn creer_personne(
     state: State<'_, AppState>,
     input: CreatePersonne,
-) -> Result<Personne, String> {
+) -> Result<Personne, AppError> {
     valider_date_naissance(input.date_naissance)?;
 
     if est_mineur(input.date_naissance) {
         match input.responsable_id {
-            None => return Err("Un mineur doit avoir un responsable légal".to_string()),
+            None => {
+                return Err(AppError::Validation(
+                    "Un mineur doit avoir un responsable légal".into(),
+                ))
+            }
             Some(rid) => {
                 let responsable = repositories::personne_repo::find_by_id(&state.pool, rid)
-                    .await
-                    .map_err(|e| e.to_string())?
-                    .ok_or("Responsable introuvable")?;
+                    .await?
+                    .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
                 if est_mineur(responsable.date_naissance) {
-                    return Err("Le responsable ne peut pas être mineur".to_string());
+                    return Err(AppError::Validation(
+                        "Le responsable ne peut pas être mineur".into(),
+                    ));
                 }
             }
         }
     }
 
-    repositories::personne_repo::create(&state.pool, input)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::personne_repo::create(&state.pool, input).await
 }
 
 #[tauri::command]
@@ -40,52 +44,50 @@ pub async fn modifier_personne(
     state: State<'_, AppState>,
     id: i64,
     input: UpdatePersonne,
-) -> Result<Personne, String> {
+) -> Result<Personne, AppError> {
     valider_date_naissance(input.date_naissance)?;
 
     if est_mineur(input.date_naissance) {
         match input.responsable_id {
-            None => return Err("Un mineur doit avoir un responsable légal".to_string()),
+            None => {
+                return Err(AppError::Validation(
+                    "Un mineur doit avoir un responsable légal".into(),
+                ))
+            }
             Some(rid) => {
                 let responsable = repositories::personne_repo::find_by_id(&state.pool, rid)
-                    .await
-                    .map_err(|e| e.to_string())?
-                    .ok_or("Responsable introuvable")?;
+                    .await?
+                    .ok_or(AppError::NotFound("Responsable introuvable".into()))?;
                 if est_mineur(responsable.date_naissance) {
-                    return Err("Le responsable ne peut pas être mineur".to_string());
+                    return Err(AppError::Validation(
+                        "Le responsable ne peut pas être mineur".into(),
+                    ));
                 }
             }
         }
     }
 
-    repositories::personne_repo::update(&state.pool, id, input)
-        .await
-        .map_err(|e| e.to_string())
+    repositories::personne_repo::update(&state.pool, id, input).await
 }
 
 #[tauri::command]
 pub async fn obtenir_personne(
     state: State<'_, AppState>,
     id: i64,
-) -> Result<Option<Personne>, String> {
-    repositories::personne_repo::find_by_id(&state.pool, id)
-        .await
-        .map_err(|e| e.to_string())
+) -> Result<Option<Personne>, AppError> {
+    repositories::personne_repo::find_by_id(&state.pool, id).await
 }
 
 #[tauri::command]
 pub async fn obtenir_detail_personne(
     state: State<'_, AppState>,
     id: i64,
-) -> Result<PersonneDetail, String> {
+) -> Result<PersonneDetail, AppError> {
     let personne = repositories::personne_repo::find_by_id(&state.pool, id)
-        .await
-        .map_err(|e| e.to_string())?
-        .ok_or_else(|| "Personne introuvable".to_string())?;
+        .await?
+        .ok_or(AppError::NotFound("Personne introuvable".into()))?;
 
-    let adhesions = repositories::adhesion_repo::list_by_personne(&state.pool, id)
-        .await
-        .map_err(|e| e.to_string())?;
+    let adhesions = repositories::adhesion_repo::list_by_personne(&state.pool, id).await?;
 
     let annee_scolaire = current_annee_scolaire();
     let a_adhesion_annee_cours = adhesions.iter().any(|a| a.annee_scolaire == annee_scolaire);
@@ -102,8 +104,6 @@ pub async fn rechercher_personnes(
     state: State<'_, AppState>,
     criteres: CriteresRecherchePersonnes,
     pagination: Pagination,
-) -> Result<ResultatRecherchePersonnes, String> {
-    repositories::personne_repo::rechercher(&state.pool, criteres, pagination)
-        .await
-        .map_err(|e| e.to_string())
+) -> Result<ResultatRecherchePersonnes, AppError> {
+    repositories::personne_repo::rechercher(&state.pool, criteres, pagination).await
 }
