@@ -1,6 +1,8 @@
 use chrono::Datelike;
 use serde::{Deserialize, Serialize};
 
+use super::activite::Role;
+
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct CreneauActivite {
     pub id: i64,
@@ -41,7 +43,7 @@ pub struct CreateSemaineBanalisee {
 pub struct PlanningCreneau {
     pub creneau: CreneauActivite,
     pub activite: super::activite::Activite,
-    pub role: String,
+    pub role: Role,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

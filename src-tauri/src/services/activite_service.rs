@@ -1,6 +1,6 @@
 use crate::domain::activite::{
-    valider_role, verifier_capacite_max, Activite, ActivitePersonne, CreateActivite,
-    CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite, UpdateActivite,
+    verifier_capacite_max, Activite, ActivitePersonne, CreateActivite,
+    CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite, Role, UpdateActivite,
 };
 use crate::domain::planning::jour_semaine_texte;
 use crate::error::AppError;
@@ -110,8 +110,6 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         &self,
         input: CreateLiaisonActivitePersonne,
     ) -> Result<(), AppError> {
-        valider_role(&input.role)?;
-
         let liaison_existante = self
             .activite_repo
             .trouver_liaison(input.activite_id, input.personne_id, &input.annee_scolaire)
@@ -129,7 +127,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
             )));
         }
 
-        if input.role == "participant" {
+        if input.role == Role::Participant {
             let activite = self
                 .activite_repo
                 .find_by_id(input.activite_id)
