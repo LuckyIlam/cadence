@@ -26,22 +26,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
             ));
         }
 
-        let annee_scolaire = input.annee_scolaire.clone();
-        let tarif = input.tarif;
-
-        let activite = self.activite_repo.create(input).await?;
-
-        if let Some(ref annee) = annee_scolaire {
-            self.activite_repo
-                .upsert_tarif(CreateTarifActivite {
-                    activite_id: activite.id,
-                    annee_scolaire: annee.clone(),
-                    tarif: tarif.unwrap_or(0.0),
-                })
-                .await?;
-        }
-
-        Ok(activite)
+        self.activite_repo.creer_avec_tarif(input).await
     }
 
     pub async fn modifier(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
@@ -106,45 +91,62 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         Ok(())
     }
 
-    pub async fn ajouter_personne(
+    async fn verifier_liaison_existante(
         &self,
-        input: CreateLiaisonActivitePersonne,
+        activite_id: i64,
+        personne_id: i64,
+        annee_scolaire: &str,
+        role: &Role,
     ) -> Result<(), AppError> {
-        let liaison_existante = self
+        let existing = self
             .activite_repo
-            .trouver_liaison(input.activite_id, input.personne_id, &input.annee_scolaire)
+            .trouver_liaison(activite_id, personne_id, annee_scolaire)
             .await?;
 
-        if let Some(existing) = liaison_existante {
-            if existing.role == input.role {
-                return Err(AppError::Conflict(
-                    "Cette personne est déjà inscrite à cette activité avec ce rôle".into(),
-                ));
-            }
-            return Err(AppError::Conflict(format!(
+        match existing {
+            None => Ok(()),
+            Some(l) if &l.role == role => Err(AppError::Conflict(
+                "Cette personne est déjà inscrite à cette activité avec ce rôle".into(),
+            )),
+            Some(l) => Err(AppError::Conflict(format!(
                 "Cette personne est déjà {} pour cette activité, elle ne peut pas être {}",
-                existing.role, input.role
-            )));
+                l.role, role
+            ))),
         }
+    }
 
-        if input.role == Role::Participant {
-            let activite = self
-                .activite_repo
-                .find_by_id(input.activite_id)
-                .await?
-                .ok_or(AppError::NotFound("Activité introuvable".into()))?;
-
-            let nb_participants = self
-                .activite_repo
-                .compter_participants(input.activite_id, &input.annee_scolaire)
-                .await?;
-
-            verifier_capacite_max(nb_participants, activite.capacite_max)?;
+    async fn verifier_capacite(
+        &self,
+        activite_id: i64,
+        annee_scolaire: &str,
+        role: &Role,
+    ) -> Result<(), AppError> {
+        if *role != Role::Participant {
+            return Ok(());
         }
+        let activite = self
+            .activite_repo
+            .find_by_id(activite_id)
+            .await?
+            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
 
+        let nb_participants = self
+            .activite_repo
+            .compter_participants(activite_id, annee_scolaire)
+            .await?;
+
+        verifier_capacite_max(nb_participants, activite.capacite_max).map_err(AppError::Validation)
+    }
+
+    async fn verifier_collision_planning(
+        &self,
+        personne_id: i64,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<(), AppError> {
         if let Some(collision) = self
             .planning_repo
-            .verifier_collision(input.personne_id, input.activite_id, &input.annee_scolaire)
+            .verifier_collision(personne_id, activite_id, annee_scolaire)
             .await?
         {
             return Err(AppError::Conflict(format!(
@@ -156,9 +158,32 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
                 collision.heure_fin,
             )));
         }
+        Ok(())
+    }
+
+    pub async fn ajouter_personne(
+        &self,
+        input: CreateLiaisonActivitePersonne,
+    ) -> Result<(), AppError> {
+        self.verifier_liaison_existante(
+            input.activite_id,
+            input.personne_id,
+            &input.annee_scolaire,
+            &input.role,
+        )
+        .await?;
+
+        self.verifier_capacite(input.activite_id, &input.annee_scolaire, &input.role)
+            .await?;
+
+        self.verifier_collision_planning(
+            input.personne_id,
+            input.activite_id,
+            &input.annee_scolaire,
+        )
+        .await?;
 
         self.activite_repo.ajouter_personne(input).await?;
-
         Ok(())
     }
 
