@@ -1,8 +1,9 @@
 use sqlx::SqlitePool;
 
 use crate::domain::adhesion::{Adhesion, CreateAdhesion, UpdateAdhesion};
+use crate::error::AppError;
 
-pub async fn create(pool: &SqlitePool, input: CreateAdhesion) -> Result<Adhesion, sqlx::Error> {
+pub async fn create(pool: &SqlitePool, input: CreateAdhesion) -> Result<Adhesion, AppError> {
     let row = sqlx::query_as::<_, Adhesion>(
         "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement)
          VALUES (?, ?, ?, ?)
@@ -22,7 +23,7 @@ pub async fn update(
     pool: &SqlitePool,
     id: i64,
     input: UpdateAdhesion,
-) -> Result<Adhesion, sqlx::Error> {
+) -> Result<Adhesion, AppError> {
     let row = sqlx::query_as::<_, Adhesion>(
         "UPDATE adhesions
          SET reglee = ?, note_paiement = ?
@@ -41,7 +42,7 @@ pub async fn update(
 pub async fn list_by_personne(
     pool: &SqlitePool,
     personne_id: i64,
-) -> Result<Vec<Adhesion>, sqlx::Error> {
+) -> Result<Vec<Adhesion>, AppError> {
     let rows = sqlx::query_as::<_, Adhesion>(
         "SELECT * FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
     )

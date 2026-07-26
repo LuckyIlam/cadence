@@ -4,8 +4,9 @@ use crate::domain::activite::{
     Activite, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite,
     LiaisonActivitePersonne, PersonneActivite, TarifActivite, UpdateActivite,
 };
+use crate::error::AppError;
 
-pub async fn create(pool: &SqlitePool, input: CreateActivite) -> Result<Activite, sqlx::Error> {
+pub async fn create(pool: &SqlitePool, input: CreateActivite) -> Result<Activite, AppError> {
     let row = sqlx::query_as::<_, Activite>(
         "INSERT INTO activites (nom, description, capacite_max)
          VALUES (?, ?, ?)
@@ -24,7 +25,7 @@ pub async fn update(
     pool: &SqlitePool,
     id: i64,
     input: UpdateActivite,
-) -> Result<Activite, sqlx::Error> {
+) -> Result<Activite, AppError> {
     let row = sqlx::query_as::<_, Activite>(
         "UPDATE activites
          SET nom = ?, description = ?, capacite_max = ?
@@ -41,7 +42,7 @@ pub async fn update(
     Ok(row)
 }
 
-pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Activite>, sqlx::Error> {
+pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Activite>, AppError> {
     let row = sqlx::query_as::<_, Activite>("SELECT * FROM activites WHERE id = ?")
         .bind(id)
         .fetch_optional(pool)
@@ -53,7 +54,7 @@ pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Activite>, 
 pub async fn upsert_tarif(
     pool: &SqlitePool,
     input: CreateTarifActivite,
-) -> Result<TarifActivite, sqlx::Error> {
+) -> Result<TarifActivite, AppError> {
     let row = sqlx::query_as::<_, TarifActivite>(
         "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
          VALUES (?, ?, ?)
@@ -74,7 +75,7 @@ pub async fn get_tarif(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<Option<TarifActivite>, sqlx::Error> {
+) -> Result<Option<TarifActivite>, AppError> {
     let row = sqlx::query_as::<_, TarifActivite>(
         "SELECT * FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
     )
@@ -89,7 +90,7 @@ pub async fn get_tarif(
 pub async fn ajouter_personne(
     pool: &SqlitePool,
     input: CreateLiaisonActivitePersonne,
-) -> Result<LiaisonActivitePersonne, sqlx::Error> {
+) -> Result<LiaisonActivitePersonne, AppError> {
     let row = sqlx::query_as::<_, LiaisonActivitePersonne>(
         "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
          VALUES (?, ?, ?, ?)
@@ -110,7 +111,7 @@ pub async fn retirer_personne(
     activite_id: i64,
     personne_id: i64,
     annee_scolaire: &str,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), AppError> {
     sqlx::query(
         "DELETE FROM activite_personnes WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
     )
@@ -127,7 +128,7 @@ pub async fn compter_participants(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<i64, sqlx::Error> {
+) -> Result<i64, AppError> {
     let count: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM activite_personnes
          WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
@@ -145,7 +146,7 @@ pub async fn trouver_liaison(
     activite_id: i64,
     personne_id: i64,
     annee_scolaire: &str,
-) -> Result<Option<LiaisonActivitePersonne>, sqlx::Error> {
+) -> Result<Option<LiaisonActivitePersonne>, AppError> {
     let row = sqlx::query_as::<_, LiaisonActivitePersonne>(
         "SELECT * FROM activite_personnes
          WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
@@ -163,7 +164,7 @@ pub async fn lister_encadrants(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<Vec<PersonneActivite>, sqlx::Error> {
+) -> Result<Vec<PersonneActivite>, AppError> {
     let rows = sqlx::query_as::<_, PersonneActivite>(
         "SELECT pp.id, pp.nom, pp.prenom
          FROM activite_personnes ap
@@ -183,7 +184,7 @@ pub async fn lister_participants(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<Vec<PersonneActivite>, sqlx::Error> {
+) -> Result<Vec<PersonneActivite>, AppError> {
     let rows = sqlx::query_as::<_, PersonneActivite>(
         "SELECT pp.id, pp.nom, pp.prenom
          FROM activite_personnes ap
@@ -221,7 +222,7 @@ struct ActiviteAnneeRow {
 pub async fn lister_activites_personne(
     pool: &SqlitePool,
     personne_id: i64,
-) -> Result<Vec<crate::domain::activite::ActivitePersonne>, sqlx::Error> {
+) -> Result<Vec<crate::domain::activite::ActivitePersonne>, AppError> {
     let rows = sqlx::query_as::<_, ActivitePersonneRow>(
         "SELECT a.id, a.nom, a.description, a.capacite_max, ap.role
          FROM activite_personnes ap
@@ -247,7 +248,7 @@ pub async fn lister_activites_personne(
         .collect())
 }
 
-pub async fn lister_annees_disponibles(pool: &SqlitePool) -> Result<Vec<String>, sqlx::Error> {
+pub async fn lister_annees_disponibles(pool: &SqlitePool) -> Result<Vec<String>, AppError> {
     let rows = sqlx::query_scalar::<_, String>(
         "SELECT DISTINCT annee_scolaire FROM tarifs_activite ORDER BY annee_scolaire DESC",
     )
@@ -260,7 +261,7 @@ pub async fn lister_annees_disponibles(pool: &SqlitePool) -> Result<Vec<String>,
 pub async fn lister_activites_par_annee(
     pool: &SqlitePool,
     annee_scolaire: &str,
-) -> Result<Vec<(Activite, Option<f64>, i64)>, sqlx::Error> {
+) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError> {
     let rows = sqlx::query_as::<_, ActiviteAnneeRow>(
         "SELECT a.id, a.nom, a.description, a.capacite_max, ta.tarif,
                 (SELECT COUNT(*) FROM activite_personnes ap2

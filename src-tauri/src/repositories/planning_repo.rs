@@ -4,11 +4,12 @@ use crate::domain::planning::{
     Collision, CreateCreneau, CreateSemaineBanalisee, CreneauActivite, PlanningCreneau,
     SemaineBanalisee,
 };
+use crate::error::AppError;
 
 pub async fn creer_creneau(
     pool: &SqlitePool,
     input: CreateCreneau,
-) -> Result<CreneauActivite, sqlx::Error> {
+) -> Result<CreneauActivite, AppError> {
     let row = sqlx::query_as::<_, CreneauActivite>(
         "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
          VALUES (?, ?, ?, ?, ?)
@@ -25,7 +26,7 @@ pub async fn creer_creneau(
     Ok(row)
 }
 
-pub async fn supprimer_creneau(pool: &SqlitePool, id: i64) -> Result<(), sqlx::Error> {
+pub async fn supprimer_creneau(pool: &SqlitePool, id: i64) -> Result<(), AppError> {
     sqlx::query("DELETE FROM creneaux_activite WHERE id = ?")
         .bind(id)
         .execute(pool)
@@ -38,7 +39,7 @@ pub async fn modifier_creneau(
     pool: &SqlitePool,
     id: i64,
     input: CreateCreneau,
-) -> Result<CreneauActivite, sqlx::Error> {
+) -> Result<CreneauActivite, AppError> {
     let row = sqlx::query_as::<_, CreneauActivite>(
         "UPDATE creneaux_activite
          SET jour_semaine = ?, heure_debut = ?, heure_fin = ?
@@ -59,7 +60,7 @@ pub async fn lister_creneaux(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<Vec<CreneauActivite>, sqlx::Error> {
+) -> Result<Vec<CreneauActivite>, AppError> {
     let rows = sqlx::query_as::<_, CreneauActivite>(
         "SELECT * FROM creneaux_activite
          WHERE activite_id = ? AND annee_scolaire = ?
@@ -76,7 +77,7 @@ pub async fn lister_creneaux(
 pub async fn ajouter_semaine_banalisee(
     pool: &SqlitePool,
     input: CreateSemaineBanalisee,
-) -> Result<SemaineBanalisee, sqlx::Error> {
+) -> Result<SemaineBanalisee, AppError> {
     let row = sqlx::query_as::<_, SemaineBanalisee>(
         "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire)
          VALUES (?, ?, ?, ?)
@@ -92,7 +93,7 @@ pub async fn ajouter_semaine_banalisee(
     Ok(row)
 }
 
-pub async fn supprimer_semaine_banalisee(pool: &SqlitePool, id: i64) -> Result<(), sqlx::Error> {
+pub async fn supprimer_semaine_banalisee(pool: &SqlitePool, id: i64) -> Result<(), AppError> {
     sqlx::query("DELETE FROM semaines_banalisees WHERE id = ?")
         .bind(id)
         .execute(pool)
@@ -104,7 +105,7 @@ pub async fn supprimer_semaine_banalisee(pool: &SqlitePool, id: i64) -> Result<(
 pub async fn lister_semaines_banalisees(
     pool: &SqlitePool,
     activite_id: i64,
-) -> Result<Vec<SemaineBanalisee>, sqlx::Error> {
+) -> Result<Vec<SemaineBanalisee>, AppError> {
     let rows = sqlx::query_as::<_, SemaineBanalisee>(
         "SELECT * FROM semaines_banalisees
          WHERE activite_id = ?
@@ -125,7 +126,7 @@ pub async fn verifier_conflit_creneaux(
     heure_debut: &str,
     heure_fin: &str,
     exclure_id: Option<i64>,
-) -> Result<Vec<CreneauActivite>, sqlx::Error> {
+) -> Result<Vec<CreneauActivite>, AppError> {
     let rows = sqlx::query_as::<_, CreneauActivite>(
         "SELECT * FROM creneaux_activite
          WHERE activite_id = ?
@@ -152,7 +153,7 @@ pub async fn compter_inscrits_activite(
     pool: &SqlitePool,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<i64, sqlx::Error> {
+) -> Result<i64, AppError> {
     let count: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM activite_personnes
          WHERE activite_id = ? AND annee_scolaire = ?",
@@ -184,7 +185,7 @@ pub async fn verifier_collision(
     personne_id: i64,
     activite_id: i64,
     annee_scolaire: &str,
-) -> Result<Option<Collision>, sqlx::Error> {
+) -> Result<Option<Collision>, AppError> {
     let creneaux_cibles = lister_creneaux(pool, activite_id, annee_scolaire).await?;
     if creneaux_cibles.is_empty() {
         return Ok(None);
@@ -233,7 +234,7 @@ pub async fn planning_personne_semaine(
     personne_id: i64,
     date_lundi: &str,
     annee_scolaire: &str,
-) -> Result<Vec<PlanningCreneau>, sqlx::Error> {
+) -> Result<Vec<PlanningCreneau>, AppError> {
     let rows = sqlx::query_as::<_, ActiviteCreneauRow>(
         "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max,
                 c.id AS creneau_id, c.jour_semaine, c.heure_debut, c.heure_fin, c.annee_scolaire,
