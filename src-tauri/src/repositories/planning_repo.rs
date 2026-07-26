@@ -117,6 +117,37 @@ pub async fn lister_semaines_banalisees(
     Ok(rows)
 }
 
+pub async fn verifier_conflit_creneaux(
+    pool: &SqlitePool,
+    activite_id: i64,
+    annee_scolaire: &str,
+    jour_semaine: i64,
+    heure_debut: &str,
+    heure_fin: &str,
+    exclure_id: Option<i64>,
+) -> Result<Vec<CreneauActivite>, sqlx::Error> {
+    let rows = sqlx::query_as::<_, CreneauActivite>(
+        "SELECT * FROM creneaux_activite
+         WHERE activite_id = ?
+           AND annee_scolaire = ?
+           AND jour_semaine = ?
+           AND heure_debut < ?
+           AND heure_fin > ?
+           AND (? IS NULL OR id != ?)",
+    )
+    .bind(activite_id)
+    .bind(annee_scolaire)
+    .bind(jour_semaine)
+    .bind(heure_fin)
+    .bind(heure_debut)
+    .bind(exclure_id)
+    .bind(exclure_id)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(rows)
+}
+
 pub async fn compter_inscrits_activite(
     pool: &SqlitePool,
     activite_id: i64,
@@ -574,6 +605,182 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(count, 1);
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_doublon() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let conflits = verifier_conflit_creneaux(&pool, a, "2025-2026", 1, "14:00", "16:00", None)
+            .await
+            .unwrap();
+        assert_eq!(conflits.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_exclure_id() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let c = creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // En excluant l'ID du créneau, aucun conflit n'est détecté
+        let conflits =
+            verifier_conflit_creneaux(&pool, a, "2025-2026", 1, "14:00", "16:00", Some(c.id))
+                .await
+                .unwrap();
+        assert!(conflits.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_partiel() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Chevauchement partiel
+        let conflits = verifier_conflit_creneaux(&pool, a, "2025-2026", 1, "11:00", "13:00", None)
+            .await
+            .unwrap();
+        assert_eq!(conflits.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_adjacent() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Adjacent (16:00-18:00) ne chevauche pas (14:00-16:00)
+        let conflits = verifier_conflit_creneaux(&pool, a, "2025-2026", 1, "16:00", "18:00", None)
+            .await
+            .unwrap();
+        assert!(conflits.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_autre_activite() {
+        let pool = setup_db().await;
+        let a1 = seed_activite(&pool, "Poterie").await;
+        let a2 = seed_activite(&pool, "Théâtre").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Même créneau sur une autre activité → pas de conflit
+        let conflits = verifier_conflit_creneaux(&pool, a2, "2025-2026", 1, "14:00", "16:00", None)
+            .await
+            .unwrap();
+        assert!(conflits.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_verifier_conflit_creneaux_autre_annee() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2024-2025".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Même créneau sur une autre année → pas de conflit
+        let conflits = verifier_conflit_creneaux(&pool, a, "2025-2026", 1, "14:00", "16:00", None)
+            .await
+            .unwrap();
+        assert!(conflits.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_verifier_confrit_creneaux_autre_jour() {
+        let pool = setup_db().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        creer_creneau(
+            &pool,
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        // Même horaire sur un autre jour → pas de conflit
+        let conflits = verifier_conflit_creneaux(&pool, a, "2025-2026", 2, "14:00", "16:00", None)
+            .await
+            .unwrap();
+        assert!(conflits.is_empty());
     }
 
     #[tokio::test]
