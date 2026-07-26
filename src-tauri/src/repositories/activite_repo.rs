@@ -3,7 +3,7 @@ use sqlx::SqlitePool;
 
 use crate::domain::activite::{
     Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite,
-    LiaisonActivitePersonne, PersonneActivite, TarifActivite, UpdateActivite,
+    LiaisonActivitePersonne, PersonneActivite, Role, TarifActivite, UpdateActivite,
 };
 use crate::error::AppError;
 
@@ -269,7 +269,7 @@ impl ActiviteRepository for SqliteActiviteRepository {
             nom: String,
             description: Option<String>,
             capacite_max: Option<i64>,
-            role: String,
+            role: Role,
         }
 
         let rows = sqlx::query_as::<_, ActivitePersonneRow>(
@@ -356,6 +356,7 @@ impl ActiviteRepository for SqliteActiviteRepository {
 mod tests {
     use super::*;
     use crate::domain::activite::CreateActivite;
+    use crate::domain::activite::Role;
     use sqlx::SqlitePool;
 
     async fn setup_db() -> SqlitePool {
@@ -473,11 +474,11 @@ mod tests {
                 activite_id: a.id,
                 personne_id: pid,
                 annee_scolaire: "2025-2026".into(),
-                role: "participant".into(),
+                role: Role::Participant,
             })
             .await
             .unwrap();
-        assert_eq!(liaison.role, "participant");
+        assert_eq!(liaison.role, Role::Participant);
 
         let participants = r.lister_participants(a.id, "2025-2026").await.unwrap();
         assert_eq!(participants.len(), 1);
@@ -494,7 +495,7 @@ mod tests {
             activite_id: a.id,
             personne_id: pid,
             annee_scolaire: "2025-2026".into(),
-            role: "participant".into(),
+            role: Role::Participant,
         })
         .await
         .unwrap();
@@ -502,7 +503,7 @@ mod tests {
         let list = r.lister_activites_personne(pid).await.unwrap();
         assert_eq!(list.len(), 1);
         assert_eq!(list[0].activite.id, a.id);
-        assert_eq!(list[0].role, "participant");
+        assert_eq!(list[0].role, Role::Participant);
     }
 
     #[tokio::test]
@@ -516,7 +517,7 @@ mod tests {
             activite_id: a.id,
             personne_id: pid,
             annee_scolaire: "2025-2026".into(),
-            role: "participant".into(),
+            role: Role::Participant,
         })
         .await
         .unwrap();

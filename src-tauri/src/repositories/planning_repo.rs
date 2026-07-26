@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use sqlx::SqlitePool;
 
+use crate::domain::activite::Role;
 use crate::domain::planning::{
     Collision, CreateCreneau, CreateSemaineBanalisee, CreneauActivite, PlanningCreneau,
     SemaineBanalisee,
@@ -294,7 +295,7 @@ impl PlanningRepository for SqlitePlanningRepository {
             heure_debut: String,
             heure_fin: String,
             annee_scolaire: String,
-            role: String,
+            role: Role,
         }
 
         let rows = sqlx::query_as::<_, ActiviteCreneauRow>(
@@ -346,6 +347,7 @@ impl PlanningRepository for SqlitePlanningRepository {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
     use sqlx::SqlitePool;
 
@@ -638,7 +640,7 @@ mod tests {
         .bind(activite_id)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -848,7 +850,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -892,7 +894,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("encadrant")
+        .bind(Role::Encadrant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -927,7 +929,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -971,7 +973,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -983,7 +985,7 @@ mod tests {
         .bind(a2)
         .bind(pid)
         .bind("2025-2026")
-        .bind("encadrant")
+        .bind(Role::Encadrant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -993,8 +995,8 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(planning.len(), 2);
-        assert_eq!(planning[0].role, "participant");
-        assert_eq!(planning[1].role, "encadrant");
+        assert_eq!(planning[0].role, Role::Participant);
+        assert_eq!(planning[1].role, Role::Encadrant);
     }
 
     #[tokio::test]
@@ -1030,7 +1032,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1096,7 +1098,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1140,7 +1142,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("encadrant")
+        .bind(Role::Encadrant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1184,7 +1186,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1218,7 +1220,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1263,7 +1265,7 @@ mod tests {
         .bind(activite_id)
         .bind(pid1)
         .bind("2025-2026")
-        .bind("encadrant")
+        .bind(Role::Encadrant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1275,7 +1277,7 @@ mod tests {
         .bind(activite_id)
         .bind(pid2)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1301,7 +1303,7 @@ mod tests {
         .bind(activite_id)
         .bind(pid)
         .bind("2024-2025")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1348,7 +1350,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1360,7 +1362,7 @@ mod tests {
         .bind(a2)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();
@@ -1514,7 +1516,7 @@ mod tests {
         .bind(a1)
         .bind(pid)
         .bind("2025-2026")
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(&r.pool)
         .await
         .unwrap();

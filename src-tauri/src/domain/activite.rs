@@ -1,5 +1,22 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, sqlx::Type)]
+#[sqlx(rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
+pub enum Role {
+    Encadrant,
+    Participant,
+}
+
+impl std::fmt::Display for Role {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Role::Encadrant => write!(f, "encadrant"),
+            Role::Participant => write!(f, "participant"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Activite {
     pub id: i64,
@@ -43,7 +60,7 @@ pub struct LiaisonActivitePersonne {
     pub activite_id: i64,
     pub personne_id: i64,
     pub annee_scolaire: String,
-    pub role: String,
+    pub role: Role,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,7 +68,7 @@ pub struct CreateLiaisonActivitePersonne {
     pub activite_id: i64,
     pub personne_id: i64,
     pub annee_scolaire: String,
-    pub role: String,
+    pub role: Role,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
@@ -72,17 +89,7 @@ pub struct DetailActivite {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActivitePersonne {
     pub activite: Activite,
-    pub role: String,
-}
-
-pub fn valider_role(role: &str) -> Result<(), String> {
-    match role {
-        "encadrant" | "participant" => Ok(()),
-        _ => Err(format!(
-            "Rôle invalide : '{}'. Les rôles valides sont 'encadrant' et 'participant'",
-            role
-        )),
-    }
+    pub role: Role,
 }
 
 pub fn verifier_capacite_max(
@@ -105,20 +112,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_role_valide_encadrant() {
-        assert!(valider_role("encadrant").is_ok());
-    }
-
-    #[test]
-    fn test_role_valide_participant() {
-        assert!(valider_role("participant").is_ok());
-    }
-
-    #[test]
-    fn test_role_invalide() {
-        assert!(valider_role("admin").is_err());
-        assert!(valider_role("").is_err());
-        assert!(valider_role("encadrant ").is_err());
+    fn test_role_deserialisation() {
+        let r: Role = serde_json::from_str("\"encadrant\"").unwrap();
+        assert_eq!(r, Role::Encadrant);
+        let r: Role = serde_json::from_str("\"participant\"").unwrap();
+        assert_eq!(r, Role::Participant);
+        assert!(serde_json::from_str::<Role>("\"admin\"").is_err());
     }
 
     #[test]

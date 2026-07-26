@@ -183,6 +183,7 @@ pub async fn verifier_collision(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
     use crate::infrastructure::db::{init_app_state, AppState};
     use sqlx::SqlitePool;
@@ -238,7 +239,7 @@ mod tests {
         .bind(activite_id)
         .bind(personne_id)
         .bind(annee)
-        .bind("participant")
+        .bind(Role::Participant)
         .execute(pool)
         .await
         .expect("failed to seed inscrit");
