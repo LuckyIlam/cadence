@@ -108,7 +108,7 @@ impl ActiviteRepository for SqliteActiviteRepository {
 
         if let Some(ref annee) = annee_scolaire {
             sqlx::query(
-                "INSERT INTO tarifs_activites (activite_id, annee_scolaire, tarif)
+                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
                  VALUES (?, ?, ?)
                  ON CONFLICT(activite_id, annee_scolaire) DO UPDATE SET tarif = excluded.tarif",
             )
@@ -450,6 +450,58 @@ mod tests {
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
         assert_eq!(a.nom, "Poterie");
         assert_eq!(a.id, 1);
+    }
+
+    #[tokio::test]
+    async fn test_creer_avec_tarif_sans_tarif() {
+        let pool = setup_db().await;
+        let r = repo(pool);
+        let input = CreateActivite {
+            nom: "Théâtre".into(),
+            description: None,
+            capacite_max: None,
+            annee_scolaire: None,
+            tarif: None,
+        };
+        let a = r.creer_avec_tarif(input).await.unwrap();
+        assert_eq!(a.nom, "Théâtre");
+    }
+
+    #[tokio::test]
+    async fn test_creer_avec_tarif_avec_tarif() {
+        let pool = setup_db().await;
+        let r = repo(pool);
+        let input = CreateActivite {
+            nom: "Poterie".into(),
+            description: None,
+            capacite_max: None,
+            annee_scolaire: Some("2025-2026".into()),
+            tarif: Some(200.0),
+        };
+        let a = r.creer_avec_tarif(input).await.unwrap();
+        assert_eq!(a.nom, "Poterie");
+
+        let tarif = r.get_tarif(a.id, "2025-2026").await.unwrap();
+        assert!(tarif.is_some());
+        assert_eq!(tarif.unwrap().tarif, 200.0);
+    }
+
+    #[tokio::test]
+    async fn test_creer_avec_tarif_sans_annee_n_insere_pas_tarif() {
+        let pool = setup_db().await;
+        let r = repo(pool);
+        let input = CreateActivite {
+            nom: "Danse".into(),
+            description: None,
+            capacite_max: None,
+            annee_scolaire: None,
+            tarif: Some(150.0),
+        };
+        let a = r.creer_avec_tarif(input).await.unwrap();
+        assert_eq!(a.nom, "Danse");
+
+        let tarif = r.get_tarif(a.id, "2025-2026").await.unwrap();
+        assert!(tarif.is_none());
     }
 
     #[tokio::test]

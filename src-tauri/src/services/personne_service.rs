@@ -90,3 +90,255 @@ impl<'a, R: PersonneRepository, A: AdhesionRepository> PersonneService<'a, R, A>
         self.personne_repo.rechercher(criteres, pagination).await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use async_trait::async_trait;
+    use std::sync::{Mutex, OnceLock};
+
+    static NEXT_ID: OnceLock<Mutex<i64>> = OnceLock::new();
+
+    fn next_id() -> i64 {
+        let lock = NEXT_ID.get_or_init(|| Mutex::new(1));
+        let mut id = lock.lock().unwrap();
+        let current = *id;
+        *id += 1;
+        current
+    }
+
+    fn date(ymd: &str) -> NaiveDate {
+        NaiveDate::parse_from_str(ymd, "%Y-%m-%d").unwrap()
+    }
+
+    struct MockPersonneRepository {
+        personnes: Mutex<Vec<Personne>>,
+    }
+
+    impl MockPersonneRepository {
+        fn new() -> Self {
+            Self {
+                personnes: Mutex::new(Vec::new()),
+            }
+        }
+    }
+
+    #[async_trait]
+    impl PersonneRepository for MockPersonneRepository {
+        async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError> {
+            let p = Personne {
+                id: next_id(),
+                nom: input.nom,
+                prenom: input.prenom,
+                date_naissance: input.date_naissance,
+                email: input.email,
+                telephone: input.telephone,
+                responsable_id: input.responsable_id,
+            };
+            let id = p.id;
+            self.personnes.lock().unwrap().push(p);
+            Ok(self
+                .personnes
+                .lock()
+                .unwrap()
+                .iter()
+                .find(|p| p.id == id)
+                .unwrap()
+                .clone())
+        }
+
+        async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
+            let mut personnes = self.personnes.lock().unwrap();
+            let p = personnes
+                .iter_mut()
+                .find(|p| p.id == id)
+                .ok_or(AppError::NotFound("Personne introuvable".into()))?;
+            p.nom = input.nom;
+            p.prenom = input.prenom;
+            p.date_naissance = input.date_naissance;
+            p.email = input.email;
+            p.telephone = input.telephone;
+            p.responsable_id = input.responsable_id;
+            Ok(p.clone())
+        }
+
+        async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError> {
+            Ok(self
+                .personnes
+                .lock()
+                .unwrap()
+                .iter()
+                .find(|p| p.id == id)
+                .cloned())
+        }
+
+        async fn rechercher(
+            &self,
+            _criteres: CriteresRecherchePersonnes,
+            _pagination: Pagination,
+        ) -> Result<ResultatRecherchePersonnes, AppError> {
+            let personnes = self.personnes.lock().unwrap();
+            Ok(ResultatRecherchePersonnes {
+                donnees: personnes.clone(),
+                total: personnes.len() as u32,
+                page: 1,
+                pages: 1,
+            })
+        }
+    }
+
+    struct MockAdhesionRepository;
+
+    #[async_trait]
+    impl AdhesionRepository for MockAdhesionRepository {
+        async fn create(
+            &self,
+            _input: crate::domain::adhesion::CreateAdhesion,
+        ) -> Result<crate::domain::adhesion::Adhesion, AppError> {
+            unreachable!("not used in personne service tests")
+        }
+
+        async fn update(
+            &self,
+            _id: i64,
+            _input: crate::domain::adhesion::UpdateAdhesion,
+        ) -> Result<crate::domain::adhesion::Adhesion, AppError> {
+            unreachable!("not used in personne service tests")
+        }
+
+        async fn list_by_personne(
+            &self,
+            _personne_id: i64,
+        ) -> Result<Vec<crate::domain::adhesion::Adhesion>, AppError> {
+            Ok(Vec::new())
+        }
+    }
+
+    fn make_service() -> PersonneService<'static, MockPersonneRepository, MockAdhesionRepository> {
+        let repo = Box::new(MockPersonneRepository::new());
+        let adhesion_repo = Box::new(MockAdhesionRepository);
+        PersonneService::new(Box::leak(repo), Box::leak(adhesion_repo))
+    }
+
+    #[tokio::test]
+    async fn test_creer_majeur_sans_responsable_cree() {
+        let service = make_service();
+        let result = service
+            .creer(CreatePersonne {
+                nom: "Dupont".into(),
+                prenom: "Jean".into(),
+                date_naissance: date("1990-01-15"),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+            })
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().nom, "Dupont");
+    }
+
+    #[tokio::test]
+    async fn test_creer_mineur_sans_responsable_retourne_erreur() {
+        let service = make_service();
+        let result = service
+            .creer(CreatePersonne {
+                nom: "Martin".into(),
+                prenom: "Lucas".into(),
+                date_naissance: date("2010-06-01"),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+            })
+            .await;
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            AppError::Validation(msg) => assert!(msg.contains("mineur")),
+            _ => panic!("expected Validation error"),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_creer_mineur_avec_responsable_mineur_retourne_erreur() {
+        let service = make_service();
+        let responsable = service
+            .personne_repo
+            .create(CreatePersonne {
+                nom: "Petit".into(),
+                prenom: "Enfant".into(),
+                date_naissance: date("2012-03-10"),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+            })
+            .await
+            .unwrap();
+
+        let result = service
+            .creer(CreatePersonne {
+                nom: "Martin".into(),
+                prenom: "Lucas".into(),
+                date_naissance: date("2010-06-01"),
+                email: None,
+                telephone: None,
+                responsable_id: Some(responsable.id),
+            })
+            .await;
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            AppError::Validation(msg) => {
+                assert!(msg.contains("responsable") && msg.contains("mineur"))
+            }
+            _ => panic!("expected Validation error"),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_creer_mineur_avec_responsable_majeur_cree() {
+        let service = make_service();
+        let responsable = service
+            .personne_repo
+            .create(CreatePersonne {
+                nom: "Dupont".into(),
+                prenom: "Adulte".into(),
+                date_naissance: date("1985-07-20"),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+            })
+            .await
+            .unwrap();
+
+        let result = service
+            .creer(CreatePersonne {
+                nom: "Martin".into(),
+                prenom: "Lucas".into(),
+                date_naissance: date("2010-06-01"),
+                email: None,
+                telephone: None,
+                responsable_id: Some(responsable.id),
+            })
+            .await;
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_obtenir_detail_personne() {
+        let service = make_service();
+        let p = service
+            .personne_repo
+            .create(CreatePersonne {
+                nom: "Durand".into(),
+                prenom: "Sophie".into(),
+                date_naissance: date("1992-11-03"),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+            })
+            .await
+            .unwrap();
+
+        let detail = service.obtenir_detail(p.id).await.unwrap();
+        assert_eq!(detail.personne.nom, "Durand");
+        assert!(detail.adhesions.is_empty());
+    }
+}

@@ -211,3 +211,447 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
             .await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use async_trait::async_trait;
+    use std::sync::Mutex;
+
+    use crate::domain::activite::{LiaisonActivitePersonne, TarifActivite};
+    use crate::domain::planning::{Collision, PlanningCreneau};
+
+    struct MockActiviteRepository {
+        activites: Mutex<Vec<Activite>>,
+        liaisons: Mutex<Vec<LiaisonActivitePersonne>>,
+        capacite_max: Mutex<Option<i64>>,
+    }
+
+    impl MockActiviteRepository {
+        fn new() -> Self {
+            Self {
+                activites: Mutex::new(Vec::new()),
+                liaisons: Mutex::new(Vec::new()),
+                capacite_max: Mutex::new(None),
+            }
+        }
+
+        fn avec_capacite(capacite_max: i64) -> Self {
+            Self {
+                activites: Mutex::new(Vec::new()),
+                liaisons: Mutex::new(Vec::new()),
+                capacite_max: Mutex::new(Some(capacite_max)),
+            }
+        }
+    }
+
+    #[async_trait]
+    impl ActiviteRepository for MockActiviteRepository {
+        #[allow(dead_code)]
+        async fn create(&self, input: CreateActivite) -> Result<Activite, AppError> {
+            let id = self.activites.lock().unwrap().len() as i64 + 1;
+            let a = Activite {
+                id,
+                nom: input.nom,
+                description: input.description,
+                capacite_max: *self.capacite_max.lock().unwrap(),
+            };
+            self.activites.lock().unwrap().push(a.clone());
+            Ok(a)
+        }
+
+        async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError> {
+            self.create(input).await
+        }
+
+        async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
+            let mut activites = self.activites.lock().unwrap();
+            let a = activites
+                .iter_mut()
+                .find(|a| a.id == id)
+                .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+            a.nom = input.nom;
+            a.description = input.description;
+            a.capacite_max = input.capacite_max;
+            Ok(a.clone())
+        }
+
+        async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError> {
+            Ok(self
+                .activites
+                .lock()
+                .unwrap()
+                .iter()
+                .find(|a| a.id == id)
+                .cloned())
+        }
+
+        async fn upsert_tarif(
+            &self,
+            _input: CreateTarifActivite,
+        ) -> Result<TarifActivite, AppError> {
+            unimplemented!()
+        }
+
+        async fn get_tarif(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Option<TarifActivite>, AppError> {
+            Ok(None)
+        }
+
+        async fn ajouter_personne(
+            &self,
+            input: CreateLiaisonActivitePersonne,
+        ) -> Result<LiaisonActivitePersonne, AppError> {
+            let liaison = LiaisonActivitePersonne {
+                activite_id: input.activite_id,
+                personne_id: input.personne_id,
+                annee_scolaire: input.annee_scolaire,
+                role: input.role,
+            };
+            self.liaisons.lock().unwrap().push(liaison.clone());
+            Ok(liaison)
+        }
+
+        async fn retirer_personne(
+            &self,
+            _activite_id: i64,
+            _personne_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<(), AppError> {
+            unimplemented!()
+        }
+
+        async fn compter_participants(
+            &self,
+            activite_id: i64,
+            annee_scolaire: &str,
+        ) -> Result<i64, AppError> {
+            let count = self
+                .liaisons
+                .lock()
+                .unwrap()
+                .iter()
+                .filter(|l| {
+                    l.activite_id == activite_id
+                        && l.annee_scolaire == annee_scolaire
+                        && l.role == Role::Participant
+                })
+                .count();
+            Ok(count as i64)
+        }
+
+        async fn trouver_liaison(
+            &self,
+            activite_id: i64,
+            personne_id: i64,
+            annee_scolaire: &str,
+        ) -> Result<Option<LiaisonActivitePersonne>, AppError> {
+            Ok(self
+                .liaisons
+                .lock()
+                .unwrap()
+                .iter()
+                .find(|l| {
+                    l.activite_id == activite_id
+                        && l.personne_id == personne_id
+                        && l.annee_scolaire == annee_scolaire
+                })
+                .cloned())
+        }
+
+        async fn lister_encadrants(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<crate::domain::activite::PersonneActivite>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_participants(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<crate::domain::activite::PersonneActivite>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_activites_personne(
+            &self,
+            _personne_id: i64,
+        ) -> Result<Vec<ActivitePersonne>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_annees_disponibles(&self) -> Result<Vec<String>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_activites_par_annee(
+            &self,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError> {
+            unimplemented!()
+        }
+    }
+
+    struct MockPlanningRepository {
+        collision: Mutex<Option<Collision>>,
+    }
+
+    impl MockPlanningRepository {
+        fn new() -> Self {
+            Self {
+                collision: Mutex::new(None),
+            }
+        }
+
+        fn avec_collision() -> Self {
+            Self {
+                collision: Mutex::new(Some(Collision {
+                    activite_conflit: "Poterie".into(),
+                    jour_semaine: 2,
+                    heure_debut: "14:00".into(),
+                    heure_fin: "16:00".into(),
+                })),
+            }
+        }
+    }
+
+    #[async_trait]
+    impl PlanningRepository for MockPlanningRepository {
+        async fn creer_creneau(
+            &self,
+            _input: crate::domain::planning::CreateCreneau,
+        ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
+        async fn supprimer_creneau(&self, _id: i64) -> Result<(), AppError> {
+            unimplemented!()
+        }
+
+        async fn modifier_creneau(
+            &self,
+            _id: i64,
+            _input: crate::domain::planning::CreateCreneau,
+        ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_creneaux(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<crate::domain::planning::CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
+        async fn ajouter_semaine_banalisee(
+            &self,
+            _input: crate::domain::planning::CreateSemaineBanalisee,
+        ) -> Result<crate::domain::planning::SemaineBanalisee, AppError> {
+            unimplemented!()
+        }
+
+        async fn supprimer_semaine_banalisee(&self, _id: i64) -> Result<(), AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_semaines_banalisees(
+            &self,
+            _activite_id: i64,
+        ) -> Result<Vec<crate::domain::planning::SemaineBanalisee>, AppError> {
+            unimplemented!()
+        }
+
+        async fn verifier_conflit_creneaux(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+            _jour_semaine: i64,
+            _heure_debut: &str,
+            _heure_fin: &str,
+            _exclure_id: Option<i64>,
+        ) -> Result<Vec<crate::domain::planning::CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
+        async fn compter_inscrits_activite(
+            &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<i64, AppError> {
+            unimplemented!()
+        }
+
+        async fn verifier_collision(
+            &self,
+            _personne_id: i64,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Option<Collision>, AppError> {
+            Ok(self.collision.lock().unwrap().clone())
+        }
+
+        async fn planning_personne_semaine(
+            &self,
+            _personne_id: i64,
+            _date_lundi: &str,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<PlanningCreneau>, AppError> {
+            unimplemented!()
+        }
+    }
+
+    fn make_service<'a>(
+        activite_repo: &'a MockActiviteRepository,
+        planning_repo: &'a MockPlanningRepository,
+    ) -> ActiviteService<'a, MockActiviteRepository, MockPlanningRepository> {
+        ActiviteService::new(activite_repo, planning_repo)
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_personne_valide_cree_liaison() {
+        let repo = MockActiviteRepository::new();
+        let planning = MockPlanningRepository::new();
+        let service = make_service(&repo, &planning);
+
+        let activite = repo
+            .create(CreateActivite {
+                nom: "Poterie".into(),
+                description: None,
+                capacite_max: None,
+                annee_scolaire: None,
+                tarif: None,
+            })
+            .await
+            .unwrap();
+
+        let result = service
+            .ajouter_personne(CreateLiaisonActivitePersonne {
+                activite_id: activite.id,
+                personne_id: 1,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            })
+            .await;
+
+        assert!(result.is_ok());
+        let liaisons = repo.liaisons.lock().unwrap();
+        assert_eq!(liaisons.len(), 1);
+        assert_eq!(liaisons[0].personne_id, 1);
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_personne_avec_liaison_existante_retourne_erreur() {
+        let repo = MockActiviteRepository::new();
+        let planning = MockPlanningRepository::new();
+        let service = make_service(&repo, &planning);
+
+        let activite = repo
+            .create(CreateActivite {
+                nom: "Poterie".into(),
+                description: None,
+                capacite_max: None,
+                annee_scolaire: None,
+                tarif: None,
+            })
+            .await
+            .unwrap();
+
+        let input = CreateLiaisonActivitePersonne {
+            activite_id: activite.id,
+            personne_id: 1,
+            annee_scolaire: "2025-2026".into(),
+            role: Role::Participant,
+        };
+
+        service.ajouter_personne(input.clone()).await.unwrap();
+
+        let result = service.ajouter_personne(input).await;
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            AppError::Conflict(msg) => assert!(msg.contains("déjà inscrite")),
+            _ => panic!("expected Conflict error"),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_personne_capacite_atteinte_retourne_erreur() {
+        let repo = MockActiviteRepository::avec_capacite(1);
+        let planning = MockPlanningRepository::new();
+        let service = make_service(&repo, &planning);
+
+        let activite = repo
+            .create(CreateActivite {
+                nom: "Poterie".into(),
+                description: None,
+                capacite_max: None,
+                annee_scolaire: None,
+                tarif: None,
+            })
+            .await
+            .unwrap();
+
+        service
+            .ajouter_personne(CreateLiaisonActivitePersonne {
+                activite_id: activite.id,
+                personne_id: 1,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            })
+            .await
+            .unwrap();
+
+        let result = service
+            .ajouter_personne(CreateLiaisonActivitePersonne {
+                activite_id: activite.id,
+                personne_id: 2,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            })
+            .await;
+
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            AppError::Validation(msg) => assert!(msg.contains("Capacité")),
+            _ => panic!("expected Validation error"),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_personne_avec_collision_planning_retourne_erreur() {
+        let repo = MockActiviteRepository::new();
+        let planning = MockPlanningRepository::avec_collision();
+        let service = make_service(&repo, &planning);
+
+        let activite = repo
+            .create(CreateActivite {
+                nom: "Poterie".into(),
+                description: None,
+                capacite_max: None,
+                annee_scolaire: None,
+                tarif: None,
+            })
+            .await
+            .unwrap();
+
+        let result = service
+            .ajouter_personne(CreateLiaisonActivitePersonne {
+                activite_id: activite.id,
+                personne_id: 1,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            })
+            .await;
+
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            AppError::Conflict(msg) => assert!(msg.contains("Conflit")),
+            _ => panic!("expected Conflict error"),
+        }
+    }
+}
