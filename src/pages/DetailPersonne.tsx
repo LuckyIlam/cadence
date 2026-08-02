@@ -3,14 +3,18 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import AdhesionForm from "../components/AdhesionForm";
 import PersonneForm from "../components/PersonneForm";
+import PlanningHebdo from "../components/PlanningHebdo";
 import {
   type ActivitePersonne,
   type Adhesion,
   ageFromDateNaissance,
   formatDate,
+  formatDateISO,
   getCurrentAnneeScolaire,
+  getLundiSemaine,
   type Personne,
   type PersonneDetail,
+  type PlanningCreneau,
 } from "../types";
 
 export default function DetailPersonne() {
@@ -20,6 +24,9 @@ export default function DetailPersonne() {
   const [adhesions, setAdhesions] = useState<Adhesion[]>([]);
   const [aAdhesionEnCours, setAAdhesionEnCours] = useState(false);
   const [activitesPersonne, setActivitesPersonne] = useState<ActivitePersonne[]>([]);
+  const [planningCreneaux, setPlanningCreneaux] = useState<PlanningCreneau[]>([]);
+  const [planningDateLundi, setPlanningDateLundi] = useState(() => getLundiSemaine(new Date()));
+  const [planningAnneeScolaire, setPlanningAnneeScolaire] = useState(getCurrentAnneeScolaire());
   const [showEditForm, setShowEditForm] = useState(false);
   const [showAdhesionForm, setShowAdhesionForm] = useState(false);
   const [editingAdhesion, setEditingAdhesion] = useState<Adhesion | null>(null);
@@ -53,6 +60,17 @@ export default function DetailPersonne() {
   useEffect(() => {
     chargerDetail();
   }, [chargerDetail]);
+
+  useEffect(() => {
+    if (!id) return;
+    invoke<PlanningCreneau[]>("planning_personne", {
+      personneId: Number(id),
+      dateLundi: formatDateISO(planningDateLundi),
+      anneeScolaire: planningAnneeScolaire,
+    })
+      .then(setPlanningCreneaux)
+      .catch(console.error);
+  }, [id, planningDateLundi, planningAnneeScolaire]);
 
   if (!personne) {
     return <p className="text-gray-500">Chargement...</p>;
@@ -195,6 +213,42 @@ export default function DetailPersonne() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Planning</h3>
+          <select
+            value={planningAnneeScolaire}
+            onChange={(e) => setPlanningAnneeScolaire(e.target.value)}
+            className="px-3 py-1 text-sm border border-gray-300 rounded-lg"
+          >
+            {(() => {
+              const debut = planningAnneeScolaire.split("-")[0];
+              if (!debut) return null;
+              const an = Number.parseInt(debut, 10);
+              return Array.from({ length: 4 }, (_, i) => an - 2 + i).map((a) => (
+                <option key={a} value={`${a}-${a + 1}`}>
+                  {`${a}-${a + 1}`}
+                </option>
+              ));
+            })()}
+          </select>
+        </div>
+        <PlanningHebdo
+          creneaux={planningCreneaux}
+          dateLundi={planningDateLundi}
+          onSemainePrecedente={() => {
+            const d = new Date(planningDateLundi);
+            d.setDate(d.getDate() - 7);
+            setPlanningDateLundi(d);
+          }}
+          onSemaineSuivante={() => {
+            const d = new Date(planningDateLundi);
+            d.setDate(d.getDate() + 7);
+            setPlanningDateLundi(d);
+          }}
+        />
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">

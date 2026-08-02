@@ -1,155 +1,178 @@
+use async_trait::async_trait;
 use sqlx::SqlitePool;
 
 use crate::domain::personne::{
     CreatePersonne, CriteresRecherchePersonnes, Pagination, Personne, ResultatRecherchePersonnes,
     UpdatePersonne,
 };
+use crate::error::AppError;
 
-pub async fn create(pool: &SqlitePool, input: CreatePersonne) -> Result<Personne, sqlx::Error> {
-    let row = sqlx::query_as::<_, Personne>(
-        "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id)
-         VALUES (?, ?, ?, ?, ?, ?)
-         RETURNING *",
-    )
-    .bind(&input.nom)
-    .bind(&input.prenom)
-    .bind(input.date_naissance)
-    .bind(&input.email)
-    .bind(&input.telephone)
-    .bind(input.responsable_id)
-    .fetch_one(pool)
-    .await?;
-
-    Ok(row)
+#[async_trait]
+pub trait PersonneRepository: Send + Sync {
+    async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError>;
+    async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError>;
+    async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError>;
+    async fn rechercher(
+        &self,
+        criteres: CriteresRecherchePersonnes,
+        pagination: Pagination,
+    ) -> Result<ResultatRecherchePersonnes, AppError>;
 }
 
-pub async fn update(
-    pool: &SqlitePool,
-    id: i64,
-    input: UpdatePersonne,
-) -> Result<Personne, sqlx::Error> {
-    let row = sqlx::query_as::<_, Personne>(
-        "UPDATE personnes_physiques
-         SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
-         WHERE id = ?
-         RETURNING *",
-    )
-    .bind(&input.nom)
-    .bind(&input.prenom)
-    .bind(input.date_naissance)
-    .bind(&input.email)
-    .bind(&input.telephone)
-    .bind(input.responsable_id)
-    .bind(id)
-    .fetch_one(pool)
-    .await?;
-
-    Ok(row)
+pub struct SqlitePersonneRepository {
+    pool: SqlitePool,
 }
 
-pub async fn find_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Personne>, sqlx::Error> {
-    let row = sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques WHERE id = ?")
-        .bind(id)
-        .fetch_optional(pool)
+impl SqlitePersonneRepository {
+    pub fn new(pool: SqlitePool) -> Self {
+        Self { pool }
+    }
+}
+
+#[async_trait]
+impl PersonneRepository for SqlitePersonneRepository {
+    async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError> {
+        let row = sqlx::query_as::<_, Personne>(
+            "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id)
+             VALUES (?, ?, ?, ?, ?, ?)
+             RETURNING *",
+        )
+        .bind(&input.nom)
+        .bind(&input.prenom)
+        .bind(input.date_naissance)
+        .bind(&input.email)
+        .bind(&input.telephone)
+        .bind(input.responsable_id)
+        .fetch_one(&self.pool)
         .await?;
 
-    Ok(row)
-}
-
-pub async fn rechercher(
-    pool: &SqlitePool,
-    criteres: CriteresRecherchePersonnes,
-    pagination: Pagination,
-) -> Result<ResultatRecherchePersonnes, sqlx::Error> {
-    let annee_scolaire = crate::domain::personne::current_annee_scolaire();
-    let pattern = criteres.texte_libre.as_ref().map(|t| format!("%{}%", t));
-
-    let mut conditions: Vec<String> = Vec::new();
-
-    if criteres.texte_libre.is_some() {
-        let cols = ["pp.nom", "pp.prenom", "pp.email", "pp.telephone"];
-        let ors: Vec<String> = cols
-            .iter()
-            .map(|c| format!("LOWER({}) LIKE LOWER(?)", c))
-            .collect();
-        conditions.push(format!("({})", ors.join(" OR ")));
+        Ok(row)
     }
 
-    if criteres.adherent_uniquement {
-        conditions.push(
-            "EXISTS (SELECT 1 FROM adhesions a WHERE a.personne_id = pp.id AND a.annee_scolaire = ?)"
-                .to_string(),
+    async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
+        let row = sqlx::query_as::<_, Personne>(
+            "UPDATE personnes_physiques
+             SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
+             WHERE id = ?
+             RETURNING *",
+        )
+        .bind(&input.nom)
+        .bind(&input.prenom)
+        .bind(input.date_naissance)
+        .bind(&input.email)
+        .bind(&input.telephone)
+        .bind(input.responsable_id)
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(row)
+    }
+
+    async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError> {
+        let row = sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques WHERE id = ?")
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await?;
+
+        Ok(row)
+    }
+
+    async fn rechercher(
+        &self,
+        criteres: CriteresRecherchePersonnes,
+        pagination: Pagination,
+    ) -> Result<ResultatRecherchePersonnes, AppError> {
+        let annee_scolaire = crate::domain::personne::current_annee_scolaire();
+        let pattern = criteres.texte_libre.as_ref().map(|t| format!("%{}%", t));
+
+        let mut conditions: Vec<String> = Vec::new();
+
+        if criteres.texte_libre.is_some() {
+            let cols = ["pp.nom", "pp.prenom", "pp.email", "pp.telephone"];
+            let ors: Vec<String> = cols
+                .iter()
+                .map(|c| format!("LOWER({}) LIKE LOWER(?)", c))
+                .collect();
+            conditions.push(format!("({})", ors.join(" OR ")));
+        }
+
+        if criteres.adherent_uniquement {
+            conditions.push(
+                "EXISTS (SELECT 1 FROM adhesions a WHERE a.personne_id = pp.id AND a.annee_scolaire = ?)"
+                    .to_string(),
+            );
+        }
+
+        let where_clause = if conditions.is_empty() {
+            String::new()
+        } else {
+            format!(" WHERE 1=1 AND {}", conditions.join(" AND "))
+        };
+
+        // --- count ---
+        let count_sql = format!(
+            "SELECT COUNT(*) FROM personnes_physiques pp{}",
+            where_clause
         );
+
+        let mut count_query = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(count_sql.as_str()));
+
+        if let Some(ref p) = pattern {
+            count_query = count_query.bind(p).bind(p).bind(p).bind(p);
+        }
+        if criteres.adherent_uniquement {
+            count_query = count_query.bind(&annee_scolaire);
+        }
+
+        let total: i64 = count_query.fetch_one(&self.pool).await?;
+
+        // --- data ---
+        let offset = if pagination.par_page > 0 {
+            (pagination.page - 1) * pagination.par_page
+        } else {
+            0
+        };
+
+        let data_sql = if pagination.par_page > 0 {
+            format!(
+                "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom LIMIT ? OFFSET ?",
+                where_clause
+            )
+        } else {
+            format!(
+                "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom",
+                where_clause
+            )
+        };
+
+        let mut data_query = sqlx::query_as::<_, Personne>(sqlx::AssertSqlSafe(data_sql.as_str()));
+
+        if let Some(ref p) = pattern {
+            data_query = data_query.bind(p).bind(p).bind(p).bind(p);
+        }
+        if criteres.adherent_uniquement {
+            data_query = data_query.bind(&annee_scolaire);
+        }
+        if pagination.par_page > 0 {
+            data_query = data_query.bind(pagination.par_page).bind(offset);
+        }
+
+        let donnees = data_query.fetch_all(&self.pool).await?;
+
+        let pages = if pagination.par_page > 0 {
+            (total as f64 / pagination.par_page as f64).ceil() as u32
+        } else {
+            1
+        };
+
+        Ok(ResultatRecherchePersonnes {
+            donnees,
+            total: total as u32,
+            page: pagination.page,
+            pages,
+        })
     }
-
-    let where_clause = if conditions.is_empty() {
-        String::new()
-    } else {
-        format!(" WHERE 1=1 AND {}", conditions.join(" AND "))
-    };
-
-    // --- count ---
-    let count_sql = format!(
-        "SELECT COUNT(*) FROM personnes_physiques pp{}",
-        where_clause
-    );
-
-    let mut count_query = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(count_sql.as_str()));
-
-    if let Some(ref p) = pattern {
-        count_query = count_query.bind(p).bind(p).bind(p).bind(p);
-    }
-    if criteres.adherent_uniquement {
-        count_query = count_query.bind(&annee_scolaire);
-    }
-
-    let total: i64 = count_query.fetch_one(pool).await?;
-
-    // --- data ---
-    let offset = if pagination.par_page > 0 {
-        (pagination.page - 1) * pagination.par_page
-    } else {
-        0
-    };
-
-    let data_sql = if pagination.par_page > 0 {
-        format!(
-            "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom LIMIT ? OFFSET ?",
-            where_clause
-        )
-    } else {
-        format!(
-            "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom",
-            where_clause
-        )
-    };
-
-    let mut data_query = sqlx::query_as::<_, Personne>(sqlx::AssertSqlSafe(data_sql.as_str()));
-
-    if let Some(ref p) = pattern {
-        data_query = data_query.bind(p).bind(p).bind(p).bind(p);
-    }
-    if criteres.adherent_uniquement {
-        data_query = data_query.bind(&annee_scolaire);
-    }
-    if pagination.par_page > 0 {
-        data_query = data_query.bind(pagination.par_page).bind(offset);
-    }
-
-    let donnees = data_query.fetch_all(pool).await?;
-
-    let pages = if pagination.par_page > 0 {
-        (total as f64 / pagination.par_page as f64).ceil() as u32
-    } else {
-        1
-    };
-
-    Ok(ResultatRecherchePersonnes {
-        donnees,
-        total: total as u32,
-        page: pagination.page,
-        pages,
-    })
 }
 
 #[cfg(test)]
@@ -167,6 +190,10 @@ mod tests {
             .await
             .expect("failed to run migrations");
         pool
+    }
+
+    fn repo(pool: SqlitePool) -> SqlitePersonneRepository {
+        SqlitePersonneRepository::new(pool)
     }
 
     async fn seed_personne(
@@ -208,19 +235,20 @@ mod tests {
         seed_personne(&pool, "Dupont", "Jean", None, None).await;
         seed_personne(&pool, "Martin", "Alice", None, None).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("dup".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("dup".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 1);
         assert_eq!(resultat.donnees.len(), 1);
@@ -234,19 +262,20 @@ mod tests {
         seed_personne(&pool, "Martin", "Jeanne", None, None).await;
         seed_personne(&pool, "Durand", "Pierre", None, None).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("jean".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("jean".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 2);
     }
@@ -257,19 +286,20 @@ mod tests {
         seed_personne(&pool, "Dupont", "Jean", Some("jean@example.com"), None).await;
         seed_personne(&pool, "Martin", "Alice", Some("alice@gmail.com"), None).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("gmail".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("gmail".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 1);
         assert_eq!(resultat.donnees[0].nom, "Martin");
@@ -281,19 +311,20 @@ mod tests {
         seed_personne(&pool, "Dupont", "Jean", None, Some("0612345678")).await;
         seed_personne(&pool, "Martin", "Alice", None, Some("0798765432")).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("0612".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("0612".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 1);
         assert_eq!(resultat.donnees[0].nom, "Dupont");
@@ -306,19 +337,20 @@ mod tests {
         seed_personne(&pool, "A", "Y", None, None).await;
         seed_personne(&pool, "B", "Z", None, None).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: None,
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: None,
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 3);
         assert_eq!(resultat.donnees.len(), 3);
@@ -330,19 +362,20 @@ mod tests {
         let pool = setup_db().await;
         seed_personne(&pool, "Dupont", "Jean", None, None).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("xyzzzzz".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("xyzzzzz".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 0);
         assert_eq!(resultat.donnees.len(), 0);
@@ -356,19 +389,20 @@ mod tests {
             seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: None,
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: None,
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 25);
         assert_eq!(resultat.donnees.len(), 20);
@@ -383,19 +417,20 @@ mod tests {
             seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: None,
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 2,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: None,
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 2,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 25);
         assert_eq!(resultat.donnees.len(), 5);
@@ -410,19 +445,20 @@ mod tests {
             seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: None,
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 0,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: None,
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 0,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 25);
         assert_eq!(resultat.donnees.len(), 25);
@@ -440,19 +476,20 @@ mod tests {
         seed_adhesion(&pool, p1.id, &annee).await;
         seed_adhesion(&pool, p3.id, &annee).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: None,
-                adherent_uniquement: true,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: None,
+                    adherent_uniquement: true,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 2);
         assert_eq!(resultat.donnees.len(), 2);
@@ -467,19 +504,20 @@ mod tests {
         let annee = crate::domain::personne::current_annee_scolaire();
         seed_adhesion(&pool, p1.id, &annee).await;
 
-        let resultat = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("dup".into()),
-                adherent_uniquement: true,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
+        let resultat = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("dup".into()),
+                    adherent_uniquement: true,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat.total, 1);
         assert_eq!(resultat.donnees[0].nom, "Dupont");
@@ -490,33 +528,35 @@ mod tests {
         let pool = setup_db().await;
         seed_personne(&pool, "Dupont", "Jean", None, None).await;
 
-        let resultat_min = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("dup".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let r = repo(pool);
 
-        let resultat_maj = rechercher(
-            &pool,
-            CriteresRecherchePersonnes {
-                texte_libre: Some("DUP".into()),
-                adherent_uniquement: false,
-            },
-            Pagination {
-                page: 1,
-                par_page: 20,
-            },
-        )
-        .await
-        .unwrap();
+        let resultat_min = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("dup".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
+
+        let resultat_maj = r
+            .rechercher(
+                CriteresRecherchePersonnes {
+                    texte_libre: Some("DUP".into()),
+                    adherent_uniquement: false,
+                },
+                Pagination {
+                    page: 1,
+                    par_page: 20,
+                },
+            )
+            .await
+            .unwrap();
 
         assert_eq!(resultat_min.total, 1);
         assert_eq!(resultat_maj.total, 1);

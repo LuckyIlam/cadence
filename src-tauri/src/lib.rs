@@ -1,9 +1,11 @@
 mod commands;
 mod domain;
+mod error;
 mod infrastructure;
 mod repositories;
+mod services;
 
-use infrastructure::db::{init_pool, AppState};
+use infrastructure::db::{init_app_state, init_pool};
 use tauri::Manager;
 
 fn write_crash_log(msg: &str) {
@@ -36,7 +38,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(init_pool(&database_url))
                 .map_err(|e| format!("échec base de données {} : {e}", db_path.display()))?;
 
-            app.manage(AppState { pool });
+            app.manage(init_app_state(pool));
 
             Ok(())
         })
@@ -59,6 +61,15 @@ pub fn run() {
             commands::activite_commands::ajouter_personne_activite,
             commands::activite_commands::retirer_personne_activite,
             commands::activite_commands::lister_activites_personne,
+            commands::planning_commands::ajouter_creneau,
+            commands::planning_commands::supprimer_creneau,
+            commands::planning_commands::modifier_creneau,
+            commands::planning_commands::lister_creneaux,
+            commands::planning_commands::ajouter_semaine_banalisee,
+            commands::planning_commands::supprimer_semaine_banalisee,
+            commands::planning_commands::lister_semaines_banalisees,
+            commands::planning_commands::planning_personne,
+            commands::planning_commands::verifier_collision,
         ])
         .run(tauri::generate_context!());
 

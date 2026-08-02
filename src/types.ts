@@ -172,3 +172,68 @@ export interface ActivitePersonne {
   activite: Activite;
   role: string;
 }
+
+export interface CreneauActivite {
+  id: number;
+  activite_id: number;
+  jour_semaine: number;
+  heure_debut: string;
+  heure_fin: string;
+  annee_scolaire: string;
+}
+
+export interface CreateCreneau {
+  activite_id: number;
+  jour_semaine: number;
+  heure_debut: string;
+  heure_fin: string;
+  annee_scolaire: string;
+}
+
+export interface SemaineBanalisee {
+  id: number;
+  activite_id: number;
+  date_debut: string;
+  motif: string | null;
+  annee_scolaire: string;
+}
+
+export interface CreateSemaineBanalisee {
+  activite_id: number;
+  date_debut: string;
+  motif: string | null;
+  annee_scolaire: string;
+}
+
+export interface PlanningCreneau {
+  creneau: CreneauActivite;
+  activite: Activite;
+  role: string;
+}
+
+const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
+
+export function jourSemaineTexte(jour: number): string {
+  return JOURS_SEMAIRE[jour - 1] ?? `Jour ${jour}`;
+}
+
+export function getNumeroSemaineISO(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+}
+
+export function getLundiSemaine(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+export function formatDateISO(date: Date): string {
+  return date.toISOString().split("T")[0] ?? "";
+}

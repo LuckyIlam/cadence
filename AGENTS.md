@@ -58,11 +58,15 @@ Les skills sont organisés en deux catégories : les **outils** (skills openspec
 ### Workflow
 
 ```
-Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Développeur ──▶ Réviseur ──▶ Livraison
-                                │                     │              │
-                                └─────────┬───────────┘              │
-                                          ▼                         │
-                                    Documentaliste ◀────────────────┘
+Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Développeur ──▶ Testeur ──▶ Réviseur ──▶ Livraison
+                                │                     │                │         │
+                                │                     └──────┬─────────┘         │
+                                │                            ▼                   │
+                                │                     (bug → doc → dev)         │
+                                │                            │                   │
+                                └─────────┬──────────────────┘                   │
+                                          ▼                                     │
+                                    Documentaliste ◀───────────────────────────┘
 ```
 
 ### Rôles
@@ -72,7 +76,8 @@ Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Dév
 | `architecte` | `openspec-explore` | `design.md` (goals, décisions, trade-offs) |
 | `product-manager` | `openspec-propose` + `openspec-sync-specs` | `proposal.md`, `specs/*/spec.md`, `tasks.md` |
 | `concepteur-technique` | — | Plan technique détaillé (migrations, interfaces, découpage) |
-| `developpeur` | `openspec-apply-change` | Code (Rust backend + React frontend), tests |
+| `developpeur` | `openspec-apply-change` | Code (Rust backend + React frontend) |
+| `testeur` | — | Tests unitaires + intégration, rapport de couverture, rapports de bugs |
 | `reviseur` | — | Revue qualité + cybersécurité |
 | `documentaliste` | `openspec-sync-specs` | `docs/fonctionnel/`, specs synchronisées |
 
@@ -81,6 +86,7 @@ Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Dév
 - Les rôles en amont (Architecte, PM) définissent *quoi* construire
 - Le Concepteur Technique définit *comment* le construire
 - Le Développeur exécute le plan
+- Le Testeur écrit les tests, détecte les bugs et les délègue au Développeur
 - Le Réviseur valide la qualité + sécurité
 - Le Documentaliste maintient la connaissance à jour
 - Chaque rôle livre un document ou un artefact au rôle suivant

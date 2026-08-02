@@ -133,9 +133,9 @@ Le système SHALL afficher, dans le détail d'une personne, la liste des activit
 - **THEN** la section affiche toutes les activités sans filtre d'année
 
 ### Requirement: Navigation
-Le système SHALL offrir un menu de navigation permettant de basculer entre la liste des personnes et la liste des activités.
+Le système SHALL offrir un menu de navigation permettant de basculer entre la liste des personnes, le planning et la liste des activités.
 
 #### Scenario: Menu visible
 - **WHEN** l'utilisateur ouvre l'application
-- **THEN** un menu de navigation est affiché avec les entrées "Personnes" et "Activités"
+- **THEN** un menu de navigation est affiché avec les entrées "Personnes", "Planning" et "Activités"
 - **THEN** l'entrée active est mise en évidence

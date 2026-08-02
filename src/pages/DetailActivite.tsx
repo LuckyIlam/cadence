@@ -1,7 +1,16 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { type Activite, getCurrentAnneeScolaire, type PersonneActivite } from "../types";
+import {
+  type Activite,
+  type CreateCreneau,
+  type CreateSemaineBanalisee,
+  type CreneauActivite,
+  formatDate,
+  getCurrentAnneeScolaire,
+  type PersonneActivite,
+  type SemaineBanalisee,
+} from "../types";
 
 export default function DetailActivite() {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +32,17 @@ export default function DetailActivite() {
   const [formNom, setFormNom] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formCapacite, setFormCapacite] = useState("");
+
+  const [creneaux, setCreneaux] = useState<CreneauActivite[]>([]);
+  const [semainesBanalisees, setSemainesBanalisees] = useState<SemaineBanalisee[]>([]);
+  const [nbInscrits, setNbInscrits] = useState(0);
+  const [showCreneauForm, setShowCreneauForm] = useState(false);
+  const [newCreneauJour, setNewCreneauJour] = useState(1);
+  const [newCreneauDebut, setNewCreneauDebut] = useState("08:00");
+  const [newCreneauFin, setNewCreneauFin] = useState("10:00");
+  const [showSemaineForm, setShowSemaineForm] = useState(false);
+  const [newSemaineDate, setNewSemaineDate] = useState("");
+  const [newSemaineMotif, setNewSemaineMotif] = useState("");
 
   const [showAddPersonne, setShowAddPersonne] = useState(false);
   const [searchTexte, setSearchTexte] = useState("");
@@ -50,6 +70,25 @@ export default function DetailActivite() {
   useEffect(() => {
     chargerDetail();
   }, [chargerDetail]);
+
+  useEffect(() => {
+    if (!id) return;
+    invoke<CreneauActivite[]>("lister_creneaux", {
+      activiteId: Number(id),
+      anneeScolaire: anneeScolaire,
+    })
+      .then(setCreneaux)
+      .catch(console.error);
+    invoke<SemaineBanalisee[]>("lister_semaines_banalisees", {
+      activiteId: Number(id),
+    })
+      .then(setSemainesBanalisees)
+      .catch(console.error);
+  }, [id, anneeScolaire]);
+
+  useEffect(() => {
+    setNbInscrits(encadrants.length + participants.length);
+  }, [encadrants, participants]);
 
   const handleSaveTarif = async () => {
     if (!id) return;
@@ -129,6 +168,84 @@ export default function DetailActivite() {
     } catch (e) {
       const msg = e as string;
       alert(msg);
+    }
+  };
+
+  const handleAjouterCreneau = async () => {
+    if (!id) return;
+    try {
+      const input: CreateCreneau = {
+        activite_id: Number(id),
+        jour_semaine: newCreneauJour,
+        heure_debut: newCreneauDebut,
+        heure_fin: newCreneauFin,
+        annee_scolaire: anneeScolaire,
+      };
+      await invoke("ajouter_creneau", { input });
+      setShowCreneauForm(false);
+      setNewCreneauJour(1);
+      setNewCreneauDebut("08:00");
+      setNewCreneauFin("10:00");
+      const c = await invoke<CreneauActivite[]>("lister_creneaux", {
+        activiteId: Number(id),
+        anneeScolaire,
+      });
+      setCreneaux(c);
+    } catch (e) {
+      alert(e as string);
+    }
+  };
+
+  const handleSupprimerCreneau = async (creneauId: number) => {
+    if (!id) return;
+    try {
+      await invoke("supprimer_creneau", {
+        id: creneauId,
+        activiteId: Number(id),
+        anneeScolaire,
+      });
+      const c = await invoke<CreneauActivite[]>("lister_creneaux", {
+        activiteId: Number(id),
+        anneeScolaire,
+      });
+      setCreneaux(c);
+    } catch (e) {
+      alert(e as string);
+    }
+  };
+
+  const handleAjouterSemaine = async () => {
+    if (!id) return;
+    try {
+      const input: CreateSemaineBanalisee = {
+        activite_id: Number(id),
+        date_debut: newSemaineDate,
+        motif: newSemaineMotif || null,
+        annee_scolaire: anneeScolaire,
+      };
+      await invoke("ajouter_semaine_banalisee", { input });
+      setShowSemaineForm(false);
+      setNewSemaineDate("");
+      setNewSemaineMotif("");
+      const sb = await invoke<SemaineBanalisee[]>("lister_semaines_banalisees", {
+        activiteId: Number(id),
+      });
+      setSemainesBanalisees(sb);
+    } catch (e) {
+      alert(e as string);
+    }
+  };
+
+  const handleSupprimerSemaine = async (semaineId: number) => {
+    if (!id) return;
+    try {
+      await invoke("supprimer_semaine_banalisee", { id: semaineId });
+      const sb = await invoke<SemaineBanalisee[]>("lister_semaines_banalisees", {
+        activiteId: Number(id),
+      });
+      setSemainesBanalisees(sb);
+    } catch (e) {
+      alert(e as string);
     }
   };
 
@@ -288,6 +405,166 @@ export default function DetailActivite() {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Créneaux hebdomadaires</h3>
+          <button
+            type="button"
+            onClick={() => setShowCreneauForm(!showCreneauForm)}
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Ajouter un créneau
+          </button>
+        </div>
+
+        {nbInscrits > 0 && (
+          <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
+            Des personnes sont inscrites à cette activité pour {anneeScolaire}. Les créneaux existants sont verrouillés
+            (modification et suppression impossible).
+          </p>
+        )}
+
+        {showCreneauForm && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              <select
+                value={newCreneauJour}
+                onChange={(e) => setNewCreneauJour(Number(e.target.value))}
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+              >
+                {[1, 2, 3, 4, 5, 6, 7].map((j) => (
+                  <option key={j} value={j}>
+                    {["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"][j - 1]}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="time"
+                value={newCreneauDebut}
+                onChange={(e) => setNewCreneauDebut(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+              />
+              <input
+                type="time"
+                value={newCreneauFin}
+                onChange={(e) => setNewCreneauFin(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+              />
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={handleAjouterCreneau}
+                  className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                >
+                  OK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCreneauForm(false)}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {creneaux.length === 0 ? (
+          <p className="text-gray-500 text-center py-4">Aucun créneau défini pour {anneeScolaire}</p>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {creneaux.map((c) => (
+              <div key={c.id} className="py-2 flex items-center justify-between">
+                <span className="text-sm">
+                  {["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"][c.jour_semaine - 1]}{" "}
+                  {c.heure_debut}–{c.heure_fin}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSupprimerCreneau(c.id)}
+                  disabled={nbInscrits > 0}
+                  className="text-xs text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  Supprimer
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Semaines banalisées</h3>
+          <button
+            type="button"
+            onClick={() => setShowSemaineForm(!showSemaineForm)}
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Ajouter une semaine
+          </button>
+        </div>
+
+        {showSemaineForm && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <input
+                type="date"
+                value={newSemaineDate}
+                onChange={(e) => setNewSemaineDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+              />
+              <input
+                type="text"
+                value={newSemaineMotif}
+                onChange={(e) => setNewSemaineMotif(e.target.value)}
+                placeholder="Motif (optionnel)"
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+              />
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={handleAjouterSemaine}
+                  className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                >
+                  OK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSemaineForm(false)}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {semainesBanalisees.length === 0 ? (
+          <p className="text-gray-500 text-center py-4">Aucune semaine banalisée</p>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {semainesBanalisees.map((sb) => (
+              <div key={sb.id} className="py-2 flex items-center justify-between">
+                <span className="text-sm">
+                  {formatDate(sb.date_debut)}
+                  {sb.motif && <span className="text-gray-500 ml-2">— {sb.motif}</span>}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSupprimerSemaine(sb.id)}
+                  className="text-xs text-red-600 hover:text-red-800"
+                >
+                  Supprimer
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
