@@ -1,0 +1,15 @@
+# .graphifyignore — fichiers/dossiers exclus du graphe de connaissances
+# Syntaxe gitignore (last-match-wins, ! pour ré-inclure). En complément de .gitignore.
+
+# Dépendances et artefacts générés (bruit pour le graphe)
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/   # schémas Tauri générés (desktop-schema, capabilities, acl…)
+
+# Sorties propres au graphe
+graphify-out/
+
+# Fichiers locaux / secrets
+.env
+*.local

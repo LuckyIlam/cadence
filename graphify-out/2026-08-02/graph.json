@@ -714,6 +714,1466 @@
       "norm_label": "main()"
     },
     {
+      "label": "desktop-schema.json",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema",
+      "community": 65,
+      "norm_label": "desktop-schema.json"
+    },
+    {
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_schema",
+      "community": 65,
+      "norm_label": "$schema"
+    },
+    {
+      "label": "title",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_title",
+      "community": 65,
+      "norm_label": "title"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_description",
+      "community": 65,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_anyof",
+      "community": 65,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "definitions",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "community": 37,
+      "norm_label": "definitions"
+    },
+    {
+      "label": "Capability",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "community": 33,
+      "norm_label": "capability"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capability_description",
+      "community": 33,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capability_type",
+      "community": 33,
+      "norm_label": "type"
+    },
+    {
+      "label": "required",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capability_required",
+      "community": 33,
+      "norm_label": "required"
+    },
+    {
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "community": 33,
+      "norm_label": "properties"
+    },
+    {
+      "label": "identifier",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_identifier",
+      "community": 33,
+      "norm_label": "identifier"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L48",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_identifier_description",
+      "community": 37,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_identifier_type",
+      "community": 33,
+      "norm_label": "type"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_description",
+      "community": 67,
+      "norm_label": "description"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_description_description",
+      "community": 67,
+      "norm_label": "description"
+    },
+    {
+      "label": "default",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_description_default",
+      "community": 67,
+      "norm_label": "default"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_description_type",
+      "community": 67,
+      "norm_label": "type"
+    },
+    {
+      "label": "remote",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_remote",
+      "community": 33,
+      "norm_label": "remote"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_remote_description",
+      "community": 33,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_remote_anyof",
+      "community": 33,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "local",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_local",
+      "community": 33,
+      "norm_label": "local"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L68",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_local_description",
+      "community": 33,
+      "norm_label": "description"
+    },
+    {
+      "label": "default",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_local_default",
+      "community": 33,
+      "norm_label": "default"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_local_type",
+      "community": 33,
+      "norm_label": "type"
+    },
+    {
+      "label": "windows",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_windows",
+      "community": 47,
+      "norm_label": "windows"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_windows_description",
+      "community": 47,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_windows_type",
+      "community": 47,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L75",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_windows_items",
+      "community": 47,
+      "norm_label": "items"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_items_type",
+      "community": 47,
+      "norm_label": "type"
+    },
+    {
+      "label": "webviews",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L79",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_webviews",
+      "community": 47,
+      "norm_label": "webviews"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_webviews_description",
+      "community": 47,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L81",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_webviews_type",
+      "community": 47,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_webviews_items",
+      "community": 47,
+      "norm_label": "items"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L86",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "community": 46,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissions_description",
+      "community": 46,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L88",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissions_type",
+      "community": 46,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissions_items",
+      "community": 46,
+      "norm_label": "items"
+    },
+    {
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_items_ref",
+      "community": 46,
+      "norm_label": "$ref"
+    },
+    {
+      "label": "uniqueItems",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissions_uniqueitems",
+      "community": 46,
+      "norm_label": "uniqueitems"
+    },
+    {
+      "label": "platforms",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_platforms",
+      "community": 46,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_platforms_description",
+      "community": 46,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_platforms_type",
+      "community": 46,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L100",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_platforms_items",
+      "community": 46,
+      "norm_label": "items"
+    },
+    {
+      "label": "CapabilityRemote",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L106",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "community": 57,
+      "norm_label": "capabilityremote"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capabilityremote_description",
+      "community": 57,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L108",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capabilityremote_type",
+      "community": 57,
+      "norm_label": "type"
+    },
+    {
+      "label": "required",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capabilityremote_required",
+      "community": 57,
+      "norm_label": "required"
+    },
+    {
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_capabilityremote_properties",
+      "community": 57,
+      "norm_label": "properties"
+    },
+    {
+      "label": "urls",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_properties_urls",
+      "community": 57,
+      "norm_label": "urls"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L114",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_urls_description",
+      "community": 57,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L115",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_urls_type",
+      "community": 57,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L116",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_urls_items",
+      "community": 47,
+      "norm_label": "items"
+    },
+    {
+      "label": "PermissionEntry",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_permissionentry",
+      "community": 37,
+      "norm_label": "permissionentry"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L123",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissionentry_description",
+      "community": 37,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_permissionentry_anyof",
+      "community": 37,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Identifier",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L386",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_identifier",
+      "community": 37,
+      "norm_label": "identifier"
+    },
+    {
+      "label": "oneOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L388",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_identifier_oneof",
+      "community": 37,
+      "norm_label": "oneof"
+    },
+    {
+      "label": "Value",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2473",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_value",
+      "community": 75,
+      "norm_label": "value"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2474",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_value_description",
+      "community": 75,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2475",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_value_anyof",
+      "community": 75,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Number",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2512",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_number",
+      "community": 37,
+      "norm_label": "number"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2513",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_number_description",
+      "community": 37,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2514",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_number_anyof",
+      "community": 37,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Target",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2527",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_target",
+      "community": 37,
+      "norm_label": "target"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2528",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_target_description",
+      "community": 37,
+      "norm_label": "description"
+    },
+    {
+      "label": "oneOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2529",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_target_oneof",
+      "community": 37,
+      "norm_label": "oneof"
+    },
+    {
+      "label": "ShellScopeEntryAllowedArg",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2567",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedarg",
+      "community": 73,
+      "norm_label": "shellscopeentryallowedarg"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2568",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedarg_description",
+      "community": 73,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2569",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedarg_anyof",
+      "community": 73,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "ShellScopeEntryAllowedArgs",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2595",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedargs",
+      "community": 74,
+      "norm_label": "shellscopeentryallowedargs"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2596",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedargs_description",
+      "community": 74,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2597",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedargs_anyof",
+      "community": 74,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "windows-schema.json",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema",
+      "community": 66,
+      "norm_label": "windows-schema.json"
+    },
+    {
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_schema",
+      "community": 66,
+      "norm_label": "$schema"
+    },
+    {
+      "label": "title",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_title",
+      "community": 66,
+      "norm_label": "title"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_description",
+      "community": 66,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_anyof",
+      "community": 66,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "definitions",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions",
+      "community": 31,
+      "norm_label": "definitions"
+    },
+    {
+      "label": "Capability",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "community": 68,
+      "norm_label": "capability"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capability_description",
+      "community": 68,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capability_type",
+      "community": 68,
+      "norm_label": "type"
+    },
+    {
+      "label": "required",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capability_required",
+      "community": 68,
+      "norm_label": "required"
+    },
+    {
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "community": 42,
+      "norm_label": "properties"
+    },
+    {
+      "label": "identifier",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_identifier",
+      "community": 42,
+      "norm_label": "identifier"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L48",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_identifier_description",
+      "community": 42,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_identifier_type",
+      "community": 42,
+      "norm_label": "type"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_description",
+      "community": 69,
+      "norm_label": "description"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_description_description",
+      "community": 69,
+      "norm_label": "description"
+    },
+    {
+      "label": "default",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_description_default",
+      "community": 69,
+      "norm_label": "default"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_description_type",
+      "community": 69,
+      "norm_label": "type"
+    },
+    {
+      "label": "remote",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_remote",
+      "community": 42,
+      "norm_label": "remote"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_remote_description",
+      "community": 42,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_remote_anyof",
+      "community": 42,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "local",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_local",
+      "community": 42,
+      "norm_label": "local"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L68",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_local_description",
+      "community": 42,
+      "norm_label": "description"
+    },
+    {
+      "label": "default",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_local_default",
+      "community": 42,
+      "norm_label": "default"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_local_type",
+      "community": 42,
+      "norm_label": "type"
+    },
+    {
+      "label": "windows",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_windows",
+      "community": 49,
+      "norm_label": "windows"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_windows_description",
+      "community": 49,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_windows_type",
+      "community": 49,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L75",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_windows_items",
+      "community": 49,
+      "norm_label": "items"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_items_type",
+      "community": 49,
+      "norm_label": "type"
+    },
+    {
+      "label": "webviews",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L79",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_webviews",
+      "community": 49,
+      "norm_label": "webviews"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_webviews_description",
+      "community": 49,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L81",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_webviews_type",
+      "community": 49,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_webviews_items",
+      "community": 49,
+      "norm_label": "items"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L86",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "community": 48,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissions_description",
+      "community": 48,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L88",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissions_type",
+      "community": 48,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissions_items",
+      "community": 48,
+      "norm_label": "items"
+    },
+    {
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_items_ref",
+      "community": 48,
+      "norm_label": "$ref"
+    },
+    {
+      "label": "uniqueItems",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissions_uniqueitems",
+      "community": 48,
+      "norm_label": "uniqueitems"
+    },
+    {
+      "label": "platforms",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_platforms",
+      "community": 48,
+      "norm_label": "platforms"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_platforms_description",
+      "community": 48,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_platforms_type",
+      "community": 48,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L100",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_platforms_items",
+      "community": 48,
+      "norm_label": "items"
+    },
+    {
+      "label": "CapabilityRemote",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L106",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "community": 58,
+      "norm_label": "capabilityremote"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capabilityremote_description",
+      "community": 58,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L108",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capabilityremote_type",
+      "community": 58,
+      "norm_label": "type"
+    },
+    {
+      "label": "required",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capabilityremote_required",
+      "community": 58,
+      "norm_label": "required"
+    },
+    {
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_capabilityremote_properties",
+      "community": 58,
+      "norm_label": "properties"
+    },
+    {
+      "label": "urls",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_properties_urls",
+      "community": 58,
+      "norm_label": "urls"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L114",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_urls_description",
+      "community": 58,
+      "norm_label": "description"
+    },
+    {
+      "label": "type",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L115",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_urls_type",
+      "community": 58,
+      "norm_label": "type"
+    },
+    {
+      "label": "items",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L116",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_urls_items",
+      "community": 49,
+      "norm_label": "items"
+    },
+    {
+      "label": "PermissionEntry",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_permissionentry",
+      "community": 31,
+      "norm_label": "permissionentry"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L123",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissionentry_description",
+      "community": 31,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_permissionentry_anyof",
+      "community": 31,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Identifier",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L386",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_identifier",
+      "community": 31,
+      "norm_label": "identifier"
+    },
+    {
+      "label": "oneOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L388",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_identifier_oneof",
+      "community": 31,
+      "norm_label": "oneof"
+    },
+    {
+      "label": "Value",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2473",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_value",
+      "community": 31,
+      "norm_label": "value"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2474",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_value_description",
+      "community": 31,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2475",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_value_anyof",
+      "community": 31,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Number",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2512",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_number",
+      "community": 31,
+      "norm_label": "number"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2513",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_number_description",
+      "community": 31,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2514",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_number_anyof",
+      "community": 31,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "Target",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2527",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_target",
+      "community": 31,
+      "norm_label": "target"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2528",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_target_description",
+      "community": 31,
+      "norm_label": "description"
+    },
+    {
+      "label": "oneOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2529",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_target_oneof",
+      "community": 31,
+      "norm_label": "oneof"
+    },
+    {
+      "label": "ShellScopeEntryAllowedArg",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2567",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedarg",
+      "community": 76,
+      "norm_label": "shellscopeentryallowedarg"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2568",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedarg_description",
+      "community": 76,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2569",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedarg_anyof",
+      "community": 76,
+      "norm_label": "anyof"
+    },
+    {
+      "label": "ShellScopeEntryAllowedArgs",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2595",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedargs",
+      "community": 77,
+      "norm_label": "shellscopeentryallowedargs"
+    },
+    {
+      "label": "description",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2596",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedargs_description",
+      "community": 77,
+      "norm_label": "description"
+    },
+    {
+      "label": "anyOf",
+      "file_type": "code",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2597",
+      "_origin": "ast",
+      "id": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedargs_anyof",
+      "community": 77,
+      "norm_label": "anyof"
+    },
+    {
       "label": "activite_commands.rs",
       "file_type": "code",
       "source_file": "src-tauri/src/commands/activite_commands.rs",
@@ -1780,7 +3240,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_role",
-      "community": 7,
+      "community": 25,
       "norm_label": "role"
     },
     {
@@ -1790,7 +3250,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "display",
-      "community": 7,
+      "community": 25,
       "norm_label": "display"
     },
     {
@@ -2100,7 +3560,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne",
-      "community": 31,
+      "community": 8,
       "norm_label": "personne.rs"
     },
     {
@@ -2110,7 +3570,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personne",
-      "community": 31,
+      "community": 8,
       "norm_label": "personne"
     },
     {
@@ -2120,7 +3580,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_string",
-      "community": 31,
+      "community": 8,
       "norm_label": "string"
     },
     {
@@ -2130,7 +3590,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_naivedate",
-      "community": 31,
+      "community": 8,
       "norm_label": "naivedate"
     },
     {
@@ -2140,7 +3600,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_option",
-      "community": 31,
+      "community": 8,
       "norm_label": "option"
     },
     {
@@ -2150,7 +3610,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_createpersonne",
-      "community": 31,
+      "community": 8,
       "norm_label": "createpersonne"
     },
     {
@@ -2160,7 +3620,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_updatepersonne",
-      "community": 31,
+      "community": 8,
       "norm_label": "updatepersonne"
     },
     {
@@ -2170,7 +3630,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personnedetail",
-      "community": 31,
+      "community": 8,
       "norm_label": "personnedetail"
     },
     {
@@ -2180,7 +3640,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_vec",
-      "community": 31,
+      "community": 8,
       "norm_label": "vec"
     },
     {
@@ -2190,7 +3650,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_adhesion",
-      "community": 31,
+      "community": 8,
       "norm_label": "adhesion"
     },
     {
@@ -2200,7 +3660,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_criteresrecherchepersonnes",
-      "community": 31,
+      "community": 8,
       "norm_label": "criteresrecherchepersonnes"
     },
     {
@@ -2210,7 +3670,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_pagination",
-      "community": 31,
+      "community": 8,
       "norm_label": "pagination"
     },
     {
@@ -2220,7 +3680,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_resultatrecherchepersonnes",
-      "community": 31,
+      "community": 8,
       "norm_label": "resultatrecherchepersonnes"
     },
     {
@@ -2230,7 +3690,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_current_annee_scolaire",
-      "community": 31,
+      "community": 8,
       "norm_label": "current_annee_scolaire()"
     },
     {
@@ -2240,7 +3700,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_annee_scolaire_from_date",
-      "community": 31,
+      "community": 8,
       "norm_label": "annee_scolaire_from_date()"
     },
     {
@@ -2250,7 +3710,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_age_from_date_naissance",
-      "community": 31,
+      "community": 8,
       "norm_label": "age_from_date_naissance()"
     },
     {
@@ -2260,7 +3720,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_est_mineur",
-      "community": 31,
+      "community": 8,
       "norm_label": "est_mineur()"
     },
     {
@@ -2270,7 +3730,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_valider_date_naissance",
-      "community": 31,
+      "community": 8,
       "norm_label": "valider_date_naissance()"
     },
     {
@@ -2280,7 +3740,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_result",
-      "community": 31,
+      "community": 8,
       "norm_label": "result"
     },
     {
@@ -2290,7 +3750,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_janvier",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_annee_scolaire_janvier()"
     },
     {
@@ -2300,7 +3760,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_aout",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_annee_scolaire_aout()"
     },
     {
@@ -2310,7 +3770,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_septembre",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_annee_scolaire_septembre()"
     },
     {
@@ -2320,7 +3780,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_decembre",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_annee_scolaire_decembre()"
     },
     {
@@ -2330,7 +3790,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_annee_complete",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_annee_scolaire_annee_complete()"
     },
     {
@@ -2340,7 +3800,7 @@
       "source_location": "L144",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_current_annee_scolaire_returns_valid_format",
-      "community": 31,
+      "community": 8,
       "norm_label": "test_current_annee_scolaire_returns_valid_format()"
     },
     {
@@ -7606,56 +9066,6 @@
     {
       "label": "SKILL.md",
       "file_type": "document",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "opencode_skills_graphify_skill",
-      "community": 33,
-      "norm_label": "skill.md"
-    },
-    {
-      "label": "Mission",
-      "file_type": "document",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "opencode_skills_graphify_skill_mission",
-      "community": 33,
-      "norm_label": "mission"
-    },
-    {
-      "label": "Fichiers",
-      "file_type": "document",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "opencode_skills_graphify_skill_fichiers",
-      "community": 33,
-      "norm_label": "fichiers"
-    },
-    {
-      "label": "Commandes",
-      "file_type": "document",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L21",
-      "_origin": "ast",
-      "id": "opencode_skills_graphify_skill_commandes",
-      "community": 33,
-      "norm_label": "commandes"
-    },
-    {
-      "label": "R\u00e8gles",
-      "file_type": "document",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L29",
-      "_origin": "ast",
-      "id": "opencode_skills_graphify_skill_r\u00e8gles",
-      "community": 33,
-      "norm_label": "regles"
-    },
-    {
-      "label": "SKILL.md",
-      "file_type": "document",
       "source_file": ".opencode/skills/openspec-apply-change/SKILL.md",
       "source_location": "L1",
       "_origin": "ast",
@@ -8242,16 +9652,6 @@
       "id": "agents_principe",
       "community": 38,
       "norm_label": "principe"
-    },
-    {
-      "label": "Graphe de connaissances (graphify)",
-      "file_type": "document",
-      "source_file": "AGENTS.md",
-      "source_location": "L94",
-      "_origin": "ast",
-      "id": "agents_graphe_de_connaissances_graphify",
-      "community": 38,
-      "norm_label": "graphe de connaissances (graphify)"
     },
     {
       "label": "README.md",
@@ -13762,6 +15162,1526 @@
       "weight": 1.0,
       "source": "src_tauri_build",
       "target": "src_tauri_build_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema",
+      "target": "src_tauri_gen_schemas_desktop_schema_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema",
+      "target": "src_tauri_gen_schemas_desktop_schema_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema",
+      "target": "src_tauri_gen_schemas_desktop_schema_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema",
+      "target": "src_tauri_gen_schemas_desktop_schema_title",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L386",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_identifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2512",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_number",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_permissionentry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2567",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedarg",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2595",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedargs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2527",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_target",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2473",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions",
+      "target": "src_tauri_gen_schemas_desktop_schema_definitions_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_desktop_schema_capability_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_desktop_schema_capability_required",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_desktop_schema_capability_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_identifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_local",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_remote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_webviews",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_windows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_identifier",
+      "target": "src_tauri_gen_schemas_desktop_schema_identifier_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_identifier",
+      "target": "src_tauri_gen_schemas_desktop_schema_identifier_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L387",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_identifier",
+      "target": "src_tauri_gen_schemas_desktop_schema_identifier_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_description",
+      "target": "src_tauri_gen_schemas_desktop_schema_description_default",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_description",
+      "target": "src_tauri_gen_schemas_desktop_schema_description_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_description",
+      "target": "src_tauri_gen_schemas_desktop_schema_description_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_remote",
+      "target": "src_tauri_gen_schemas_desktop_schema_remote_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_remote",
+      "target": "src_tauri_gen_schemas_desktop_schema_remote_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_local",
+      "target": "src_tauri_gen_schemas_desktop_schema_local_default",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_local",
+      "target": "src_tauri_gen_schemas_desktop_schema_local_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_local",
+      "target": "src_tauri_gen_schemas_desktop_schema_local_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_desktop_schema_windows_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_desktop_schema_windows_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_desktop_schema_windows_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_windows_items",
+      "target": "src_tauri_gen_schemas_desktop_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_urls_items",
+      "target": "src_tauri_gen_schemas_desktop_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_webviews_items",
+      "target": "src_tauri_gen_schemas_desktop_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_desktop_schema_webviews_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_desktop_schema_webviews_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_desktop_schema_webviews_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissions_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissions_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissions_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissions_uniqueitems",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_permissions_items",
+      "target": "src_tauri_gen_schemas_desktop_schema_items_ref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_platforms_items",
+      "target": "src_tauri_gen_schemas_desktop_schema_items_ref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_desktop_schema_platforms_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_desktop_schema_platforms_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_desktop_schema_platforms_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_desktop_schema_capabilityremote_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_desktop_schema_capabilityremote_properties",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_desktop_schema_capabilityremote_required",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_desktop_schema_capabilityremote_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_capabilityremote_properties",
+      "target": "src_tauri_gen_schemas_desktop_schema_properties_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_desktop_schema_urls_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_desktop_schema_urls_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_desktop_schema_urls_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_permissionentry",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissionentry_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L123",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_permissionentry",
+      "target": "src_tauri_gen_schemas_desktop_schema_permissionentry_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L388",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_identifier",
+      "target": "src_tauri_gen_schemas_desktop_schema_identifier_oneof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2475",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_value",
+      "target": "src_tauri_gen_schemas_desktop_schema_value_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2474",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_value",
+      "target": "src_tauri_gen_schemas_desktop_schema_value_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2514",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_number",
+      "target": "src_tauri_gen_schemas_desktop_schema_number_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2513",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_number",
+      "target": "src_tauri_gen_schemas_desktop_schema_number_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2528",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_target",
+      "target": "src_tauri_gen_schemas_desktop_schema_target_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2529",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_target",
+      "target": "src_tauri_gen_schemas_desktop_schema_target_oneof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2569",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedarg",
+      "target": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedarg_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2568",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedarg",
+      "target": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedarg_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2597",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedargs",
+      "target": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedargs_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/desktop-schema.json",
+      "source_location": "L2596",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_desktop_schema_definitions_shellscopeentryallowedargs",
+      "target": "src_tauri_gen_schemas_desktop_schema_shellscopeentryallowedargs_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema",
+      "target": "src_tauri_gen_schemas_windows_schema_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema",
+      "target": "src_tauri_gen_schemas_windows_schema_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema",
+      "target": "src_tauri_gen_schemas_windows_schema_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema",
+      "target": "src_tauri_gen_schemas_windows_schema_title",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L386",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_identifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2512",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_number",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_permissionentry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2567",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedarg",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2595",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedargs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2527",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_target",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2473",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions",
+      "target": "src_tauri_gen_schemas_windows_schema_definitions_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_windows_schema_capability_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_windows_schema_capability_required",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capability",
+      "target": "src_tauri_gen_schemas_windows_schema_capability_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_identifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_local",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_platforms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_remote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_webviews",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capability_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_windows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_identifier",
+      "target": "src_tauri_gen_schemas_windows_schema_identifier_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_identifier",
+      "target": "src_tauri_gen_schemas_windows_schema_identifier_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L387",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_identifier",
+      "target": "src_tauri_gen_schemas_windows_schema_identifier_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_description",
+      "target": "src_tauri_gen_schemas_windows_schema_description_default",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_description",
+      "target": "src_tauri_gen_schemas_windows_schema_description_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_description",
+      "target": "src_tauri_gen_schemas_windows_schema_description_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_remote",
+      "target": "src_tauri_gen_schemas_windows_schema_remote_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_remote",
+      "target": "src_tauri_gen_schemas_windows_schema_remote_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_local",
+      "target": "src_tauri_gen_schemas_windows_schema_local_default",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_local",
+      "target": "src_tauri_gen_schemas_windows_schema_local_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_local",
+      "target": "src_tauri_gen_schemas_windows_schema_local_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_windows_schema_windows_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_windows_schema_windows_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_windows",
+      "target": "src_tauri_gen_schemas_windows_schema_windows_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_windows_items",
+      "target": "src_tauri_gen_schemas_windows_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_urls_items",
+      "target": "src_tauri_gen_schemas_windows_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_webviews_items",
+      "target": "src_tauri_gen_schemas_windows_schema_items_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_windows_schema_webviews_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_windows_schema_webviews_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_webviews",
+      "target": "src_tauri_gen_schemas_windows_schema_webviews_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_windows_schema_permissions_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_windows_schema_permissions_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_windows_schema_permissions_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_permissions",
+      "target": "src_tauri_gen_schemas_windows_schema_permissions_uniqueitems",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_permissions_items",
+      "target": "src_tauri_gen_schemas_windows_schema_items_ref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_platforms_items",
+      "target": "src_tauri_gen_schemas_windows_schema_items_ref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_windows_schema_platforms_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_windows_schema_platforms_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_platforms",
+      "target": "src_tauri_gen_schemas_windows_schema_platforms_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_windows_schema_capabilityremote_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_windows_schema_capabilityremote_properties",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_windows_schema_capabilityremote_required",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_capabilityremote",
+      "target": "src_tauri_gen_schemas_windows_schema_capabilityremote_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_capabilityremote_properties",
+      "target": "src_tauri_gen_schemas_windows_schema_properties_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_windows_schema_urls_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_windows_schema_urls_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_properties_urls",
+      "target": "src_tauri_gen_schemas_windows_schema_urls_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_permissionentry",
+      "target": "src_tauri_gen_schemas_windows_schema_permissionentry_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L123",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_permissionentry",
+      "target": "src_tauri_gen_schemas_windows_schema_permissionentry_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L388",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_identifier",
+      "target": "src_tauri_gen_schemas_windows_schema_identifier_oneof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2475",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_value",
+      "target": "src_tauri_gen_schemas_windows_schema_value_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2474",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_value",
+      "target": "src_tauri_gen_schemas_windows_schema_value_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2514",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_number",
+      "target": "src_tauri_gen_schemas_windows_schema_number_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2513",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_number",
+      "target": "src_tauri_gen_schemas_windows_schema_number_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2528",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_target",
+      "target": "src_tauri_gen_schemas_windows_schema_target_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2529",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_target",
+      "target": "src_tauri_gen_schemas_windows_schema_target_oneof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2569",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedarg",
+      "target": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedarg_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2568",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedarg",
+      "target": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedarg_description",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2597",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedargs",
+      "target": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedargs_anyof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/gen/schemas/windows-schema.json",
+      "source_location": "L2596",
+      "weight": 1.0,
+      "source": "src_tauri_gen_schemas_windows_schema_definitions_shellscopeentryallowedargs",
+      "target": "src_tauri_gen_schemas_windows_schema_shellscopeentryallowedargs_description",
       "confidence_score": 1.0
     },
     {
@@ -32811,46 +35731,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L21",
-      "weight": 1.0,
-      "source": "opencode_skills_graphify_skill",
-      "target": "opencode_skills_graphify_skill_commandes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "source": "opencode_skills_graphify_skill",
-      "target": "opencode_skills_graphify_skill_fichiers",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L6",
-      "weight": 1.0,
-      "source": "opencode_skills_graphify_skill",
-      "target": "opencode_skills_graphify_skill_mission",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".opencode/skills/graphify/SKILL.md",
-      "source_location": "L29",
-      "weight": 1.0,
-      "source": "opencode_skills_graphify_skill",
-      "target": "opencode_skills_graphify_skill_r\u00e8gles",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": ".opencode/skills/openspec-explore/SKILL.md",
       "source_location": "L251",
       "weight": 1.0,
@@ -33286,16 +36166,6 @@
       "weight": 1.0,
       "source": "agents_r\u00e8gles_de_d\u00e9veloppement",
       "target": "agents_gestion_des_erreurs",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "AGENTS.md",
-      "source_location": "L94",
-      "weight": 1.0,
-      "source": "agents_r\u00e8gles_de_d\u00e9veloppement",
-      "target": "agents_graphe_de_connaissances_graphify",
       "confidence_score": 1.0
     },
     {
