@@ -14,6 +14,7 @@ Cette documentation s'adresse aux **utilisateurs de l'application** (bénévoles
 | [Adhésions](adhesions.md) | Gestion des adhésions annuelles |
 | [Activités](activites.md) | Gestion des activités de l'association (participants, encadrants, tarifs, créneaux horaires) |
 | [Planning](planning.md) | Gestion des créneaux horaires, semaines banalisées, planning hebdomadaire par personne |
+| [Paramètres](parametres.md) | Configuration globale de la plage horaire d'ouverture des activités |
 
 ## Concepts généraux
 

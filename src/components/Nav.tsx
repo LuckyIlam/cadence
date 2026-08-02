@@ -4,6 +4,7 @@ const links = [
   { to: "/", label: "Personnes" },
   { to: "/planning", label: "Planning" },
   { to: "/activites", label: "Activités" },
+  { to: "/parametres", label: "Paramètres" },
 ];
 
 export default function Nav() {

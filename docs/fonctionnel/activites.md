@@ -73,6 +73,8 @@ Dans le détail d'une personne, une section "Activités" affiche les activités 
 
 Chaque activité peut avoir un ou plusieurs créneaux horaires récurrents dans la semaine (ex: "Poterie le lundi de 14h à 16h"). La gestion des créneaux se fait depuis le détail de l'activité. Voir la section dédiée dans le [module Planning](planning.md).
 
+> ℹ️ Les créneaux doivent être compris dans la **plage horaire d'ouverture** globale des activités (par défaut 8h – 20h), configurable dans la page [Paramètres](/parametres). Voir [Plage horaire d'ouverture](planning.md#plage-horaire-douverture).
+
 > ⚠️ Si des personnes sont inscrites à l'activité pour l'année, les créneaux existants sont verrouillés (modification et suppression interdites). Vous pouvez toujours ajouter de nouveaux créneaux.
 
 ### Gérer les semaines banalisées

@@ -8,6 +8,7 @@ import {
   type CreneauActivite,
   formatDate,
   getCurrentAnneeScolaire,
+  type ParametresPlanning,
   type PersonneActivite,
   type SemaineBanalisee,
 } from "../types";
@@ -40,6 +41,7 @@ export default function DetailActivite() {
   const [newCreneauJour, setNewCreneauJour] = useState(1);
   const [newCreneauDebut, setNewCreneauDebut] = useState("08:00");
   const [newCreneauFin, setNewCreneauFin] = useState("10:00");
+  const [plageHoraire, setPlageHoraire] = useState<ParametresPlanning | null>(null);
   const [showSemaineForm, setShowSemaineForm] = useState(false);
   const [newSemaineDate, setNewSemaineDate] = useState("");
   const [newSemaineMotif, setNewSemaineMotif] = useState("");
@@ -70,6 +72,10 @@ export default function DetailActivite() {
   useEffect(() => {
     chargerDetail();
   }, [chargerDetail]);
+
+  useEffect(() => {
+    invoke<ParametresPlanning>("obtenir_parametres_planning").then(setPlageHoraire).catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -443,12 +449,16 @@ export default function DetailActivite() {
               <input
                 type="time"
                 value={newCreneauDebut}
+                min={plageHoraire?.heure_ouverture}
+                max={plageHoraire?.heure_fermeture}
                 onChange={(e) => setNewCreneauDebut(e.target.value)}
                 className="px-2 py-1 border border-gray-300 rounded text-sm"
               />
               <input
                 type="time"
                 value={newCreneauFin}
+                min={plageHoraire?.heure_ouverture}
+                max={plageHoraire?.heure_fermeture}
                 onChange={(e) => setNewCreneauFin(e.target.value)}
                 className="px-2 py-1 border border-gray-300 rounded text-sm"
               />
@@ -469,6 +479,12 @@ export default function DetailActivite() {
                 </button>
               </div>
             </div>
+            {plageHoraire && (
+              <p className="text-xs text-gray-500">
+                Plage horaire d'ouverture de l'activité : {plageHoraire.heure_ouverture} –{" "}
+                {plageHoraire.heure_fermeture}. Les créneaux doivent être entièrement compris dans cette plage.
+              </p>
+            )}
           </div>
         )}
 

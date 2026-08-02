@@ -12,6 +12,7 @@ import {
   formatDateISO,
   getCurrentAnneeScolaire,
   getLundiSemaine,
+  type ParametresPlanning,
   type Personne,
   type PersonneDetail,
   type PlanningCreneau,
@@ -25,6 +26,7 @@ export default function DetailPersonne() {
   const [aAdhesionEnCours, setAAdhesionEnCours] = useState(false);
   const [activitesPersonne, setActivitesPersonne] = useState<ActivitePersonne[]>([]);
   const [planningCreneaux, setPlanningCreneaux] = useState<PlanningCreneau[]>([]);
+  const [plageHoraire, setPlageHoraire] = useState<ParametresPlanning | null>(null);
   const [planningDateLundi, setPlanningDateLundi] = useState(() => getLundiSemaine(new Date()));
   const [planningAnneeScolaire, setPlanningAnneeScolaire] = useState(getCurrentAnneeScolaire());
   const [showEditForm, setShowEditForm] = useState(false);
@@ -60,6 +62,10 @@ export default function DetailPersonne() {
   useEffect(() => {
     chargerDetail();
   }, [chargerDetail]);
+
+  useEffect(() => {
+    invoke<ParametresPlanning>("obtenir_parametres_planning").then(setPlageHoraire).catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -235,20 +241,25 @@ export default function DetailPersonne() {
             })()}
           </select>
         </div>
-        <PlanningHebdo
-          creneaux={planningCreneaux}
-          dateLundi={planningDateLundi}
-          onSemainePrecedente={() => {
-            const d = new Date(planningDateLundi);
-            d.setDate(d.getDate() - 7);
-            setPlanningDateLundi(d);
-          }}
-          onSemaineSuivante={() => {
-            const d = new Date(planningDateLundi);
-            d.setDate(d.getDate() + 7);
-            setPlanningDateLundi(d);
-          }}
-        />
+        {plageHoraire ? (
+          <PlanningHebdo
+            creneaux={planningCreneaux}
+            dateLundi={planningDateLundi}
+            plageHoraire={plageHoraire}
+            onSemainePrecedente={() => {
+              const d = new Date(planningDateLundi);
+              d.setDate(d.getDate() - 7);
+              setPlanningDateLundi(d);
+            }}
+            onSemaineSuivante={() => {
+              const d = new Date(planningDateLundi);
+              d.setDate(d.getDate() + 7);
+              setPlanningDateLundi(d);
+            }}
+          />
+        ) : (
+          <p className="text-gray-500 text-center py-8">Chargement...</p>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
