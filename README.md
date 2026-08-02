@@ -75,6 +75,28 @@ cadence/
 ├── package.json
 └── AGENTS.md
 ```
+## Développement assisté par IA (skills)
+
+Les skills (rôles : `architecte`, `product-manager`, `developpeur`, etc. ; outils : `openspec-*`)
+résident dans `.opencode/skills/` et sont chargées par OpenCode.
+
+Pour les partager avec Cline (qui cherche ses skills dans `.claude/skills/`) sans les dupliquer,
+on utilise une jonction Windows :
+
+```powershell
+# PowerShell — crée le lien .claude/skills vers .opencode/skills
+New-Item -ItemType Junction -Path .claude\skills -Target .opencode\skills
+```
+
+**Pourquoi une jonction et pas un lien symbolique ?**
+
+| Approche | Commande (PowerShell) | Privilège requis |
+|----------|------------------------|------------------|
+| Lien symbolique | `New-Item -ItemType SymbolicLink -Path <lien> -Target <cible>` | Admin ou mode développeur |
+| **Jonction** ✅ | `New-Item -ItemType Junction -Path <lien> -Target <cible>` | **Aucun** |
+
+- La jonction se comporte comme un répertoire classique (lecture/parcours transparents).
+- `.claude/` est ajouté au `.gitignore` : la liaison est locale et non versionnée.
 
 ## Documentation fonctionnelle
 
