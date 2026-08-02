@@ -90,3 +90,14 @@ Idée ──▶ Architecte ──▶ PM ──▶ Concepteur Tech ──▶ Dév
 - Le Réviseur valide la qualité + sécurité
 - Le Documentaliste maintient la connaissance à jour
 - Chaque rôle livre un document ou un artefact au rôle suivant
+
+## Graphe de connaissances (graphify)
+
+Le projet dispose d'un graphe de connaissances dans `graphify-out/` (nœuds « god », communautés, relations inter-fichiers).
+
+- Pour toute question sur le code, lancer d'abord `graphify query "<question>"` dès que `graphify-out/graph.json` existe. Utiliser `graphify path "<A>" "<B>"` pour les relations entre deux concepts et `graphify explain "<concept>"` pour un concept ciblé : ces commandes renvoient un sous-graphe restreint, bien plus petit que `GRAPH_REPORT.md` ou un grep brut.
+- Lire `graphify-out/GRAPH_REPORT.md` seulement pour une revue globale de l'architecture.
+- Après modification du code ou de la documentation, rafraîchir le graphe avec `graphify update .` (extraction AST seule, sans coût LLM).
+- ⚠ Aucune clé LLM n'est configurée dans l'environnement : ne pas lancer `graphify extract` sémantique (il échouerait) ; utiliser uniquement `graphify update .`.
+- La commande `graphify` est sur le PATH (sinon : `C:\Users\Eric\dev\graphify\bin\graphify.exe`).
+- Le fichier `.graphifyignore` écarte le bruit (schémas générés, `node_modules`, etc.) du graphe.

@@ -1,0 +1,352 @@
+{
+  "communities": {
+    "0": [
+      "docs_fonctionnel_adhesions_module_adhesions",
+      "docs_fonctionnel_adhesions_regle_adhesion_unique",
+      "docs_fonctionnel_personnes_module_personnes",
+      "docs_fonctionnel_personnes_regle_date_naissance",
+      "docs_fonctionnel_personnes_regle_mineur_responsable",
+      "docs_fonctionnel_readme_adhesion",
+      "docs_fonctionnel_readme_cadence",
+      "docs_fonctionnel_readme_personne_physique",
+      "docs_fonctionnel_readme_responsable_legal",
+      "index_html_entry",
+      "openspec_changes_archive_v1_personnes_adhesions_design_adhesion_binaire",
+      "openspec_changes_archive_v1_personnes_adhesions_design_architecture_couches",
+      "openspec_changes_archive_v1_personnes_adhesions_design_sqlx_multidb",
+      "openspec_changes_archive_v1_personnes_adhesions_proposal_v1"
+    ],
+    "1": [
+      "explore_mode_stance",
+      "intelligent_merging",
+      "opencode_commands_opsx_apply",
+      "opencode_commands_opsx_archive",
+      "opencode_commands_opsx_explore",
+      "opencode_commands_opsx_propose",
+      "opencode_commands_opsx_sync",
+      "opencode_skills_openspec_apply_change_skill",
+      "opencode_skills_openspec_archive_change_skill",
+      "opencode_skills_openspec_explore_skill",
+      "opencode_skills_openspec_propose_skill",
+      "opencode_skills_openspec_sync_specs_skill",
+      "openspec_workflow"
+    ],
+    "2": [
+      "docs_fonctionnel_activites_activite",
+      "docs_fonctionnel_activites_encadrant",
+      "docs_fonctionnel_activites_module_activites",
+      "docs_fonctionnel_activites_participant",
+      "docs_fonctionnel_activites_regle_double_role",
+      "docs_fonctionnel_activites_tarif",
+      "docs_fonctionnel_readme_annee_scolaire",
+      "openspec_changes_v2_activites_design_navigation_menu",
+      "openspec_changes_v2_activites_design_table_unique_activite_personnes",
+      "openspec_changes_v2_activites_design_tarifs_separes",
+      "openspec_changes_v2_activites_design_validation_rust",
+      "openspec_changes_v2_activites_proposal_v2"
+    ],
+    "3": [
+      "agents",
+      "cadence_app",
+      "error_handling_rules",
+      "opencode_skills_cadence_prepare_release_skill",
+      "opencode_skills_handle_issue_skill",
+      "opencode_skills_implement_feature_skill",
+      "readme",
+      "test_requirement",
+      "thin_frontend_pattern",
+      "verification_checklist"
+    ],
+    "4": [
+      "github_workflows_ci",
+      "github_workflows_ci_verification_pipeline",
+      "github_workflows_release",
+      "github_workflows_release_pipeline"
+    ],
+    "5": [
+      "github_dependabot"
+    ],
+    "6": [
+      "src_app_app"
+    ],
+    "7": [
+      "src_components_adhesionform_adhesionform"
+    ],
+    "8": [
+      "src_components_nav_nav"
+    ],
+    "9": [
+      "src_pages_activites_activites"
+    ],
+    "10": [
+      "src_pages_detailpersonne_detailpersonne"
+    ],
+    "11": [
+      "src_pages_listepersonnes_listepersonnes"
+    ],
+    "12": [
+      "src_types_activite"
+    ],
+    "13": [
+      "src_types_activitepersonne"
+    ],
+    "14": [
+      "src_types_adhesion"
+    ],
+    "15": [
+      "src_types_agefromdatenaissance"
+    ],
+    "16": [
+      "src_types_createactivite"
+    ],
+    "17": [
+      "src_types_createadhesion"
+    ],
+    "18": [
+      "src_types_createliaisonactivitepersonne"
+    ],
+    "19": [
+      "src_types_createpersonne"
+    ],
+    "20": [
+      "src_types_createtarifactivite"
+    ],
+    "21": [
+      "src_types_criteresrecherchepersonnes"
+    ],
+    "22": [
+      "src_types_dateestvalide"
+    ],
+    "23": [
+      "src_types_datenaissanceestvalide"
+    ],
+    "24": [
+      "src_types_detailactivite"
+    ],
+    "25": [
+      "src_types_estanneescolairevalide"
+    ],
+    "26": [
+      "src_types_estmineur"
+    ],
+    "27": [
+      "src_types_formatdate"
+    ],
+    "28": [
+      "src_types_getcurrentanneescolaire"
+    ],
+    "29": [
+      "src_types_getcurrentyear"
+    ],
+    "30": [
+      "src_types_pagination"
+    ],
+    "31": [
+      "src_types_personne"
+    ],
+    "32": [
+      "src_types_personneactivite"
+    ],
+    "33": [
+      "src_types_personnedetail"
+    ],
+    "34": [
+      "src_types_resultatrecherchepersonnes"
+    ],
+    "35": [
+      "src_types_updateactivite"
+    ],
+    "36": [
+      "src_types_updateadhesion"
+    ],
+    "37": [
+      "src_types_updatepersonne"
+    ]
+  },
+  "cohesion": {
+    "0": 0.2087912087912088,
+    "1": 0.1794871794871795,
+    "2": 0.25757575757575757,
+    "3": 0.3333333333333333,
+    "4": 0.5,
+    "5": 1.0,
+    "6": 1.0,
+    "7": 1.0,
+    "8": 1.0,
+    "9": 1.0,
+    "10": 1.0,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0,
+    "30": 1.0,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0
+  },
+  "gods": [
+    {
+      "id": "docs_fonctionnel_activites_module_activites",
+      "label": "Module Activités",
+      "degree": 9
+    },
+    {
+      "id": "openspec_workflow",
+      "label": "OpenSpec Experimental Change Workflow",
+      "degree": 7
+    },
+    {
+      "id": "docs_fonctionnel_readme_cadence",
+      "label": "Cadence",
+      "degree": 7
+    },
+    {
+      "id": "docs_fonctionnel_readme_personne_physique",
+      "label": "Personne physique",
+      "degree": 7
+    },
+    {
+      "id": "openspec_changes_v2_activites_proposal_v2",
+      "label": "V2 Module Activités",
+      "degree": 6
+    },
+    {
+      "id": "agents",
+      "label": "AGENTS.md Development Rules",
+      "degree": 5
+    },
+    {
+      "id": "cadence_app",
+      "label": "Cadence Desktop Application",
+      "degree": 5
+    },
+    {
+      "id": "verification_checklist",
+      "label": "Pre-submission Verification Checklist",
+      "degree": 5
+    },
+    {
+      "id": "opencode_skills_handle_issue_skill",
+      "label": "Handle Issue Skill",
+      "degree": 4
+    },
+    {
+      "id": "opencode_skills_implement_feature_skill",
+      "label": "Implement Feature Skill",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "CI Workflow",
+      "target": "Pre-submission Verification Checklist",
+      "source_files": [
+        ".github/workflows/ci.yml",
+        "AGENTS.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Cadence Prepare Release Skill",
+      "target": "Cadence Desktop Application",
+      "source_files": [
+        ".opencode/skills/cadence-prepare-release/SKILL.md",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Cadence Prepare Release Skill` unexpectedly reaches hub `Cadence Desktop Application`"
+    },
+    {
+      "source": "Cadence Prepare Release Skill",
+      "target": "Pre-submission Verification Checklist",
+      "source_files": [
+        ".opencode/skills/cadence-prepare-release/SKILL.md",
+        "AGENTS.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Cadence Prepare Release Skill` unexpectedly reaches hub `Pre-submission Verification Checklist`"
+    },
+    {
+      "source": "Application entry point (index.html)",
+      "target": "Cadence",
+      "source_files": [
+        "index.html",
+        "docs/fonctionnel/README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Application entry point (index.html)` unexpectedly reaches hub `Cadence`"
+    },
+    {
+      "source": "Architecture en couches domain/repositories/commands",
+      "target": "Cadence",
+      "source_files": [
+        "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/design.md",
+        "docs/fonctionnel/README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "rationale_for",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Architecture en couches domain/repositories/commands` unexpectedly reaches hub `Cadence`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `Module Activités` connect `Community 2` to `Community 0`?",
+      "why": "High betweenness centrality (0.031) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Cadence` connect `Community 0` to `Community 2`?",
+      "why": "High betweenness centrality (0.029) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Personne physique` connect `Community 0` to `Community 2`?",
+      "why": "High betweenness centrality (0.019) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `Module Activités` (e.g. with `Navigation par menu React Router (Personnes/Activités)` and `Table unique activite_personnes avec rôle et année`) actually correct?",
+      "why": "`Module Activités` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `OpenSpec Experimental Change Workflow` (e.g. with `Explore Mode Thinking Stance` and `Intelligent Merging for Delta Specs`) actually correct?",
+      "why": "`OpenSpec Experimental Change Workflow` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 3 inferred relationships involving `Cadence` (e.g. with `Application entry point (index.html)` and `Architecture en couches domain/repositories/commands`) actually correct?",
+      "why": "`Cadence` has 3 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 3 inferred relationships involving `Personne physique` (e.g. with `Encadrant` and `Participant`) actually correct?",
+      "why": "`Personne physique` has 3 INFERRED edges - model-reasoned connections that need verification."
+    }
+  ]
+}

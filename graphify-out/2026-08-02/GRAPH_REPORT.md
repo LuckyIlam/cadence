@@ -1,11 +1,11 @@
 # Graph Report - cadence  (2026-08-02)
 
 ## Corpus Check
-- 98 files · ~60,346 words
+- 101 files · ~84,176 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1302 nodes · 2329 edges · 102 communities (72 shown, 30 thin omitted)
+- 1442 nodes · 2476 edges · 120 communities (90 shown, 30 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.82)
 - Token cost: 0 input · 0 output
 
@@ -51,13 +51,19 @@
 - Type RésultatRecherche
 - Type UpdateActivite
 - Type UpdateAdhesion
+- Type UpdatePersonne
 - Règles de développement
 - SKILL.md
 - Décisions
 - tasks.md
+- properties
 - Gestion des personnes
 - opsx-explore.md
 - SKILL.md
+- permissions
+- webviews
+- permissions
+- webviews
 - Fonctionnalités
 - SKILL.md
 - tasks.md
@@ -65,15 +71,27 @@
 - SKILL.md
 - SKILL.md
 - SKILL.md
+- CapabilityRemote
+- CapabilityRemote
 - Gestion des adhésions
 - proposal.md
 - proposal.md
 - proposal.md
 - adhesion.rs
 - Documentation fonctionnelle — Cadence
+- desktop-schema.json
+- windows-schema.json
+- description
+- Capability
+- description
 - opencode.json
 - dependencies
 - graphify.js
+- ShellScopeEntryAllowedArg
+- ShellScopeEntryAllowedArgs
+- Value
+- ShellScopeEntryAllowedArg
+- ShellScopeEntryAllowedArgs
 - Cadence Desktop Application
 - Encadrant
 - Module Activités
@@ -127,7 +145,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (102 total, 30 thin omitted)
+## Communities (120 total, 30 thin omitted)
 
 ### Community 0 - "Membres & Adhésions"
 Cohesion: 0.22
@@ -146,12 +164,12 @@ Cohesion: 0.06
 Nodes (55): App(), AdhesionForm(), Props, links, Nav(), PersonneForm(), Props, hauteurBloc() (+47 more)
 
 ### Community 7 - "Formulaire Adhésion"
-Cohesion: 0.07
-Nodes (39): Display, From, P, LiaisonActivitePersonne, Role, Collision, AppError, Error (+31 more)
+Cohesion: 0.08
+Nodes (37): From, P, LiaisonActivitePersonne, Collision, AppError, Error, Self, String (+29 more)
 
 ### Community 8 - "Navigation"
-Cohesion: 0.11
-Nodes (30): A, date(), make_service(), MockAdhesionRepository, MockPersonneRepository, next_id(), PersonneService, PersonneService<'a, R, A> (+22 more)
+Cohesion: 0.07
+Nodes (49): A, age_from_date_naissance(), annee_scolaire_from_date(), CreatePersonne, CriteresRecherchePersonnes, current_annee_scolaire(), est_mineur(), Pagination (+41 more)
 
 ### Community 9 - "Pages Activités"
 Cohesion: 0.12
@@ -218,8 +236,8 @@ Cohesion: 0.08
 Nodes (25): ADDED Requirements, MODIFIED Requirements, REMOVED Requirements, RENAMED Requirements, Requirement: Ajouter une personne à une activité, Requirement: Consulter le détail d'une activité, Requirement: Créer une activité, Requirement: Définir le tarif d'une activité pour une année scolaire (+17 more)
 
 ### Community 25 - "Type AnnéeScolaire"
-Cohesion: 0.16
-Nodes (17): Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite, PersonneActivite (+9 more)
+Cohesion: 0.15
+Nodes (19): Display, Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite (+11 more)
 
 ### Community 26 - "Type Mineur"
 Cohesion: 0.11
@@ -242,16 +260,16 @@ Cohesion: 0.13
 Nodes (14): Purpose, Requirement: Adhésion unique par an, Requirement: Ajouter une adhésion, Requirement: Lister les adhésions d'une personne, Requirement: Modifier une adhésion, Requirements, Scenario: Ajout désactivé si adhésion existante pour l'année en cours, Scenario: Ajout réussi (+6 more)
 
 ### Community 31 - "Type Personne"
-Cohesion: 0.16
-Nodes (19): age_from_date_naissance(), annee_scolaire_from_date(), CreatePersonne, CriteresRecherchePersonnes, current_annee_scolaire(), est_mineur(), Pagination, Personne (+11 more)
+Cohesion: 0.13
+Nodes (15): definitions, Identifier, Number, PermissionEntry, Target, Value, oneOf, anyOf (+7 more)
 
 ### Community 32 - "Type PersonneActivite"
 Cohesion: 0.14
 Nodes (13): ADDED Requirements, Requirement: Adhésion unique par an, Requirement: Ajouter une adhésion, Requirement: Lister les adhésions d'une personne, Requirement: Modifier une adhésion, Scenario: Ajout désactivé si adhésion existante pour l'année en cours, Scenario: Ajout réussi, Scenario: Année scolaire invalide (+5 more)
 
 ### Community 33 - "Type PersonneDetail"
-Cohesion: 0.40
-Nodes (4): Commandes, Fichiers, Mission, Règles
+Cohesion: 0.14
+Nodes (14): description, properties, required, type, Capability, type, default, description (+6 more)
 
 ### Community 34 - "Type RésultatRecherche"
 Cohesion: 0.15
@@ -265,9 +283,13 @@ Nodes (12): Critères d'entrée, Critères de sortie, Cybersécurité, Documenta
 Cohesion: 0.15
 Nodes (12): 1. SQLx avec SQLite local, interchangeable avec Postgres, 2. Architecture clean mais légère (pas d'hexagonal overhead), 3. React 19 + Tailwind CSS + Vite en frontend Tauri, 4. Deux états pour l'adhésion : adhesion = ligne avec booléen `reglee`, 5. Responsable légal : `responsable_id` nullable sur `personnes_physiques`, 6. Validation date de naissance : <= 1920 et pas dans le futur, 7. Format d'affichage des dates : JJ/MM/AAAA, 8. Désactivation du bouton d'ajout d'adhésion si l'année en cours existe déjà (+4 more)
 
-### Community 38 - "Règles de développement"
+### Community 37 - "Type UpdatePersonne"
 Cohesion: 0.15
-Nodes (13): Architecture, Couverture de code, Documentations, Gestion des erreurs, Graphe de connaissances (graphify), Organisation de l'équipe, Principe, Règles de développement (+5 more)
+Nodes (13): definitions, Identifier, Number, PermissionEntry, Target, description, oneOf, anyOf (+5 more)
+
+### Community 38 - "Règles de développement"
+Cohesion: 0.17
+Nodes (12): Architecture, Couverture de code, Documentations, Gestion des erreurs, Organisation de l'équipe, Principe, Règles de développement, Rôles (+4 more)
 
 ### Community 39 - "SKILL.md"
 Cohesion: 0.17
@@ -281,6 +303,10 @@ Nodes (11): 1. Table unique `activite_personnes` avec rôle et année scolaire, 
 Cohesion: 0.18
 Nodes (10): 10. Vérifications finales, 1. Base de données, 2. Couche domaine, 3. Repository, 4. Tauri commands, 5. Frontend — Navigation, 6. Frontend — Liste des activités, 7. Frontend — Détail d'une activité (+2 more)
 
+### Community 42 - "properties"
+Cohesion: 0.18
+Nodes (11): properties, description, type, default, description, type, identifier, local (+3 more)
+
 ### Community 43 - "Gestion des personnes"
 Cohesion: 0.20
 Nodes (10): Consulter le détail d'une personne, Créer une personne, Filtrer par adhésion, Gestion des personnes, Lister les personnes, Modifier une personne, Pagination, Rechercher une personne (+2 more)
@@ -292,6 +318,22 @@ Nodes (9): Check for context, Ending Discovery, Guardrails, OpenSpec Awareness, 
 ### Community 45 - "SKILL.md"
 Cohesion: 0.20
 Nodes (9): Critères d'entrée, Critères de sortie, Création d'un change, Documents consommés, Documents produits, Interactions avec l'équipe, Mise à jour des spécifications, Mission (+1 more)
+
+### Community 46 - "permissions"
+Cohesion: 0.20
+Nodes (10): $ref, description, items, type, uniqueItems, description, items, type (+2 more)
+
+### Community 47 - "webviews"
+Cohesion: 0.20
+Nodes (10): type, webviews, windows, items, description, items, type, description (+2 more)
+
+### Community 48 - "permissions"
+Cohesion: 0.20
+Nodes (10): $ref, description, items, type, uniqueItems, description, items, type (+2 more)
+
+### Community 49 - "webviews"
+Cohesion: 0.20
+Nodes (10): type, webviews, windows, items, description, items, type, description (+2 more)
 
 ### Community 50 - "Fonctionnalités"
 Cohesion: 0.22
@@ -321,6 +363,14 @@ Nodes (7): Critères d'entrée, Critères de sortie, Documents consommés, Docum
 Cohesion: 0.25
 Nodes (7): Critères d'entrée, Critères de sortie, Documents consommés, Documents produits, Interactions avec l'équipe, Mission, Workflow
 
+### Community 57 - "CapabilityRemote"
+Cohesion: 0.25
+Nodes (8): description, properties, required, type, CapabilityRemote, urls, description, type
+
+### Community 58 - "CapabilityRemote"
+Cohesion: 0.25
+Nodes (8): description, properties, required, type, CapabilityRemote, urls, description, type
+
 ### Community 59 - "Gestion des adhésions"
 Cohesion: 0.29
 Nodes (7): Ajouter une adhésion, Format de l'année scolaire, Gestion des adhésions, Lister les adhésions d'une personne, Modifier une adhésion, Règle : une seule adhésion par année, Suivi des règlements
@@ -345,8 +395,48 @@ Nodes (5): Adhesion, CreateAdhesion, Option, String, UpdateAdhesion
 Cohesion: 0.40
 Nodes (5): Concepts généraux, Documentation fonctionnelle — Cadence, Flux principaux, Modules fonctionnels, Public visé
 
+### Community 65 - "desktop-schema.json"
+Cohesion: 0.40
+Nodes (4): anyOf, description, $schema, title
+
+### Community 66 - "windows-schema.json"
+Cohesion: 0.40
+Nodes (4): anyOf, description, $schema, title
+
+### Community 67 - "description"
+Cohesion: 0.50
+Nodes (4): default, description, type, description
+
+### Community 68 - "Capability"
+Cohesion: 0.50
+Nodes (4): description, required, type, Capability
+
+### Community 69 - "description"
+Cohesion: 0.50
+Nodes (4): default, description, type, description
+
+### Community 73 - "ShellScopeEntryAllowedArg"
+Cohesion: 0.67
+Nodes (3): ShellScopeEntryAllowedArg, anyOf, description
+
+### Community 74 - "ShellScopeEntryAllowedArgs"
+Cohesion: 0.67
+Nodes (3): ShellScopeEntryAllowedArgs, anyOf, description
+
+### Community 75 - "Value"
+Cohesion: 0.67
+Nodes (3): Value, anyOf, description
+
+### Community 76 - "ShellScopeEntryAllowedArg"
+Cohesion: 0.67
+Nodes (3): ShellScopeEntryAllowedArg, anyOf, description
+
+### Community 77 - "ShellScopeEntryAllowedArgs"
+Cohesion: 0.67
+Nodes (3): ShellScopeEntryAllowedArgs, anyOf, description
+
 ## Knowledge Gaps
-- **522 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+517 more)
+- **603 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+598 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -354,16 +444,16 @@ Nodes (5): Concepts généraux, Documentation fonctionnelle — Cadence, Flux pr
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `AppError` connect `Formulaire Adhésion` to `Navigation`, `Pages Activités`, `Détail Personne`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type CurrentAnnée`?**
-  _High betweenness centrality (0.133) - this node is a cross-community bridge._
-- **Why does `Role` connect `Formulaire Adhésion` to `Type AnnéeScolaire`, `Type CreateAdhesion`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+  _High betweenness centrality (0.086) - this node is a cross-community bridge._
+- **Why does `Role` connect `Type AnnéeScolaire` to `Type CreateAdhesion`, `Formulaire Adhésion`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Why does `AppState` connect `Détail Personne` to `Pages Activités`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type CurrentAnnée`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `$schema`, `plugin`, `@opencode-ai/plugin` to the rest of the system?**
-  _535 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _616 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Shell` be split into smaller, more focused modules?**
   _Cohesion score 0.06376811594202898 - nodes in this community are weakly interconnected._
 - **Should `Formulaire Adhésion` be split into smaller, more focused modules?**
-  _Cohesion score 0.07277701778385773 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07515777395295467 - nodes in this community are weakly interconnected._
 - **Should `Navigation` be split into smaller, more focused modules?**
-  _Cohesion score 0.10821256038647344 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06559356136820925 - nodes in this community are weakly interconnected._
