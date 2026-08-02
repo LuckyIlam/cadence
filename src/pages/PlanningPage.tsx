@@ -2,13 +2,21 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlanningHebdo from "../components/PlanningHebdo";
-import { formatDateISO, getCurrentAnneeScolaire, getLundiSemaine, type Personne, type PlanningCreneau } from "../types";
+import {
+  formatDateISO,
+  getCurrentAnneeScolaire,
+  getLundiSemaine,
+  type ParametresPlanning,
+  type Personne,
+  type PlanningCreneau,
+} from "../types";
 
 export default function PlanningPage() {
   const { personneId } = useParams<{ personneId: string }>();
   const [personnes, setPersonnes] = useState<Personne[]>([]);
   const [selectedPersonneId, setSelectedPersonneId] = useState<number | null>(null);
   const [creneaux, setCreneaux] = useState<PlanningCreneau[]>([]);
+  const [plageHoraire, setPlageHoraire] = useState<ParametresPlanning | null>(null);
   const [anneeScolaire, setAnneeScolaire] = useState(getCurrentAnneeScolaire());
   const [dateLundi, setDateLundi] = useState(() => getLundiSemaine(new Date()));
   const [loading, setLoading] = useState(false);
@@ -33,6 +41,10 @@ export default function PlanningPage() {
     };
     chargerPersonnes();
   }, [personneId]);
+
+  useEffect(() => {
+    invoke<ParametresPlanning>("obtenir_parametres_planning").then(setPlageHoraire).catch(console.error);
+  }, []);
 
   const chargerPlanning = useCallback(async () => {
     if (!selectedPersonneId) return;
@@ -120,13 +132,16 @@ export default function PlanningPage() {
 
       {loading ? (
         <p className="text-gray-500 text-center py-8">Chargement...</p>
-      ) : (
+      ) : plageHoraire ? (
         <PlanningHebdo
           creneaux={creneaux}
           dateLundi={dateLundi}
+          plageHoraire={plageHoraire}
           onSemainePrecedente={handleSemainePrecedente}
           onSemaineSuivante={handleSemaineSuivante}
         />
+      ) : (
+        <p className="text-gray-500 text-center py-8">Chargement...</p>
       )}
     </div>
   );

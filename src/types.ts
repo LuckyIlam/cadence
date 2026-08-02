@@ -211,6 +211,12 @@ export interface PlanningCreneau {
   role: string;
 }
 
+export interface ParametresPlanning {
+  id: number;
+  heure_ouverture: string;
+  heure_fermeture: string;
+}
+
 const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
 
 export function jourSemaineTexte(jour: number): string {

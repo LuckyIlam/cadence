@@ -4,6 +4,7 @@ import Activites from "./pages/Activites";
 import DetailActivite from "./pages/DetailActivite";
 import DetailPersonne from "./pages/DetailPersonne";
 import ListePersonnes from "./pages/ListePersonnes";
+import ParametresPage from "./pages/ParametresPage";
 import PlanningPage from "./pages/PlanningPage";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/activites/:id" element={<DetailActivite />} />
           <Route path="/planning" element={<PlanningPage />} />
           <Route path="/planning/:personneId" element={<PlanningPage />} />
+          <Route path="/parametres" element={<ParametresPage />} />
         </Routes>
       </main>
     </div>

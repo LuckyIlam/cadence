@@ -1,12 +1,13 @@
 use tauri::State;
 
+use crate::domain::parametre::valider_creneau_dans_plage;
 use crate::domain::planning::{
     est_lundi, valider_creneau, CreateCreneau, CreateSemaineBanalisee, CreneauActivite,
     PlanningCreneau, SemaineBanalisee,
 };
 use crate::error::AppError;
 use crate::infrastructure::db::AppState;
-use crate::repositories::{ActiviteRepository, PlanningRepository};
+use crate::repositories::{ActiviteRepository, ParametreRepository, PlanningRepository};
 
 #[tauri::command]
 pub async fn ajouter_creneau(
@@ -14,6 +15,7 @@ pub async fn ajouter_creneau(
     input: CreateCreneau,
 ) -> Result<CreneauActivite, AppError> {
     valider_creneau(&input)?;
+    valider_creneau_dans_plage_global(&state, &input).await?;
 
     let _activite = state
         .activite_repo
@@ -47,6 +49,17 @@ pub async fn ajouter_creneau(
     state.planning_repo.creer_creneau(input).await
 }
 
+/// Vérifie qu'un créneau est entièrement compris dans la plage horaire d'ouverture globale
+/// configurée pour les activités (paramètres de l'application).
+async fn valider_creneau_dans_plage_global(
+    state: &State<'_, AppState>,
+    input: &CreateCreneau,
+) -> Result<(), AppError> {
+    let params = state.param_repo.obtenir_parametres_planning().await?;
+    valider_creneau_dans_plage(input, &params.heure_ouverture, &params.heure_fermeture)
+        .map_err(AppError::Validation)
+}
+
 #[tauri::command]
 pub async fn supprimer_creneau(
     state: State<'_, AppState>,
@@ -75,6 +88,7 @@ pub async fn modifier_creneau(
     input: CreateCreneau,
 ) -> Result<CreneauActivite, AppError> {
     valider_creneau(&input)?;
+    valider_creneau_dans_plage_global(&state, &input).await?;
 
     let nb = state
         .planning_repo
@@ -268,6 +282,70 @@ mod tests {
         assert_eq!(c.activite_id, a);
         assert_eq!(c.jour_semaine, 1);
         assert_eq!(c.heure_debut, "14:00");
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_avant_ouverture_refuse() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let err = ajouter_creneau(
+            app.state::<AppState>(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "07:00".to_string(),
+                heure_fin: "09:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect_err("créneau avant l'ouverture refusé");
+
+        assert!(err.to_string().contains("avant l'ouverture"));
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_apres_fermeture_refuse() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let err = ajouter_creneau(
+            app.state::<AppState>(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "18:00".to_string(),
+                heure_fin: "21:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect_err("créneau après la fermeture refusé");
+
+        assert!(err.to_string().contains("après la fermeture"));
+    }
+
+    #[tokio::test]
+    async fn test_ajouter_creneau_aux_bornes_accepte() {
+        let (app, pool) = setup_app().await;
+        let a = seed_activite(&pool, "Poterie").await;
+
+        let c = ajouter_creneau(
+            app.state::<AppState>(),
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "08:00".to_string(),
+                heure_fin: "20:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+        )
+        .await
+        .expect("créneau aux bornes de la plage accepté");
+
+        assert_eq!(c.heure_debut, "08:00");
+        assert_eq!(c.heure_fin, "20:00");
     }
 
     #[tokio::test]

@@ -21,8 +21,10 @@ Dans le détail d'une activité, une section **Créneaux** affiche la liste des 
 **Ajouter un créneau** :
 1. Cliquez sur "Ajouter un créneau".
 2. Sélectionnez le jour de la semaine.
-3. Renseignez l'heure de début et l'heure de fin.
+3. Renseignez l'heure de début et l'heure de fin (comprises dans la plage horaire d'ouverture de l'activité).
 4. Validez.
+
+> ℹ️ Un créneau doit être **entièrement compris** dans la [plage horaire d'ouverture](#plage-horaire-douverture) configurée (ex : 8h – 20h par défaut). Sinon, la création ou la modification est refusée.
 
 **Modifier un créneau** : cliquez sur le créneau et modifiez le jour ou les horaires.
 
@@ -49,9 +51,18 @@ Deux façons d'accéder au planning :
 - **Depuis le détail d'une personne** : une section "Planning" affiche la grille hebdomadaire de la personne. Naviguez entre les semaines avec les boutons "Semaine précédente" et "Semaine suivante". Le numéro de semaine ISO et la date du lundi sont affichés.
 - **Depuis la page Planning** (`/planning`) : sélectionnez une personne pour voir son planning. Utile pour les secrétaires qui consultent le planning de différents adhérents.
 
-La grille hebdomadaire s'affiche du lundi au dimanche, de 8h à 20h. Chaque créneau apparaît comme un bloc coloré positionné à l'intersection du jour et de l'heure. Le bloc indique le nom de l'activité et le rôle de la personne (Encadrant ou Participant). Les couleurs diffèrent selon le rôle (bleu pour encadrant, vert pour participant).
+La grille hebdomadaire s'affiche du lundi au dimanche, dans la plage horaire d'ouverture configurée (8h à 20h par défaut). Chaque créneau apparaît comme un bloc coloré positionné à l'intersection du jour et de l'heure. Le bloc indique le nom de l'activité et le rôle de la personne (Encadrant ou Participant). Les couleurs diffèrent selon le rôle (bleu pour encadrant, vert pour participant).
 
 Les activités dont la semaine est banalisée n'apparaissent pas dans la grille.
+
+### Plage horaire d'ouverture
+
+La plage horaire des activités (heure d'ouverture et heure de fermeture) est une **configuration globale** définie dans la page **Paramètres** (`/parametres`), par défaut **8h – 20h**.
+
+Elle est utilisée à deux endroits :
+- **À la création / modification d'un créneau** : un créneau doit être entièrement compris dans cette plage, sinon la demande est refusée.
+- **À la consultation d'un planning** : la grille hebdomadaire s'affiche entre l'heure d'ouverture et l'heure de fermeture configurées.
+
 
 ### Détection des collisions
 

@@ -1,13 +1,13 @@
-import { getNumeroSemaineISO, jourSemaineTexte, type PlanningCreneau } from "../types";
+import { getNumeroSemaineISO, jourSemaineTexte, type ParametresPlanning, type PlanningCreneau } from "../types";
 
 interface PlanningHebdoProps {
   creneaux: PlanningCreneau[];
   dateLundi: Date;
+  plageHoraire: ParametresPlanning;
   onSemainePrecedente: () => void;
   onSemaineSuivante: () => void;
 }
 
-const HEURES = Array.from({ length: 13 }, (_, i) => i + 8);
 const HAUTEUR_LIGNE = 60;
 
 function parseHeure(heure: string): { h: number; m: number } {
@@ -15,9 +15,9 @@ function parseHeure(heure: string): { h: number; m: number } {
   return { h: Number(parts[0]), m: Number(parts[1]) };
 }
 
-function posY(heure: string): number {
+function posY(heure: string, ouverture: { h: number; m: number }): number {
   const { h, m } = parseHeure(heure);
-  return (h + m / 60 - 8) * HAUTEUR_LIGNE;
+  return (h + m / 60 - (ouverture.h + ouverture.m / 60)) * HAUTEUR_LIGNE;
 }
 
 function hauteurBloc(debut: string, fin: string): number {
@@ -29,6 +29,7 @@ function hauteurBloc(debut: string, fin: string): number {
 export default function PlanningHebdo({
   creneaux,
   dateLundi,
+  plageHoraire,
   onSemainePrecedente,
   onSemaineSuivante,
 }: PlanningHebdoProps) {
@@ -38,6 +39,12 @@ export default function PlanningHebdo({
     month: "short",
     year: "numeric",
   });
+
+  const ouverture = parseHeure(plageHoraire.heure_ouverture);
+  const fermeture = parseHeure(plageHoraire.heure_fermeture);
+  const nbHeures = Math.max(1, fermeture.h + fermeture.m / 60 - (ouverture.h + ouverture.m / 60));
+  const HEURES = Array.from({ length: Math.floor(nbHeures) + 1 }, (_, i) => ouverture.h + i);
+  const hauteurTotale = nbHeures * HAUTEUR_LIGNE;
 
   return (
     <div>
@@ -80,7 +87,7 @@ export default function PlanningHebdo({
               </div>
             ))}
           </div>
-          <div className="relative" style={{ height: `${HEURES.length * HAUTEUR_LIGNE}px` }}>
+          <div className="relative" style={{ height: `${hauteurTotale}px` }}>
             <div
               className="absolute inset-0 grid"
               style={{
@@ -102,7 +109,7 @@ export default function PlanningHebdo({
               ])}
             </div>
             {creneaux.map((pc) => {
-              const y = posY(pc.creneau.heure_debut);
+              const y = posY(pc.creneau.heure_debut, ouverture);
               const h = hauteurBloc(pc.creneau.heure_debut, pc.creneau.heure_fin);
               return (
                 <div
