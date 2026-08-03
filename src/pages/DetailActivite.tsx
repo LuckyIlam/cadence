@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { erreurMessage } from "../errors";
 import {
   type Activite,
   type CreateCreneau,
@@ -172,8 +173,7 @@ export default function DetailActivite() {
       setSearchResults([]);
       chargerDetail();
     } catch (e) {
-      const msg = e as string;
-      alert(msg);
+      alert(erreurMessage(e));
     }
   };
 
@@ -216,7 +216,7 @@ export default function DetailActivite() {
       });
       setCreneaux(c);
     } catch (e) {
-      alert(e as string);
+      alert(erreurMessage(e));
     }
   };
 
@@ -238,7 +238,7 @@ export default function DetailActivite() {
       });
       setSemainesBanalisees(sb);
     } catch (e) {
-      alert(e as string);
+      alert(erreurMessage(e));
     }
   };
 
@@ -251,7 +251,7 @@ export default function DetailActivite() {
       });
       setSemainesBanalisees(sb);
     } catch (e) {
-      alert(e as string);
+      alert(erreurMessage(e));
     }
   };
 

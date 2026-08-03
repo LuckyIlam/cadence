@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
+import { erreurMessage } from "../errors";
 import type { ImpactCreneau, ParametresPlanning } from "../types";
 import { jourSemaineTexte } from "../types";
 
@@ -50,7 +51,7 @@ export default function ParametresPage() {
         setImpacts(apercu);
       }
     } catch (e) {
-      setErreur(e as string);
+      setErreur(erreurMessage(e));
     } finally {
       setSaving(false);
     }
@@ -63,7 +64,7 @@ export default function ParametresPage() {
       await sauvegarderPlage(true);
       setImpacts(null);
     } catch (e) {
-      setErreur(e as string);
+      setErreur(erreurMessage(e));
     } finally {
       setConfirming(false);
     }

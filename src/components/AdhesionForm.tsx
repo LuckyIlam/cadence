@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
+import { erreurMessage } from "../errors";
 import { type Adhesion, type CreateAdhesion, getCurrentAnneeScolaire, type UpdateAdhesion } from "../types";
 
 interface Props {
@@ -51,7 +52,7 @@ export default function AdhesionForm({ personneId, adhesion, onClose, onSaved }:
       }
       onSaved();
     } catch (e) {
-      setError(String(e));
+      setError(erreurMessage(e));
     } finally {
       setLoading(false);
     }
