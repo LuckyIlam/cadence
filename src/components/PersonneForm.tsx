@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { erreurMessage } from "../errors";
 import {
   ageFromDateNaissance,
   type CreatePersonne,
@@ -113,7 +114,7 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
       }
       onSaved();
     } catch (e) {
-      setError(String(e));
+      setError(erreurMessage(e));
     } finally {
       setLoading(false);
     }
