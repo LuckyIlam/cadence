@@ -71,6 +71,7 @@ pub fn run() {
             commands::planning_commands::planning_personne,
             commands::planning_commands::verifier_collision,
             commands::parametre_commands::obtenir_parametres_planning,
+            commands::parametre_commands::apercu_creneaux_hors_plage,
             commands::parametre_commands::modifier_plage_horaire,
         ])
         .run(tauri::generate_context!());

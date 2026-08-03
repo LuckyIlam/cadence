@@ -449,6 +449,44 @@ mod tests {
             unimplemented!()
         }
 
+        async fn lister_tous_creneaux(
+            &self,
+        ) -> Result<Vec<crate::domain::planning::CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_creneaux_hors_plage(
+            &self,
+            _heure_ouverture: &str,
+            _heure_fermeture: &str,
+        ) -> Result<Vec<crate::domain::planning::CreneauHorsPlage>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_inscriptions(
+            &self,
+        ) -> Result<Vec<crate::domain::planning::Inscription>, AppError> {
+            unimplemented!()
+        }
+
+        async fn supprimer_creneau_tx(
+            &self,
+            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _id: i64,
+        ) -> Result<(), AppError> {
+            unimplemented!()
+        }
+
+        async fn deplacer_creneau_tx(
+            &self,
+            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _id: i64,
+            _heure_debut: &str,
+            _heure_fin: &str,
+        ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
         async fn ajouter_semaine_banalisee(
             &self,
             _input: crate::domain::planning::CreateSemaineBanalisee,

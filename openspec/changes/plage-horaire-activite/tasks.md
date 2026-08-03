@@ -154,7 +154,56 @@ export interface ParametresPlanning {
 
 ---
 
-## 8. Vérifications (obligatoires)
+## 8. Réduction de la plage — gestion des créneaux impactés
+
+### 8.1 Domaine `domain/parametre.rs`
+
+- `heure_en_minutes(&str) -> Option<u32>` et `minutes_en_heure(u32) -> String` (conversion HH:MM ↔ minutes)
+- `trouver_place_deplacement(heure_debut, heure_fin, heure_ouverture, heure_fermeture, occupes: &[(String, String)]) -> Option<(String, String)>` : place libre la plus proche, même jour, durée conservée, début le plus proche de l'ancien (égalité → plus tôt), `None` si aucune fenêtre
+- `enum ImpactAction { Supprime, Deplace, DeplaceImpossible }` (serde snake_case)
+- `struct ImpactCreneau { creneau_id, activite_id, activite_nom, jour_semaine, heure_debut, heure_fin, annee_scolaire, action, nouveau_debut, nouveau_fin, raison }` avec `raison: Option<String>` portant le message de conflit adhérent
+- tests unitaires de `trouver_place_deplacement` (place libre, évite les occupés, plus proche avant/après, égalité → plus tôt, début après fermeture, à cheval avant ouverture, aucun emplacement, trop grand)
+
+### 8.2 `domain/planning.rs`
+
+- `struct CreneauHorsPlage { creneau_id, activite_id, activite_nom, jour_semaine, heure_debut, heure_fin, annee_scolaire, nb_inscrits }` (sqlx::FromRow)
+
+### 8.3 `repositories/planning_repo.rs`
+
+- trait `PlanningRepository` :
+  - `lister_creneaux_hors_plage(&self, ouverture, fermeture) -> Result<Vec<CreneauHorsPlage>, AppError>` (jointure `activites`, sous-requête `activite_personnes` pour `nb_inscrits`, `WHERE heure_debut < ? OR heure_fin > ?`, ordre par id)
+  - `lister_tous_creneaux(&self) -> Result<Vec<CreneauActivite>, AppError>`
+  - `lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError>` (`Inscription { activite_id, personne_id, annee_scolaire, activite_nom }`, JOIN `activites`, sans filtre de rôle)
+  - `supprimer_creneau_tx(&self, tx, id)` et `deplacer_creneau_tx(&self, tx, id, heure_debut, heure_fin)` (requêtes via `&mut **tx`)
+- tests : listing hors plage (avec/sans, tri, nb_inscrits), `lister_tous_creneaux` sans filtre, `lister_inscriptions` (nom joint), tx commit/rollback pour supprimer et déplacer
+
+### 8.4 `repositories/parametre_repo.rs`
+
+- `mettre_a_jour_plage_horaire_tx(&self, tx, ouverture, fermeture) -> Result<ParametresPlanning, AppError>` (le `mettre_a_jour_plage_horaire` non-tx est retiré)
+- test : mise à jour en tx persistante
+
+### 8.5 `services/parametre_service.rs`
+
+- `ParametreService<'a, R: ParametreRepository, P: PlanningRepository> { param_repo, planning_repo, pool }` avec `new`
+- `apercu_impact_plage(ouverture, fermeture) -> Result<Vec<ImpactCreneau>, AppError>` : validation plage, listing hors plage, occupation = créneaux fixes + destinations déjà retenues (**même activité**, année/jour), suppression si sans inscrit, déplacement sinon ; puis contrôle adhérent à l'état final (un adhérent d'un créneau déplacé déjà inscrit à une autre activité dont un créneau chevauche le nouvel horaire → `DeplaceImpossible` + `raison`)
+- `appliquer_plage(ouverture, fermeture, confirmer_suppression) -> Result<ParametresPlanning, AppError>` : refus si `DeplaceImpossible` (message enrichi de `raison` si présente) ; refus si impacts et pas de confirmation ; sinon transaction (suppressions, déplacements, mise à jour plage) et commit
+- tests avec mocks (aperçu, confirmation, refus sans confirmation, refus si déplacement impossible, aucun impact sans confirmation, occupation même activité, contrôle adhérent)
+
+### 8.6 `commands/parametre_commands.rs` + `lib.rs`
+
+- `modifier_plage_horaire(state, heure_ouverture, heure_fermeture, confirmer_suppression)` délègue au service
+- `apercu_creneaux_hors_plage(state, heure_ouverture, heure_fermeture) -> Result<Vec<ImpactCreneau>, AppError>` (lecture seule)
+- enregistrement d'`apercu_creneaux_hors_plage` dans le `generate_handler!`
+- tests : aperçu, réduction refusée sans confirmation, réduction confirmée qui supprime le créneau
+
+### 8.7 `src/types.ts` + `src/pages/ParametresPage.tsx`
+
+- types `ImpactAction` (`supprime` | `deplace` | `deplace_impossible`) et `ImpactCreneau`
+- à l'enregistrement : appel `apercu_creneaux_hors_plage` ; si impacts → modale listant suppressions/déplacements, boutons Annuler / Confirmer (désactivé si un déplacement est impossible) ; sinon enregistrement direct avec `confirmer_suppression: false`
+
+---
+
+## 9. Vérifications (obligatoires)
 
 Dans `src-tauri/` :
 

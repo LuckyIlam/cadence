@@ -217,6 +217,22 @@ export interface ParametresPlanning {
   heure_fermeture: string;
 }
 
+export type ImpactAction = "supprime" | "deplace" | "deplace_impossible";
+
+export interface ImpactCreneau {
+  creneau_id: number;
+  activite_id: number;
+  activite_nom: string;
+  jour_semaine: number;
+  heure_debut: string;
+  heure_fin: string;
+  annee_scolaire: string;
+  action: ImpactAction;
+  nouveau_debut: string | null;
+  nouveau_fin: string | null;
+  raison: string | null;
+}
+
 const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
 
 export function jourSemaineTexte(jour: number): string {
