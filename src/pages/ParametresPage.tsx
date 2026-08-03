@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import type { ParametresPlanning } from "../types";
+import type { ImpactCreneau, ParametresPlanning } from "../types";
+import { jourSemaineTexte } from "../types";
 
 export default function ParametresPage() {
   const [parametres, setParametres] = useState<ParametresPlanning | null>(null);
@@ -9,6 +10,8 @@ export default function ParametresPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [impacts, setImpacts] = useState<ImpactCreneau[] | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     invoke<ParametresPlanning>("obtenir_parametres_planning")
@@ -20,25 +23,59 @@ export default function ParametresPage() {
       .catch(console.error);
   }, []);
 
+  const sauvegarderPlage = async (confirmerSuppression: boolean) => {
+    const p = await invoke<ParametresPlanning>("modifier_plage_horaire", {
+      heureOuverture: ouverture,
+      heureFermeture: fermeture,
+      confirmerSuppression,
+    });
+    setParametres(p);
+    setOuverture(p.heure_ouverture);
+    setFermeture(p.heure_fermeture);
+    setMessage("Plage horaire enregistrée.");
+  };
+
   const handleSauvegarder = async () => {
     setSaving(true);
     setMessage(null);
     setErreur(null);
     try {
-      const p = await invoke<ParametresPlanning>("modifier_plage_horaire", {
+      const apercu = await invoke<ImpactCreneau[]>("apercu_creneaux_hors_plage", {
         heureOuverture: ouverture,
         heureFermeture: fermeture,
       });
-      setParametres(p);
-      setOuverture(p.heure_ouverture);
-      setFermeture(p.heure_fermeture);
-      setMessage("Plage horaire enregistrée.");
+      if (apercu.length === 0) {
+        await sauvegarderPlage(false);
+      } else {
+        setImpacts(apercu);
+      }
     } catch (e) {
       setErreur(e as string);
     } finally {
       setSaving(false);
     }
   };
+
+  const handleConfirmer = async () => {
+    setConfirming(true);
+    setErreur(null);
+    try {
+      await sauvegarderPlage(true);
+      setImpacts(null);
+    } catch (e) {
+      setErreur(e as string);
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  const handleAnnuler = () => {
+    setImpacts(null);
+  };
+
+  const impossible = (impacts ?? []).some((i) => i.action === "deplace_impossible");
+  const nbSupprimes = (impacts ?? []).filter((i) => i.action === "supprime").length;
+  const nbDeplaces = (impacts ?? []).filter((i) => i.action === "deplace").length;
 
   if (!parametres) {
     return <p className="text-gray-500">Chargement...</p>;
@@ -102,6 +139,71 @@ export default function ParametresPage() {
           {saving ? "Enregistrement..." : "Enregistrer"}
         </button>
       </div>
+
+      {impacts && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Créneaux impactés par la réduction de la plage</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              La nouvelle plage ({ouverture}–{fermeture}) ne couvre pas certains créneaux :
+              {nbSupprimes > 0 && (
+                <span>
+                  {" "}
+                  {nbSupprimes} créneau{nbSupprimes > 1 ? "x" : ""} sans inscrit seront supprimés
+                </span>
+              )}
+              {nbSupprimes > 0 && nbDeplaces > 0 && <span>,</span>}
+              {nbDeplaces > 0 && (
+                <span>
+                  {" "}
+                  {nbDeplaces} créneau{nbDeplaces > 1 ? "x" : ""} avec inscrits seront déplacés au plus proche
+                </span>
+              )}
+              .
+            </p>
+
+            {impossible && (
+              <div className="bg-red-100 border border-red-300 text-red-700 px-3 py-2 rounded-lg mb-3 text-sm">
+                Certains créneaux avec inscrits ne peuvent pas être déplacés dans la nouvelle plage. La réduction est
+                impossible : élargissez la plage ou retirez d'abord les inscrits.
+              </div>
+            )}
+
+            <ul className="space-y-2 mb-4 text-sm">
+              {impacts.map((i) => (
+                <li key={i.creneau_id} className="flex items-start gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gray-400 shrink-0" />
+                  <span className={i.action === "deplace_impossible" ? "text-red-700" : "text-gray-800"}>
+                    <strong>{i.activite_nom}</strong> — {jourSemaineTexte(i.jour_semaine)} {i.heure_debut}–{i.heure_fin}
+                    {i.action === "supprime" && " → supprimé"}
+                    {i.action === "deplace" && ` → déplacé ${i.nouveau_debut}–${i.nouveau_fin}`}
+                    {i.action === "deplace_impossible" && (i.raison ? ` → ${i.raison}` : " → aucune place libre")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={handleAnnuler}
+                disabled={confirming}
+                className="px-4 py-2 text-sm bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmer}
+                disabled={impossible || confirming}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {confirming ? "Application..." : "Confirmer la réduction"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

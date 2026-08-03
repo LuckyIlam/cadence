@@ -7,7 +7,6 @@ use crate::repositories::{
 };
 
 pub struct AppState {
-    #[allow(dead_code)]
     pub pool: SqlitePool,
     pub personne_repo: SqlitePersonneRepository,
     pub activite_repo: SqliteActiviteRepository,

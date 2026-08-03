@@ -54,6 +54,30 @@ pub struct Collision {
     pub heure_fin: String,
 }
 
+/// Créneau d'activité sortant (totalement ou partiellement) de la plage horaire d'ouverture,
+/// avec le nom de l'activité et le nombre d'inscrits pour décider du traitement.
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+pub struct CreneauHorsPlage {
+    pub creneau_id: i64,
+    pub activite_id: i64,
+    pub activite_nom: String,
+    pub jour_semaine: i64,
+    pub heure_debut: String,
+    pub heure_fin: String,
+    pub annee_scolaire: String,
+    pub nb_inscrits: i64,
+}
+
+/// Inscription d'une personne à une activité pour une année scolaire donnée,
+/// avec le nom de l'activité (jointure `activites`) pour le contrôle adhérent.
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+pub struct Inscription {
+    pub activite_id: i64,
+    pub personne_id: i64,
+    pub annee_scolaire: String,
+    pub activite_nom: String,
+}
+
 pub fn valider_jour_semaine(jour: i64) -> Result<(), String> {
     match jour {
         1..=7 => Ok(()),

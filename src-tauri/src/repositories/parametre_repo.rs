@@ -7,8 +7,9 @@ use crate::error::AppError;
 #[async_trait]
 pub trait ParametreRepository: Send + Sync {
     async fn obtenir_parametres_planning(&self) -> Result<ParametresPlanning, AppError>;
-    async fn mettre_a_jour_plage_horaire(
+    async fn mettre_a_jour_plage_horaire_tx(
         &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
         heure_ouverture: &str,
         heure_fermeture: &str,
     ) -> Result<ParametresPlanning, AppError>;
@@ -36,8 +37,9 @@ impl ParametreRepository for SqliteParametreRepository {
         Ok(row)
     }
 
-    async fn mettre_a_jour_plage_horaire(
+    async fn mettre_a_jour_plage_horaire_tx(
         &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
         heure_ouverture: &str,
         heure_fermeture: &str,
     ) -> Result<ParametresPlanning, AppError> {
@@ -49,7 +51,7 @@ impl ParametreRepository for SqliteParametreRepository {
         )
         .bind(heure_ouverture)
         .bind(heure_fermeture)
-        .fetch_one(&self.pool)
+        .fetch_one(&mut **tx)
         .await?;
 
         Ok(row)
@@ -87,12 +89,14 @@ mod tests {
     #[tokio::test]
     async fn test_mettre_a_jour_plage_horaire() {
         let pool = setup_db().await;
-        let r = SqliteParametreRepository::new(pool);
+        let r = SqliteParametreRepository::new(pool.clone());
 
+        let mut tx = pool.begin().await.unwrap();
         let params = r
-            .mettre_a_jour_plage_horaire("09:00", "18:00")
+            .mettre_a_jour_plage_horaire_tx(&mut tx, "09:00", "18:00")
             .await
             .unwrap();
+        tx.commit().await.unwrap();
         assert_eq!(params.heure_ouverture, "09:00");
         assert_eq!(params.heure_fermeture, "18:00");
 

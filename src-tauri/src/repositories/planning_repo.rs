@@ -3,8 +3,8 @@ use sqlx::SqlitePool;
 
 use crate::domain::activite::Role;
 use crate::domain::planning::{
-    Collision, CreateCreneau, CreateSemaineBanalisee, CreneauActivite, PlanningCreneau,
-    SemaineBanalisee,
+    Collision, CreateCreneau, CreateSemaineBanalisee, CreneauActivite, CreneauHorsPlage,
+    Inscription, PlanningCreneau, SemaineBanalisee,
 };
 use crate::error::AppError;
 
@@ -22,6 +22,25 @@ pub trait PlanningRepository: Send + Sync {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<CreneauActivite>, AppError>;
+    async fn lister_tous_creneaux(&self) -> Result<Vec<CreneauActivite>, AppError>;
+    async fn lister_creneaux_hors_plage(
+        &self,
+        heure_ouverture: &str,
+        heure_fermeture: &str,
+    ) -> Result<Vec<CreneauHorsPlage>, AppError>;
+    async fn lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError>;
+    async fn supprimer_creneau_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        id: i64,
+    ) -> Result<(), AppError>;
+    async fn deplacer_creneau_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        id: i64,
+        heure_debut: &str,
+        heure_fin: &str,
+    ) -> Result<CreneauActivite, AppError>;
     async fn ajouter_semaine_banalisee(
         &self,
         input: CreateSemaineBanalisee,
@@ -134,6 +153,95 @@ impl PlanningRepository for SqlitePlanningRepository {
         .await?;
 
         Ok(rows)
+    }
+
+    async fn lister_tous_creneaux(&self) -> Result<Vec<CreneauActivite>, AppError> {
+        let rows =
+            sqlx::query_as::<_, CreneauActivite>("SELECT * FROM creneaux_activite ORDER BY id")
+                .fetch_all(&self.pool)
+                .await?;
+
+        Ok(rows)
+    }
+
+    async fn lister_creneaux_hors_plage(
+        &self,
+        heure_ouverture: &str,
+        heure_fermeture: &str,
+    ) -> Result<Vec<CreneauHorsPlage>, AppError> {
+        let rows = sqlx::query_as::<_, CreneauHorsPlage>(
+            "SELECT c.id AS creneau_id,
+                    c.activite_id AS activite_id,
+                    a.nom AS activite_nom,
+                    c.jour_semaine AS jour_semaine,
+                    c.heure_debut AS heure_debut,
+                    c.heure_fin AS heure_fin,
+                    c.annee_scolaire AS annee_scolaire,
+                    (SELECT COUNT(*) FROM activite_personnes ap
+                     WHERE ap.activite_id = c.activite_id
+                       AND ap.annee_scolaire = c.annee_scolaire) AS nb_inscrits
+             FROM creneaux_activite c
+             JOIN activites a ON a.id = c.activite_id
+             WHERE c.heure_debut < ? OR c.heure_fin > ?
+             ORDER BY c.id",
+        )
+        .bind(heure_ouverture)
+        .bind(heure_fermeture)
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows)
+    }
+
+    async fn lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError> {
+        let rows = sqlx::query_as::<_, Inscription>(
+            "SELECT ap.activite_id AS activite_id,
+                    ap.personne_id AS personne_id,
+                    ap.annee_scolaire AS annee_scolaire,
+                    a.nom AS activite_nom
+             FROM activite_personnes ap
+             JOIN activites a ON a.id = ap.activite_id
+             ORDER BY ap.activite_id, ap.personne_id",
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows)
+    }
+
+    async fn supprimer_creneau_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        id: i64,
+    ) -> Result<(), AppError> {
+        sqlx::query("DELETE FROM creneaux_activite WHERE id = ?")
+            .bind(id)
+            .execute(&mut **tx)
+            .await?;
+
+        Ok(())
+    }
+
+    async fn deplacer_creneau_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        id: i64,
+        heure_debut: &str,
+        heure_fin: &str,
+    ) -> Result<CreneauActivite, AppError> {
+        let row = sqlx::query_as::<_, CreneauActivite>(
+            "UPDATE creneaux_activite
+             SET heure_debut = ?, heure_fin = ?
+             WHERE id = ?
+             RETURNING *",
+        )
+        .bind(heure_debut)
+        .bind(heure_fin)
+        .bind(id)
+        .fetch_one(&mut **tx)
+        .await?;
+
+        Ok(row)
     }
 
     async fn ajouter_semaine_banalisee(
@@ -399,7 +507,7 @@ mod tests {
     async fn test_creer_creneau() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -422,7 +530,7 @@ mod tests {
     async fn test_lister_creneaux() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -454,7 +562,7 @@ mod tests {
     async fn test_lister_creneaux_autre_annee() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -474,7 +582,7 @@ mod tests {
     async fn test_supprimer_creneau() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -497,7 +605,7 @@ mod tests {
     async fn test_modifier_creneau() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -533,7 +641,7 @@ mod tests {
     async fn test_ajouter_semaine_banalisee() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -553,7 +661,7 @@ mod tests {
     async fn test_ajouter_semaine_banalisee_sans_motif() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -572,7 +680,7 @@ mod tests {
     async fn test_lister_semaines_banalisees() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
             activite_id,
@@ -602,7 +710,7 @@ mod tests {
     async fn test_supprimer_semaine_banalisee() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -625,7 +733,7 @@ mod tests {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let count = r
             .compter_inscrits_activite(activite_id, "2025-2026")
@@ -656,7 +764,7 @@ mod tests {
     async fn test_verifier_conflit_creneaux_doublon() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -679,7 +787,7 @@ mod tests {
     async fn test_verifier_conflit_creneaux_exclure_id() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -703,7 +811,7 @@ mod tests {
     async fn test_verifier_conflit_creneaux_partiel() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -726,7 +834,7 @@ mod tests {
     async fn test_verifier_conflit_creneaux_adjacent() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -750,7 +858,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -773,7 +881,7 @@ mod tests {
     async fn test_verifier_conflit_creneaux_autre_annee() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -796,7 +904,7 @@ mod tests {
     async fn test_verifier_confrit_creneaux_autre_jour() {
         let pool = setup_db().await;
         let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -821,7 +929,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -865,7 +973,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -910,7 +1018,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -944,7 +1052,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1004,7 +1112,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1054,7 +1162,7 @@ mod tests {
     async fn test_planning_personne_semaine_aucune_activite() {
         let pool = setup_db().await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let planning = r
             .planning_personne_semaine(pid, "2025-09-01", "2025-2026")
@@ -1069,7 +1177,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1113,7 +1221,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1157,7 +1265,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1201,7 +1309,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a2,
@@ -1234,7 +1342,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1256,7 +1364,7 @@ mod tests {
         let activite_id = seed_activite(&pool, "Poterie").await;
         let pid1 = seed_personne(&pool).await;
         let pid2 = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         sqlx::query(
             "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
@@ -1294,7 +1402,7 @@ mod tests {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         sqlx::query(
             "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
@@ -1321,7 +1429,7 @@ mod tests {
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1381,7 +1489,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let c1 = r
             .creer_creneau(CreateCreneau {
@@ -1414,7 +1522,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let sb1 = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -1444,7 +1552,7 @@ mod tests {
     async fn test_lister_creneaux_tri_par_jour_puis_heure() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -1475,7 +1583,7 @@ mod tests {
     #[tokio::test]
     async fn test_modifier_creneau_inexistant() {
         let pool = setup_db().await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let result = r
             .modifier_creneau(
@@ -1496,7 +1604,7 @@ mod tests {
     #[tokio::test]
     async fn test_supprimer_creneau_inexistant() {
         let pool = setup_db().await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         let result = r.supprimer_creneau(99999).await;
         assert!(result.is_ok());
@@ -1507,7 +1615,7 @@ mod tests {
         let pool = setup_db().await;
         let a1 = seed_activite(&pool, "Poterie").await;
         let pid = seed_personne(&pool).await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         sqlx::query(
             "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
@@ -1532,7 +1640,7 @@ mod tests {
     async fn test_semaine_banalisee_meme_activite_deux_dates() {
         let pool = setup_db().await;
         let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool);
+        let r = repo(pool.clone());
 
         r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
             activite_id,
@@ -1554,5 +1662,306 @@ mod tests {
 
         let list = r.lister_semaines_banalisees(activite_id).await.unwrap();
         assert_eq!(list.len(), 2);
+    }
+
+    #[tokio::test]
+    async fn test_lister_creneaux_hors_plage_av_apres_partiel() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let pid = seed_personne(&pool).await;
+        let r = repo(pool.clone());
+
+        let c1 = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "07:00".to_string(),
+                heure_fin: "08:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let c2 = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "09:00".to_string(),
+                heure_fin: "11:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let c3 = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 2,
+                heure_debut: "19:00".to_string(),
+                heure_fin: "21:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let c4 = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 3,
+                heure_debut: "07:30".to_string(),
+                heure_fin: "09:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        sqlx::query(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+             VALUES (?, ?, ?, ?)",
+        )
+        .bind(activite_id)
+        .bind(pid)
+        .bind("2025-2026")
+        .bind(Role::Participant)
+        .execute(&r.pool)
+        .await
+        .unwrap();
+
+        let hors = r
+            .lister_creneaux_hors_plage("08:00", "20:00")
+            .await
+            .unwrap();
+
+        let ids: Vec<i64> = hors.iter().map(|h| h.creneau_id).collect();
+        assert_eq!(ids, vec![c1.id, c3.id, c4.id]);
+        assert!(!ids.contains(&c2.id));
+        for h in &hors {
+            assert_eq!(h.annee_scolaire, "2025-2026");
+            assert_eq!(h.nb_inscrits, 1);
+        }
+    }
+
+    #[tokio::test]
+    async fn test_lister_creneaux_hors_plage_aucun() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let r = repo(pool.clone());
+
+        r.creer_creneau(CreateCreneau {
+            activite_id,
+            jour_semaine: 1,
+            heure_debut: "09:00".to_string(),
+            heure_fin: "11:00".to_string(),
+            annee_scolaire: "2025-2026".to_string(),
+        })
+        .await
+        .unwrap();
+
+        let hors = r
+            .lister_creneaux_hors_plage("08:00", "20:00")
+            .await
+            .unwrap();
+        assert!(hors.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_lister_tous_creneaux_sans_filtre() {
+        let pool = setup_db().await;
+        let a1 = seed_activite(&pool, "Poterie").await;
+        let a2 = seed_activite(&pool, "Théâtre").await;
+        let r = repo(pool.clone());
+
+        let c1 = r
+            .creer_creneau(CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let c2 = r
+            .creer_creneau(CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 3,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2024-2025".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let tous = r.lister_tous_creneaux().await.unwrap();
+        assert_eq!(tous.len(), 2);
+        assert_eq!(tous[0].id, c1.id);
+        assert_eq!(tous[1].id, c2.id);
+    }
+
+    #[tokio::test]
+    async fn test_supprimer_creneau_tx_commit_visible() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let r = repo(pool.clone());
+
+        let c = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let mut tx = pool.begin().await.unwrap();
+        r.supprimer_creneau_tx(&mut tx, c.id).await.unwrap();
+        tx.commit().await.unwrap();
+
+        let list = r.lister_creneaux(activite_id, "2025-2026").await.unwrap();
+        assert!(list.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_supprimer_creneau_tx_rollback_sans_effet() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let r = repo(pool.clone());
+
+        let c = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let mut tx = pool.begin().await.unwrap();
+        r.supprimer_creneau_tx(&mut tx, c.id).await.unwrap();
+        tx.rollback().await.unwrap();
+
+        let list = r.lister_creneaux(activite_id, "2025-2026").await.unwrap();
+        assert_eq!(list.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_deplacer_creneau_tx_commit_visible() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let r = repo(pool.clone());
+
+        let c = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "07:00".to_string(),
+                heure_fin: "09:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let mut tx = pool.begin().await.unwrap();
+        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
+            .await
+            .unwrap();
+        tx.commit().await.unwrap();
+
+        let list = r.lister_creneaux(activite_id, "2025-2026").await.unwrap();
+        assert_eq!(list[0].heure_debut, "09:00");
+        assert_eq!(list[0].heure_fin, "11:00");
+    }
+
+    #[tokio::test]
+    async fn test_deplacer_creneau_tx_rollback_sans_effet() {
+        let pool = setup_db().await;
+        let activite_id = seed_activite(&pool, "Poterie").await;
+        let r = repo(pool.clone());
+
+        let c = r
+            .creer_creneau(CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "07:00".to_string(),
+                heure_fin: "09:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            })
+            .await
+            .unwrap();
+
+        let mut tx = pool.begin().await.unwrap();
+        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
+            .await
+            .unwrap();
+        tx.rollback().await.unwrap();
+
+        let list = r.lister_creneaux(activite_id, "2025-2026").await.unwrap();
+        assert_eq!(list[0].heure_debut, "07:00");
+        assert_eq!(list[0].heure_fin, "09:00");
+    }
+
+    #[tokio::test]
+    async fn test_lister_inscriptions_nom_joint() {
+        let pool = setup_db().await;
+        let a1 = seed_activite(&pool, "Poterie").await;
+        let a2 = seed_activite(&pool, "Théâtre").await;
+        let pid1 = seed_personne(&pool).await;
+        let pid2 = seed_personne(&pool).await;
+        let r = repo(pool.clone());
+
+        sqlx::query(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+             VALUES (?, ?, ?, ?)",
+        )
+        .bind(a1)
+        .bind(pid1)
+        .bind("2025-2026")
+        .bind(Role::Participant)
+        .execute(&r.pool)
+        .await
+        .unwrap();
+
+        sqlx::query(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+             VALUES (?, ?, ?, ?)",
+        )
+        .bind(a1)
+        .bind(pid2)
+        .bind("2025-2026")
+        .bind(Role::Encadrant)
+        .execute(&r.pool)
+        .await
+        .unwrap();
+
+        sqlx::query(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+             VALUES (?, ?, ?, ?)",
+        )
+        .bind(a2)
+        .bind(pid1)
+        .bind("2024-2025")
+        .bind(Role::Participant)
+        .execute(&r.pool)
+        .await
+        .unwrap();
+
+        let inscrits = r.lister_inscriptions().await.unwrap();
+        assert_eq!(inscrits.len(), 3);
+
+        let poterie = inscrits
+            .iter()
+            .find(|i| i.activite_id == a1 && i.personne_id == pid1)
+            .unwrap();
+        assert_eq!(poterie.activite_nom, "Poterie");
+        assert_eq!(poterie.annee_scolaire, "2025-2026");
+
+        let theatre = inscrits.iter().find(|i| i.activite_id == a2).unwrap();
+        assert_eq!(theatre.activite_nom, "Théâtre");
+        assert_eq!(theatre.annee_scolaire, "2024-2025");
     }
 }

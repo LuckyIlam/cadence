@@ -205,8 +205,8 @@
     "semantic_hash": "ad40990e7cb6da8e565f037dc4909a8a"
   },
   "src/types.ts": {
-    "mtime": 1785780479.2826502,
-    "ast_hash": "6f869d203f474298e307b2c86c5241b6",
+    "mtime": 1785703696.5493245,
+    "ast_hash": "67bfc020f70b91e72d8437c037238b58",
     "semantic_hash": ""
   },
   "src/vite-env.d.ts": {
@@ -650,8 +650,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/domain/planning.rs": {
-    "mtime": 1785780211.4381618,
-    "ast_hash": "b56c48b04bafbf6ee86077ddc1f1a501",
+    "mtime": 1785703301.9121351,
+    "ast_hash": "58d5b95475d6c32be9ba8f0abe33bef4",
     "semantic_hash": ""
   },
   "src-tauri/src/error.rs": {
@@ -660,13 +660,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/planning_repo.rs": {
-    "mtime": 1785780592.7712286,
-    "ast_hash": "cf061d43e9fa0571f2f6d48ef42f3c6a",
+    "mtime": 1785703643.4495122,
+    "ast_hash": "9683d413e364f84a7c06d230f15d727d",
     "semantic_hash": ""
   },
   "src-tauri/src/services/activite_service.rs": {
-    "mtime": 1785780330.050792,
-    "ast_hash": "17f0c78f623f3ad44f0387e3c19dc2b0",
+    "mtime": 1785703323.1880622,
+    "ast_hash": "0418e70f8aa6bf1a0d4aaefa0288a453",
     "semantic_hash": ""
   },
   "src-tauri/src/services/mod.rs": {
@@ -800,8 +800,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/domain/parametre.rs": {
-    "mtime": 1785780216.6749046,
-    "ast_hash": "77dbd604ebe9d0312811ebe030c82173",
+    "mtime": 1785703643.426122,
+    "ast_hash": "e67d51322f06607ce97c45b34da91258",
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/parametre_repo.rs": {
@@ -810,13 +810,13 @@
     "semantic_hash": ""
   },
   "src/pages/ParametresPage.tsx": {
-    "mtime": 1785780489.9033325,
-    "ast_hash": "6d9cb33b38a0b24c7c19a6544d2a4b39",
+    "mtime": 1785703749.9618852,
+    "ast_hash": "69b9cf77a39440596df98a6017020309",
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/design.md": {
-    "mtime": 1785780509.0520706,
-    "ast_hash": "d48d07959a0418b191280822703eb54c",
+    "mtime": 1785703863.9131432,
+    "ast_hash": "2a8afd4d9414284daf3b255a648de6bc",
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/proposal.md": {
@@ -825,8 +825,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/specs/parametres/spec.md": {
-    "mtime": 1785780518.7632942,
-    "ast_hash": "26d5235b82051b27880c85a4a74d5d55",
+    "mtime": 1785703823.183382,
+    "ast_hash": "0620ed8b62e770d51ae63134a0e01f3a",
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/specs/planning/spec.md": {
@@ -835,28 +835,23 @@
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/tasks.md": {
-    "mtime": 1785780551.7173953,
-    "ast_hash": "39dbc2579a854919b5902f36ba8649d7",
+    "mtime": 1785703888.763178,
+    "ast_hash": "ecc1a9b2ef84e34ff4973c759d1d960f",
     "semantic_hash": ""
   },
   "openspec/specs/parametres/spec.md": {
-    "mtime": 1785780528.152918,
-    "ast_hash": "2fc86d409c8ecac3a18d1a18c56427cd",
+    "mtime": 1785703831.9183156,
+    "ast_hash": "e98794e6786a48088f4e49209fbfe6cc",
     "semantic_hash": ""
   },
   "src-tauri/src/services/parametre_service.rs": {
-    "mtime": 1785780592.7832718,
-    "ast_hash": "dd85aca9265d81f4b8633c59638fbe06",
+    "mtime": 1785703643.4590678,
+    "ast_hash": "66418cb21bdce96d4814599bed8a9d25",
     "semantic_hash": ""
   },
   "docs/fonctionnel/parametres.md": {
-    "mtime": 1785780534.130853,
-    "ast_hash": "e1230387b7bbe7a63467fe4a441f251b",
-    "semantic_hash": ""
-  },
-  "openspec/changes/plage-horaire-activite/plan-option-c.md": {
-    "mtime": 1785780566.1091082,
-    "ast_hash": "231687ffe16671a112177f213e5a5fd8",
+    "mtime": 1785703840.643769,
+    "ast_hash": "08fc061d64f51b64d04408675e19c0c9",
     "semantic_hash": ""
   }
 }

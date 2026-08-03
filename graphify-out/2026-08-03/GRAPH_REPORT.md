@@ -1,11 +1,11 @@
-# Graph Report - cadence  (2026-08-03)
+# Graph Report - cadence  (2026-08-02)
 
 ## Corpus Check
-- 112 files · ~73,444 words
+- 111 files · ~70,274 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1605 nodes · 2983 edges · 111 communities (81 shown, 30 thin omitted)
+- 1568 nodes · 2856 edges · 111 communities (81 shown, 30 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
@@ -111,16 +111,16 @@
 - Thin Frontend Pattern — Business Logic in Backend
 
 ## God Nodes (most connected - your core abstractions)
-1. `AppError` - 167 edges
-2. `repo()` - 50 edges
-3. `setup_db()` - 49 edges
-4. `seed_activite()` - 45 edges
-5. `AppState` - 44 edges
+1. `AppError` - 164 edges
+2. `AppState` - 44 edges
+3. `repo()` - 42 edges
+4. `setup_db()` - 41 edges
+5. `seed_activite()` - 37 edges
 6. `setup_app()` - 36 edges
 7. `seed_activite()` - 26 edges
 8. `MockActiviteRepository` - 25 edges
-9. `MockPlanningRepository` - 25 edges
-10. `MockPlanningRepository` - 24 edges
+9. `MockPlanningRepository` - 23 edges
+10. `MockPlanningRepository` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Application entry point (index.html)` --conceptually_related_to--> `Cadence`  [INFERRED]
@@ -161,15 +161,15 @@ Nodes (58): App(), AdhesionForm(), Props, links, Nav(), PersonneForm(), Props, h
 
 ### Community 7 - "Formulaire Adhésion"
 Cohesion: 0.07
-Nodes (38): From, Collision, AppError, Error, Self, String, ActiviteService, ActiviteService<'a, R, P> (+30 more)
+Nodes (33): LiaisonActivitePersonne, ActiviteService, ActiviteService<'a, R, P>, make_service(), MockActiviteRepository, MockPlanningRepository, Activite, ActivitePersonne (+25 more)
 
 ### Community 8 - "Navigation"
 Cohesion: 0.11
 Nodes (30): A, date(), make_service(), MockAdhesionRepository, MockPersonneRepository, next_id(), PersonneService, PersonneService<'a, R, A> (+22 more)
 
 ### Community 9 - "Pages Activités"
-Cohesion: 0.10
-Nodes (66): PlanningRepository, repo(), CreateCreneau, CreateSemaineBanalisee, CreneauActivite, Option, PlanningCreneau, Result (+58 more)
+Cohesion: 0.11
+Nodes (58): PlanningRepository, repo(), CreateCreneau, CreateSemaineBanalisee, CreneauActivite, Option, PlanningCreneau, Result (+50 more)
 
 ### Community 10 - "Détail Personne"
 Cohesion: 0.06
@@ -180,8 +180,8 @@ Cohesion: 0.11
 Nodes (58): ajouter_creneau(), ajouter_semaine_banalisee(), lister_creneaux(), lister_semaines_banalisees(), modifier_creneau(), planning_personne(), App, CreateCreneau (+50 more)
 
 ### Community 12 - "Type Activité"
-Cohesion: 0.07
-Nodes (52): Display, Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite (+44 more)
+Cohesion: 0.12
+Nodes (32): TarifActivite, ActiviteRepository, create_activite_input(), repo(), Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne (+24 more)
 
 ### Community 13 - "Type ActivitéPersonne"
 Cohesion: 0.04
@@ -201,7 +201,7 @@ Nodes (36): Purpose, Requirement: Afficher les activités d'une personne, Requir
 
 ### Community 17 - "Type CreateAdhesion"
 Cohesion: 0.09
-Nodes (20): CreateCreneau, CreateSemaineBanalisee, CreneauActivite, est_lundi(), PlanningCreneau, Activite, Option, Result (+12 more)
+Nodes (21): Collision, CreateCreneau, CreateSemaineBanalisee, CreneauActivite, est_lundi(), PlanningCreneau, Activite, Option (+13 more)
 
 ### Community 18 - "Type CreateLiaison"
 Cohesion: 0.17
@@ -232,8 +232,8 @@ Cohesion: 0.08
 Nodes (25): ADDED Requirements, MODIFIED Requirements, REMOVED Requirements, RENAMED Requirements, Requirement: Ajouter une personne à une activité, Requirement: Consulter le détail d'une activité, Requirement: Créer une activité, Requirement: Définir le tarif d'une activité pour une année scolaire (+17 more)
 
 ### Community 25 - "Type AnnéeScolaire"
-Cohesion: 0.13
-Nodes (14): 1. Code — `src-tauri/src/services/parametre_service.rs`, 2. Domaine — `src-tauri/src/domain/planning.rs` et `src-tauri/src/domain/parametre.rs`, 3. Repo — `src-tauri/src/repositories/planning_repo.rs`, 4. Frontend, Contexte, Documentation, Décisions d'architecture, Modifications (+6 more)
+Cohesion: 0.15
+Nodes (19): Display, Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite (+11 more)
 
 ### Community 26 - "Type Mineur"
 Cohesion: 0.11
@@ -321,11 +321,11 @@ Nodes (11): Architecture, Backend (Rust / Tauri), Contexte, Design — Plage hor
 
 ### Community 47 - "Requirement: Modifier la plage horaire d'ouverture"
 Cohesion: 0.12
-Nodes (16): Purpose, Requirement: Apercevoir l'impact d'une réduction de plage, Requirement: Consulter la plage horaire d'ouverture des activités, Requirement: Modifier la plage horaire d'ouverture, Requirement: Réduire la plage horaire en gérant les créneaux impactés, Requirements, Scenario: Aperçu avec suppressions et déplacements, Scenario: Aperçu sans impact (+8 more)
+Nodes (15): Purpose, Requirement: Apercevoir l'impact d'une réduction de plage, Requirement: Consulter la plage horaire d'ouverture des activités, Requirement: Modifier la plage horaire d'ouverture, Requirement: Réduire la plage horaire en gérant les créneaux impactés, Requirements, Scenario: Aperçu avec suppressions et déplacements, Scenario: Aperçu sans impact (+7 more)
 
 ### Community 48 - "Requirement: Modifier la plage horaire d'ouverture"
-Cohesion: 0.12
-Nodes (15): ADDED Requirements, Requirement: Apercevoir l'impact d'une réduction de plage, Requirement: Consulter la plage horaire d'ouverture des activités, Requirement: Modifier la plage horaire d'ouverture, Requirement: Réduire la plage horaire en gérant les créneaux impactés, Scenario: Aperçu avec suppressions et déplacements, Scenario: Aperçu sans impact, Scenario: Déplacement refusé si chevauchement avec une autre activité de l'adhérent (+7 more)
+Cohesion: 0.13
+Nodes (14): ADDED Requirements, Requirement: Apercevoir l'impact d'une réduction de plage, Requirement: Consulter la plage horaire d'ouverture des activités, Requirement: Modifier la plage horaire d'ouverture, Requirement: Réduire la plage horaire en gérant les créneaux impactés, Scenario: Aperçu avec suppressions et déplacements, Scenario: Aperçu sans impact, Scenario: Format d'heure invalide (+6 more)
 
 ### Community 49 - "proposal.md"
 Cohesion: 0.29
@@ -361,7 +361,7 @@ Nodes (7): Critères d'entrée, Critères de sortie, Documents consommés, Docum
 
 ### Community 57 - "AppError"
 Cohesion: 0.09
-Nodes (41): CreneauHorsPlage, Inscription, hors_plage(), make_pool(), make_service(), MockParametreRepository, MockPlanningRepository, ParametreService (+33 more)
+Nodes (39): From, CreneauHorsPlage, AppError, Error, Self, String, hors_plage(), make_pool() (+31 more)
 
 ### Community 58 - "personne.rs"
 Cohesion: 0.16
@@ -396,24 +396,24 @@ Cohesion: 0.40
 Nodes (5): Description, Impact de la plage, Modifier la plage horaire, Paramètres, Réduire la plage horaire
 
 ## Knowledge Gaps
-- **618 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+613 more)
+- **605 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+600 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppError` connect `Formulaire Adhésion` to `Navigation`, `Pages Activités`, `Détail Personne`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `AppError`, `Type CurrentAnnée`?**
-  _High betweenness centrality (0.141) - this node is a cross-community bridge._
+- **Why does `AppError` connect `AppError` to `Formulaire Adhésion`, `Navigation`, `Pages Activités`, `Détail Personne`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type CurrentAnnée`?**
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
 - **Why does `AppState` connect `Détail Personne` to `Pages Activités`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type CurrentAnnée`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `verifier_capacite_max()` connect `Type Activité` to `Formulaire Adhésion`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `verifier_capacite_max()` connect `Type AnnéeScolaire` to `Formulaire Adhésion`?**
   _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **What connects `$schema`, `plugin`, `@opencode-ai/plugin` to the rest of the system?**
-  _631 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _618 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Shell` be split into smaller, more focused modules?**
   _Cohesion score 0.06219918548685672 - nodes in this community are weakly interconnected._
 - **Should `Formulaire Adhésion` be split into smaller, more focused modules?**
-  _Cohesion score 0.07066167290886392 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06944444444444445 - nodes in this community are weakly interconnected._
 - **Should `Navigation` be split into smaller, more focused modules?**
   _Cohesion score 0.10821256038647344 - nodes in this community are weakly interconnected._
