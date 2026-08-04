@@ -16,7 +16,7 @@ tauri = { version = "2", default-features = false, features = ["wry", "test"] }
 tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-sqlx = { version = "0.9", features = ["runtime-tokio", "sqlite", "chrono"] }
+libsql = { version = "=0.9.30", default-features = false, features = ["remote", "core", "tls", "serde"] }
 tokio = { version = "1", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "2"

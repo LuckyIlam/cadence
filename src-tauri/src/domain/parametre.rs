@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::planning::{valider_heure, CreateCreneau};
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParametresPlanning {
     pub id: i64,
     pub heure_ouverture: String,

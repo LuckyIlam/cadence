@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::SqlitePool;
+use libsql::Connection;
 
 use crate::domain::activite::Role;
 use crate::domain::planning::{
@@ -31,12 +31,12 @@ pub trait PlanningRepository: Send + Sync {
     async fn lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError>;
     async fn supprimer_creneau_tx(
         &self,
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut libsql::Transaction,
         id: i64,
     ) -> Result<(), AppError>;
     async fn deplacer_creneau_tx(
         &self,
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut libsql::Transaction,
         id: i64,
         heure_debut: &str,
         heure_fin: &str,
@@ -78,39 +78,53 @@ pub trait PlanningRepository: Send + Sync {
     ) -> Result<Vec<PlanningCreneau>, AppError>;
 }
 
-pub struct SqlitePlanningRepository {
-    pub(crate) pool: SqlitePool,
+pub struct LibsqlPlanningRepository {
+    pub(crate) conn: Connection,
 }
 
-impl SqlitePlanningRepository {
-    pub fn new(pool: SqlitePool) -> Self {
-        Self { pool }
+impl LibsqlPlanningRepository {
+    pub fn new(conn: Connection) -> Self {
+        Self { conn }
     }
+}
+
+#[derive(Debug, Clone, serde::Deserialize)]
+struct CompteurRow {
+    count: i64,
 }
 
 #[async_trait]
-impl PlanningRepository for SqlitePlanningRepository {
+impl PlanningRepository for LibsqlPlanningRepository {
     async fn creer_creneau(&self, input: CreateCreneau) -> Result<CreneauActivite, AppError> {
-        let row = sqlx::query_as::<_, CreneauActivite>(
-            "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
-             VALUES (?, ?, ?, ?, ?)
-             RETURNING *",
-        )
-        .bind(input.activite_id)
-        .bind(input.jour_semaine)
-        .bind(&input.heure_debut)
-        .bind(&input.heure_fin)
-        .bind(&input.annee_scolaire)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
+                 VALUES (?, ?, ?, ?, ?)
+                 RETURNING *",
+                libsql::params![
+                    input.activite_id,
+                    input.jour_semaine,
+                    input.heure_debut,
+                    input.heure_fin,
+                    input.annee_scolaire
+                ],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
+        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
     }
 
     async fn supprimer_creneau(&self, id: i64) -> Result<(), AppError> {
-        sqlx::query("DELETE FROM creneaux_activite WHERE id = ?")
-            .bind(id)
-            .execute(&self.pool)
+        self.conn
+            .execute(
+                "DELETE FROM creneaux_activite WHERE id = ?",
+                libsql::params![id],
+            )
             .await?;
 
         Ok(())
@@ -121,20 +135,22 @@ impl PlanningRepository for SqlitePlanningRepository {
         id: i64,
         input: CreateCreneau,
     ) -> Result<CreneauActivite, AppError> {
-        let row = sqlx::query_as::<_, CreneauActivite>(
-            "UPDATE creneaux_activite
-             SET jour_semaine = ?, heure_debut = ?, heure_fin = ?
-             WHERE id = ?
-             RETURNING *",
-        )
-        .bind(input.jour_semaine)
-        .bind(&input.heure_debut)
-        .bind(&input.heure_fin)
-        .bind(id)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "UPDATE creneaux_activite
+                 SET jour_semaine = ?, heure_debut = ?, heure_fin = ?
+                 WHERE id = ?
+                 RETURNING *",
+                libsql::params![input.jour_semaine, input.heure_debut, input.heure_fin, id],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
+        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
     }
 
     async fn lister_creneaux(
@@ -142,26 +158,39 @@ impl PlanningRepository for SqlitePlanningRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<CreneauActivite>, AppError> {
-        let rows = sqlx::query_as::<_, CreneauActivite>(
-            "SELECT * FROM creneaux_activite
-             WHERE activite_id = ? AND annee_scolaire = ?
-             ORDER BY jour_semaine, heure_debut",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM creneaux_activite
+                 WHERE activite_id = ? AND annee_scolaire = ?
+                 ORDER BY jour_semaine, heure_debut",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauActivite>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_tous_creneaux(&self) -> Result<Vec<CreneauActivite>, AppError> {
-        let rows =
-            sqlx::query_as::<_, CreneauActivite>("SELECT * FROM creneaux_activite ORDER BY id")
-                .fetch_all(&self.pool)
-                .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM creneaux_activite ORDER BY id",
+                libsql::params![],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauActivite>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_creneaux_hors_plage(
@@ -169,104 +198,128 @@ impl PlanningRepository for SqlitePlanningRepository {
         heure_ouverture: &str,
         heure_fermeture: &str,
     ) -> Result<Vec<CreneauHorsPlage>, AppError> {
-        let rows = sqlx::query_as::<_, CreneauHorsPlage>(
-            "SELECT c.id AS creneau_id,
-                    c.activite_id AS activite_id,
-                    a.nom AS activite_nom,
-                    c.jour_semaine AS jour_semaine,
-                    c.heure_debut AS heure_debut,
-                    c.heure_fin AS heure_fin,
-                    c.annee_scolaire AS annee_scolaire,
-                    (SELECT COUNT(*) FROM activite_personnes ap
-                     WHERE ap.activite_id = c.activite_id
-                       AND ap.annee_scolaire = c.annee_scolaire) AS nb_inscrits
-             FROM creneaux_activite c
-             JOIN activites a ON a.id = c.activite_id
-             WHERE c.heure_debut < ? OR c.heure_fin > ?
-             ORDER BY c.id",
-        )
-        .bind(heure_ouverture)
-        .bind(heure_fermeture)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT c.id AS creneau_id,
+                        c.activite_id AS activite_id,
+                        a.nom AS activite_nom,
+                        c.jour_semaine AS jour_semaine,
+                        c.heure_debut AS heure_debut,
+                        c.heure_fin AS heure_fin,
+                        c.annee_scolaire AS annee_scolaire,
+                        (SELECT COUNT(*) FROM activite_personnes ap
+                         WHERE ap.activite_id = c.activite_id
+                           AND ap.annee_scolaire = c.annee_scolaire) AS nb_inscrits
+                 FROM creneaux_activite c
+                 JOIN activites a ON a.id = c.activite_id
+                 WHERE c.heure_debut < ? OR c.heure_fin > ?
+                 ORDER BY c.id",
+                libsql::params![heure_ouverture, heure_fermeture],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauHorsPlage>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError> {
-        let rows = sqlx::query_as::<_, Inscription>(
-            "SELECT ap.activite_id AS activite_id,
-                    ap.personne_id AS personne_id,
-                    ap.annee_scolaire AS annee_scolaire,
-                    a.nom AS activite_nom
-             FROM activite_personnes ap
-             JOIN activites a ON a.id = ap.activite_id
-             ORDER BY ap.activite_id, ap.personne_id",
-        )
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT ap.activite_id AS activite_id,
+                        ap.personne_id AS personne_id,
+                        ap.annee_scolaire AS annee_scolaire,
+                        a.nom AS activite_nom
+                 FROM activite_personnes ap
+                 JOIN activites a ON a.id = ap.activite_id
+                 ORDER BY ap.activite_id, ap.personne_id",
+                libsql::params![],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<Inscription>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn supprimer_creneau_tx(
         &self,
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut libsql::Transaction,
         id: i64,
     ) -> Result<(), AppError> {
-        sqlx::query("DELETE FROM creneaux_activite WHERE id = ?")
-            .bind(id)
-            .execute(&mut **tx)
-            .await?;
+        tx.execute(
+            "DELETE FROM creneaux_activite WHERE id = ?",
+            libsql::params![id],
+        )
+        .await?;
 
         Ok(())
     }
 
     async fn deplacer_creneau_tx(
         &self,
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut libsql::Transaction,
         id: i64,
         heure_debut: &str,
         heure_fin: &str,
     ) -> Result<CreneauActivite, AppError> {
-        let row = sqlx::query_as::<_, CreneauActivite>(
-            "UPDATE creneaux_activite
-             SET heure_debut = ?, heure_fin = ?
-             WHERE id = ?
-             RETURNING *",
-        )
-        .bind(heure_debut)
-        .bind(heure_fin)
-        .bind(id)
-        .fetch_one(&mut **tx)
-        .await?;
+        let mut rows = tx
+            .query(
+                "UPDATE creneaux_activite
+                 SET heure_debut = ?, heure_fin = ?
+                 WHERE id = ?
+                 RETURNING *",
+                libsql::params![heure_debut, heure_fin, id],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
+        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
     }
 
     async fn ajouter_semaine_banalisee(
         &self,
         input: CreateSemaineBanalisee,
     ) -> Result<SemaineBanalisee, AppError> {
-        let row = sqlx::query_as::<_, SemaineBanalisee>(
-            "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire)
-             VALUES (?, ?, ?, ?)
-             RETURNING *",
-        )
-        .bind(input.activite_id)
-        .bind(&input.date_debut)
-        .bind(&input.motif)
-        .bind(&input.annee_scolaire)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire)
+                 VALUES (?, ?, ?, ?)
+                 RETURNING *",
+                libsql::params![
+                    input.activite_id,
+                    input.date_debut,
+                    input.motif,
+                    input.annee_scolaire
+                ],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Semaine banalisée introuvable".into()))?;
+        Ok(libsql::de::from_row::<SemaineBanalisee>(&row)?)
     }
 
     async fn supprimer_semaine_banalisee(&self, id: i64) -> Result<(), AppError> {
-        sqlx::query("DELETE FROM semaines_banalisees WHERE id = ?")
-            .bind(id)
-            .execute(&self.pool)
+        self.conn
+            .execute(
+                "DELETE FROM semaines_banalisees WHERE id = ?",
+                libsql::params![id],
+            )
             .await?;
 
         Ok(())
@@ -276,16 +329,22 @@ impl PlanningRepository for SqlitePlanningRepository {
         &self,
         activite_id: i64,
     ) -> Result<Vec<SemaineBanalisee>, AppError> {
-        let rows = sqlx::query_as::<_, SemaineBanalisee>(
-            "SELECT * FROM semaines_banalisees
-             WHERE activite_id = ?
-             ORDER BY date_debut",
-        )
-        .bind(activite_id)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM semaines_banalisees
+                 WHERE activite_id = ?
+                 ORDER BY date_debut",
+                libsql::params![activite_id],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<SemaineBanalisee>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn verifier_conflit_creneaux(
@@ -297,26 +356,34 @@ impl PlanningRepository for SqlitePlanningRepository {
         heure_fin: &str,
         exclure_id: Option<i64>,
     ) -> Result<Vec<CreneauActivite>, AppError> {
-        let rows = sqlx::query_as::<_, CreneauActivite>(
-            "SELECT * FROM creneaux_activite
-             WHERE activite_id = ?
-               AND annee_scolaire = ?
-               AND jour_semaine = ?
-               AND heure_debut < ?
-               AND heure_fin > ?
-               AND (? IS NULL OR id != ?)",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .bind(jour_semaine)
-        .bind(heure_fin)
-        .bind(heure_debut)
-        .bind(exclure_id)
-        .bind(exclure_id)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM creneaux_activite
+                 WHERE activite_id = ?
+                   AND annee_scolaire = ?
+                   AND jour_semaine = ?
+                   AND heure_debut < ?
+                   AND heure_fin > ?
+                   AND (? IS NULL OR id != ?)",
+                libsql::params![
+                    activite_id,
+                    annee_scolaire,
+                    jour_semaine,
+                    heure_fin,
+                    heure_debut,
+                    exclure_id,
+                    exclure_id
+                ],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauActivite>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn compter_inscrits_activite(
@@ -324,16 +391,20 @@ impl PlanningRepository for SqlitePlanningRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError> {
-        let count: (i64,) = sqlx::query_as(
-            "SELECT COUNT(*) FROM activite_personnes
-             WHERE activite_id = ? AND annee_scolaire = ?",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT COUNT(*) AS count FROM activite_personnes
+                 WHERE activite_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(count.0)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
+        Ok(libsql::de::from_row::<CompteurRow>(&row)?.count)
     }
 
     async fn verifier_collision(
@@ -342,20 +413,34 @@ impl PlanningRepository for SqlitePlanningRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<Collision>, AppError> {
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct AutreActiviteRow {
+            activite_id: i64,
+        }
+
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct NomActiviteRow {
+            nom: String,
+        }
+
         let creneaux_cibles = self.lister_creneaux(activite_id, annee_scolaire).await?;
         if creneaux_cibles.is_empty() {
             return Ok(None);
         }
 
-        let autres_activites = sqlx::query_scalar::<_, i64>(
-            "SELECT activite_id FROM activite_personnes
-             WHERE personne_id = ? AND annee_scolaire = ? AND activite_id != ?",
-        )
-        .bind(personne_id)
-        .bind(annee_scolaire)
-        .bind(activite_id)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT activite_id FROM activite_personnes
+                 WHERE personne_id = ? AND annee_scolaire = ? AND activite_id != ?",
+                libsql::params![personne_id, annee_scolaire, activite_id],
+            )
+            .await?;
+
+        let mut autres_activites = Vec::new();
+        while let Some(row) = rows.next().await? {
+            autres_activites.push(libsql::de::from_row::<AutreActiviteRow>(&row)?.activite_id);
+        }
 
         for autre_id in autres_activites {
             let creneaux_autre = self.lister_creneaux(autre_id, annee_scolaire).await?;
@@ -365,12 +450,18 @@ impl PlanningRepository for SqlitePlanningRepository {
                         && cible.heure_debut < autre.heure_fin
                         && cible.heure_fin > autre.heure_debut
                     {
-                        let nom = sqlx::query_scalar::<_, String>(
-                            "SELECT nom FROM activites WHERE id = ?",
-                        )
-                        .bind(autre_id)
-                        .fetch_one(&self.pool)
-                        .await?;
+                        let mut nom_rows = self
+                            .conn
+                            .query(
+                                "SELECT nom FROM activites WHERE id = ?",
+                                libsql::params![autre_id],
+                            )
+                            .await?;
+                        let nom_row = nom_rows
+                            .next()
+                            .await?
+                            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+                        let nom = libsql::de::from_row::<NomActiviteRow>(&nom_row)?.nom;
 
                         return Ok(Some(Collision {
                             activite_conflit: nom,
@@ -392,7 +483,7 @@ impl PlanningRepository for SqlitePlanningRepository {
         date_lundi: &str,
         annee_scolaire: &str,
     ) -> Result<Vec<PlanningCreneau>, AppError> {
-        #[derive(Debug, Clone, sqlx::FromRow)]
+        #[derive(Debug, Clone, serde::Deserialize)]
         struct ActiviteCreneauRow {
             activite_id: i64,
             nom: String,
@@ -406,32 +497,31 @@ impl PlanningRepository for SqlitePlanningRepository {
             role: Role,
         }
 
-        let rows = sqlx::query_as::<_, ActiviteCreneauRow>(
-            "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max,
-                    c.id AS creneau_id, c.jour_semaine, c.heure_debut, c.heure_fin, c.annee_scolaire,
-                    ap.role
-             FROM activite_personnes ap
-             JOIN activites a ON a.id = ap.activite_id
-             JOIN creneaux_activite c ON c.activite_id = a.id
-             WHERE ap.personne_id = ?
-               AND c.annee_scolaire = ?
-               AND ap.annee_scolaire = ?
-               AND NOT EXISTS (
-                   SELECT 1 FROM semaines_banalisees sb
-                   WHERE sb.activite_id = a.id AND sb.date_debut = ?
-               )
-             ORDER BY c.jour_semaine, c.heure_debut",
-        )
-        .bind(personne_id)
-        .bind(annee_scolaire)
-        .bind(annee_scolaire)
-        .bind(date_lundi)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max,
+                        c.id AS creneau_id, c.jour_semaine, c.heure_debut, c.heure_fin, c.annee_scolaire,
+                        ap.role
+                 FROM activite_personnes ap
+                 JOIN activites a ON a.id = ap.activite_id
+                 JOIN creneaux_activite c ON c.activite_id = a.id
+                 WHERE ap.personne_id = ?
+                   AND c.annee_scolaire = ?
+                   AND ap.annee_scolaire = ?
+                   AND NOT EXISTS (
+                       SELECT 1 FROM semaines_banalisees sb
+                       WHERE sb.activite_id = a.id AND sb.date_debut = ?
+                   )
+                 ORDER BY c.jour_semaine, c.heure_debut",
+                libsql::params![personne_id, annee_scolaire, annee_scolaire, date_lundi],
+            )
+            .await?;
 
-        Ok(rows
-            .into_iter()
-            .map(|r| PlanningCreneau {
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            let r = libsql::de::from_row::<ActiviteCreneauRow>(&row)?;
+            donnees.push(PlanningCreneau {
                 creneau: CreneauActivite {
                     id: r.creneau_id,
                     activite_id: r.activite_id,
@@ -447,8 +537,10 @@ impl PlanningRepository for SqlitePlanningRepository {
                     capacite_max: r.capacite_max,
                 },
                 role: r.role,
-            })
-            .collect())
+            });
+        }
+
+        Ok(donnees)
     }
 }
 
@@ -457,57 +549,74 @@ mod tests {
     use super::*;
     use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
-    use sqlx::SqlitePool;
 
-    async fn setup_db() -> SqlitePool {
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+    #[derive(Debug, Clone, serde::Deserialize)]
+    struct IdRow {
+        id: i64,
+    }
+
+    async fn setup_db() -> Connection {
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        pool
+        conn
     }
 
-    fn repo(pool: SqlitePool) -> SqlitePlanningRepository {
-        SqlitePlanningRepository::new(pool)
+    fn repo(conn: Connection) -> LibsqlPlanningRepository {
+        LibsqlPlanningRepository::new(conn)
     }
 
-    async fn seed_activite(pool: &SqlitePool, nom: &str) -> i64 {
-        let row = sqlx::query_as::<_, crate::domain::activite::Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?) RETURNING *",
+    async fn seed_activite(conn: &Connection, nom: &str) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO activites (nom, description, capacite_max)
+                 VALUES (?, ?, ?) RETURNING id",
+                libsql::params![nom, None::<String>, None::<i64>],
+            )
+            .await
+            .expect("failed to seed activite");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<IdRow>(&row)
+            .expect("failed to read id")
+            .id
+    }
+
+    async fn seed_personne(conn: &Connection) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
+                 VALUES (?, ?, ?) RETURNING id",
+                libsql::params!["Test", "User", "2000-01-15"],
+            )
+            .await
+            .expect("failed to seed personne");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<IdRow>(&row)
+            .expect("failed to read id")
+            .id
+    }
+
+    async fn seed_inscrit(conn: &Connection, activite_id: i64, personne_id: i64, annee: &str) {
+        conn.execute(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+             VALUES (?, ?, ?, ?)",
+            libsql::params![activite_id, personne_id, annee, "participant"],
         )
-        .bind(nom)
-        .bind(None::<String>)
-        .bind(None::<i64>)
-        .fetch_one(pool)
         .await
-        .expect("failed to seed activite");
-        row.id
-    }
-
-    async fn seed_personne(pool: &SqlitePool) -> i64 {
-        sqlx::query_scalar::<_, i64>(
-            "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
-             VALUES (?, ?, ?) RETURNING id",
-        )
-        .bind("Test")
-        .bind("User")
-        .bind("2000-01-15")
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed personne")
+        .expect("failed to seed inscrit");
     }
 
     #[tokio::test]
     async fn test_creer_creneau() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -528,9 +637,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_creneaux() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -560,9 +669,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_creneaux_autre_annee() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -580,9 +689,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_supprimer_creneau() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -603,9 +712,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_modifier_creneau() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -639,9 +748,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_ajouter_semaine_banalisee() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -659,9 +768,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_ajouter_semaine_banalisee_sans_motif() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -678,9 +787,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_semaines_banalisees() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
             activite_id,
@@ -708,9 +817,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_supprimer_semaine_banalisee() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let sb = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -730,10 +839,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_compter_inscrits_activite() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         let count = r
             .compter_inscrits_activite(activite_id, "2025-2026")
@@ -741,17 +850,7 @@ mod tests {
             .unwrap();
         assert_eq!(count, 0);
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(activite_id)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, activite_id, pid, "2025-2026").await;
 
         let count = r
             .compter_inscrits_activite(activite_id, "2025-2026")
@@ -762,9 +861,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_doublon() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -785,9 +884,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_exclure_id() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -809,9 +908,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_partiel() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -832,9 +931,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_adjacent() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -855,10 +954,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_autre_activite() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -879,9 +978,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_conflit_creneaux_autre_annee() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -902,9 +1001,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_confrit_creneaux_autre_jour() {
-        let pool = setup_db().await;
-        let a = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a,
@@ -925,11 +1024,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_pas_de_conflit() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -951,17 +1050,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_none());
@@ -969,11 +1058,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_conflit() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -995,17 +1084,14 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Encadrant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        r.conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![a1, pid, "2025-2026", "encadrant"],
+            )
+            .await
+            .unwrap();
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_some());
@@ -1015,10 +1101,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_meme_activite_ignoree() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1030,17 +1116,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let collision = r.verifier_collision(pid, a1, "2025-2026").await.unwrap();
         assert!(collision.is_none());
@@ -1048,11 +1124,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_planning_personne_semaine() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1074,29 +1150,16 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a2)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Encadrant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        r.conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![a2, pid, "2025-2026", "encadrant"],
+            )
+            .await
+            .unwrap();
 
         let planning = r
             .planning_personne_semaine(pid, "2025-09-01", "2025-2026")
@@ -1109,10 +1172,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_planning_personne_semaine_banalisee_exclue() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1133,17 +1196,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let planning = r
             .planning_personne_semaine(pid, "2025-12-22", "2025-2026")
@@ -1160,9 +1213,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_planning_personne_semaine_aucune_activite() {
-        let pool = setup_db().await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         let planning = r
             .planning_personne_semaine(pid, "2025-09-01", "2025-2026")
@@ -1173,11 +1226,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_exact_overlap() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1199,17 +1252,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_some());
@@ -1217,11 +1260,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_contenant_contenu() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1243,17 +1286,14 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Encadrant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        r.conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![a1, pid, "2025-2026", "encadrant"],
+            )
+            .await
+            .unwrap();
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_some());
@@ -1261,11 +1301,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_adjacent_no_overlap() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1287,17 +1327,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_none());
@@ -1305,11 +1335,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_activite_sans_creneaux() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a2,
@@ -1321,17 +1351,7 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let collision = r.verifier_collision(pid, a2, "2025-2026").await.unwrap();
         assert!(collision.is_none());
@@ -1339,10 +1359,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_verifier_collision_personne_sans_activite() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1360,35 +1380,22 @@ mod tests {
 
     #[tokio::test]
     async fn test_compter_inscrits_encadrant_et_participant() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let pid1 = seed_personne(&pool).await;
-        let pid2 = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let pid1 = seed_personne(&conn).await;
+        let pid2 = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(activite_id)
-        .bind(pid1)
-        .bind("2025-2026")
-        .bind(Role::Encadrant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        r.conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![activite_id, pid1, "2025-2026", "encadrant"],
+            )
+            .await
+            .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(activite_id)
-        .bind(pid2)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, activite_id, pid2, "2025-2026").await;
 
         let count = r
             .compter_inscrits_activite(activite_id, "2025-2026")
@@ -1399,22 +1406,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_compter_inscrits_autre_annee() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(activite_id)
-        .bind(pid)
-        .bind("2024-2025")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, activite_id, pid, "2024-2025").await;
 
         let count = r
             .compter_inscrits_activite(activite_id, "2025-2026")
@@ -1425,11 +1422,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_planning_personne_meme_jour_trie_par_heure() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id: a1,
@@ -1451,29 +1448,8 @@ mod tests {
         .await
         .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
-
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a2)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
+        seed_inscrit(&r.conn, a2, pid, "2025-2026").await;
 
         let planning = r
             .planning_personne_semaine(pid, "2025-09-01", "2025-2026")
@@ -1486,10 +1462,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_creneau_plusieurs_activites() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let r = repo(conn.clone());
 
         let c1 = r
             .creer_creneau(CreateCreneau {
@@ -1519,10 +1495,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_semaine_banalisee_meme_date_deux_activites() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let r = repo(conn.clone());
 
         let sb1 = r
             .ajouter_semaine_banalisee(CreateSemaineBanalisee {
@@ -1550,9 +1526,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_creneaux_tri_par_jour_puis_heure() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -1582,8 +1558,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_modifier_creneau_inexistant() {
-        let pool = setup_db().await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let r = repo(conn.clone());
 
         let result = r
             .modifier_creneau(
@@ -1603,8 +1579,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_supprimer_creneau_inexistant() {
-        let pool = setup_db().await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let r = repo(conn.clone());
 
         let result = r.supprimer_creneau(99999).await;
         assert!(result.is_ok());
@@ -1612,22 +1588,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_planning_personne_activite_sans_creneaux() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid, "2025-2026").await;
 
         let planning = r
             .planning_personne_semaine(pid, "2025-09-01", "2025-2026")
@@ -1638,9 +1604,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_semaine_banalisee_meme_activite_deux_dates() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
             activite_id,
@@ -1666,10 +1632,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_creneaux_hors_plage_av_apres_partiel() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let pid = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let pid = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
         let c1 = r
             .creer_creneau(CreateCreneau {
@@ -1715,17 +1681,7 @@ mod tests {
             .await
             .unwrap();
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(activite_id)
-        .bind(pid)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, activite_id, pid, "2025-2026").await;
 
         let hors = r
             .lister_creneaux_hors_plage("08:00", "20:00")
@@ -1743,9 +1699,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_creneaux_hors_plage_aucun() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         r.creer_creneau(CreateCreneau {
             activite_id,
@@ -1766,10 +1722,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_tous_creneaux_sans_filtre() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let r = repo(conn.clone());
 
         let c1 = r
             .creer_creneau(CreateCreneau {
@@ -1801,9 +1757,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_supprimer_creneau_tx_commit_visible() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -1816,7 +1772,7 @@ mod tests {
             .await
             .unwrap();
 
-        let mut tx = pool.begin().await.unwrap();
+        let mut tx = conn.transaction().await.unwrap();
         r.supprimer_creneau_tx(&mut tx, c.id).await.unwrap();
         tx.commit().await.unwrap();
 
@@ -1826,9 +1782,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_supprimer_creneau_tx_rollback_sans_effet() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -1841,7 +1797,7 @@ mod tests {
             .await
             .unwrap();
 
-        let mut tx = pool.begin().await.unwrap();
+        let mut tx = conn.transaction().await.unwrap();
         r.supprimer_creneau_tx(&mut tx, c.id).await.unwrap();
         tx.rollback().await.unwrap();
 
@@ -1851,9 +1807,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_deplacer_creneau_tx_commit_visible() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -1866,7 +1822,7 @@ mod tests {
             .await
             .unwrap();
 
-        let mut tx = pool.begin().await.unwrap();
+        let mut tx = conn.transaction().await.unwrap();
         r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
             .await
             .unwrap();
@@ -1879,9 +1835,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_deplacer_creneau_tx_rollback_sans_effet() {
-        let pool = setup_db().await;
-        let activite_id = seed_activite(&pool, "Poterie").await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let activite_id = seed_activite(&conn, "Poterie").await;
+        let r = repo(conn.clone());
 
         let c = r
             .creer_creneau(CreateCreneau {
@@ -1894,7 +1850,7 @@ mod tests {
             .await
             .unwrap();
 
-        let mut tx = pool.begin().await.unwrap();
+        let mut tx = conn.transaction().await.unwrap();
         r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
             .await
             .unwrap();
@@ -1907,48 +1863,23 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_inscriptions_nom_joint() {
-        let pool = setup_db().await;
-        let a1 = seed_activite(&pool, "Poterie").await;
-        let a2 = seed_activite(&pool, "Théâtre").await;
-        let pid1 = seed_personne(&pool).await;
-        let pid2 = seed_personne(&pool).await;
-        let r = repo(pool.clone());
+        let conn = setup_db().await;
+        let a1 = seed_activite(&conn, "Poterie").await;
+        let a2 = seed_activite(&conn, "Théâtre").await;
+        let pid1 = seed_personne(&conn).await;
+        let pid2 = seed_personne(&conn).await;
+        let r = repo(conn.clone());
 
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid1)
-        .bind("2025-2026")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
-
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a1)
-        .bind(pid2)
-        .bind("2025-2026")
-        .bind(Role::Encadrant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
-
-        sqlx::query(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)",
-        )
-        .bind(a2)
-        .bind(pid1)
-        .bind("2024-2025")
-        .bind(Role::Participant)
-        .execute(&r.pool)
-        .await
-        .unwrap();
+        seed_inscrit(&r.conn, a1, pid1, "2025-2026").await;
+        r.conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![a1, pid2, "2025-2026", "encadrant"],
+            )
+            .await
+            .unwrap();
+        seed_inscrit(&r.conn, a2, pid1, "2024-2025").await;
 
         let inscrits = r.lister_inscriptions().await.unwrap();
         assert_eq!(inscrits.len(), 3);

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::adhesion::Adhesion;
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Personne {
     pub id: i64,
     pub nom: String,

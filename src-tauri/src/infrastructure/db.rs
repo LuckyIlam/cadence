@@ -1,38 +1,58 @@
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::SqlitePool;
+use std::path::Path;
 
+use libsql::Connection;
+
+use super::config::{ConnexionConfig, ModeConnexion};
+use super::migrations::cadence_migrations;
+use crate::error::AppError;
 use crate::repositories::{
-    SqliteActiviteRepository, SqliteAdhesionRepository, SqliteParametreRepository,
-    SqlitePersonneRepository, SqlitePlanningRepository,
+    LibsqlActiviteRepository, LibsqlAdhesionRepository, LibsqlParametreRepository,
+    LibsqlPersonneRepository, LibsqlPlanningRepository,
 };
 
 pub struct AppState {
-    pub pool: SqlitePool,
-    pub personne_repo: SqlitePersonneRepository,
-    pub activite_repo: SqliteActiviteRepository,
-    pub adhesion_repo: SqliteAdhesionRepository,
-    pub planning_repo: SqlitePlanningRepository,
-    pub param_repo: SqliteParametreRepository,
+    pub conn: Connection,
+    pub personne_repo: LibsqlPersonneRepository,
+    pub activite_repo: LibsqlActiviteRepository,
+    pub adhesion_repo: LibsqlAdhesionRepository,
+    pub planning_repo: LibsqlPlanningRepository,
+    pub param_repo: LibsqlParametreRepository,
 }
 
-pub async fn init_pool(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect(database_url)
-        .await?;
+pub async fn init_connection(
+    config: &ConnexionConfig,
+    app_dir: &Path,
+) -> Result<Connection, AppError> {
+    let database = match config.mode {
+        ModeConnexion::Mono => {
+            libsql::Builder::new_local(app_dir.join("cadence.db"))
+                .build()
+                .await?
+        }
+        ModeConnexion::Multi => {
+            let url = config.url.clone().ok_or_else(|| {
+                AppError::Validation("L'URL de la base distante est requise en mode multi".into())
+            })?;
+            let token = config.token.clone().ok_or_else(|| {
+                AppError::Validation("La clé d'accès est requise en mode multi".into())
+            })?;
+            libsql::Builder::new_remote(url, token).build().await?
+        }
+    };
 
-    sqlx::migrate!("./migrations").run(&pool).await?;
+    let conn = database.connect()?;
+    cadence_migrations(&conn).await?;
 
-    Ok(pool)
+    Ok(conn)
 }
 
-pub fn init_app_state(pool: SqlitePool) -> AppState {
+pub fn init_app_state(conn: Connection) -> AppState {
     AppState {
-        personne_repo: SqlitePersonneRepository::new(pool.clone()),
-        activite_repo: SqliteActiviteRepository::new(pool.clone()),
-        adhesion_repo: SqliteAdhesionRepository::new(pool.clone()),
-        planning_repo: SqlitePlanningRepository::new(pool.clone()),
-        param_repo: SqliteParametreRepository::new(pool.clone()),
-        pool,
+        personne_repo: LibsqlPersonneRepository::new(conn.clone()),
+        activite_repo: LibsqlActiviteRepository::new(conn.clone()),
+        adhesion_repo: LibsqlAdhesionRepository::new(conn.clone()),
+        planning_repo: LibsqlPlanningRepository::new(conn.clone()),
+        param_repo: LibsqlParametreRepository::new(conn.clone()),
+        conn,
     }
 }

@@ -10,7 +10,7 @@ pub async fn obtenir_parametres_planning(
     state: State<'_, AppState>,
 ) -> Result<ParametresPlanning, AppError> {
     let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.pool.clone());
+        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
     service.obtenir_parametres().await
 }
 
@@ -22,7 +22,7 @@ pub async fn apercu_creneaux_hors_plage(
     heure_fermeture: String,
 ) -> Result<Vec<ImpactCreneau>, AppError> {
     let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.pool.clone());
+        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
     service
         .apercu_impact_plage(&heure_ouverture, &heure_fermeture)
         .await
@@ -41,7 +41,7 @@ pub async fn modifier_plage_horaire(
 ) -> Result<ParametresPlanning, AppError> {
     valider_plage_horaire(&heure_ouverture, &heure_fermeture).map_err(AppError::Validation)?;
     let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.pool.clone());
+        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
     service
         .appliquer_plage(&heure_ouverture, &heure_fermeture, confirmer_suppression)
         .await
@@ -53,36 +53,37 @@ mod tests {
     use crate::domain::parametre::ImpactAction;
     use crate::infrastructure::db::init_app_state;
     use crate::repositories::PlanningRepository;
-    use sqlx::SqlitePool;
+    use libsql::Connection;
     use tauri::Manager;
 
-    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, SqlitePool) {
+    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, Connection) {
         let app = tauri::test::mock_app();
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        app.manage(init_app_state(pool.clone()));
-        (app, pool)
+        app.manage(init_app_state(conn.clone()));
+        (app, conn)
     }
 
-    async fn seed_activite(pool: &SqlitePool, nom: &str) -> i64 {
-        let row = sqlx::query_as::<_, crate::domain::activite::Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?) RETURNING *",
-        )
-        .bind(nom)
-        .bind(None::<String>)
-        .bind(None::<i64>)
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed activite");
-        row.id
+    async fn seed_activite(conn: &Connection, nom: &str) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO activites (nom, description, capacite_max)
+                 VALUES (?, ?, ?) RETURNING *",
+                libsql::params![nom, None::<String>, None::<i64>],
+            )
+            .await
+            .expect("failed to seed activite");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<crate::domain::activite::Activite>(&row)
+            .expect("failed to read activite")
+            .id
     }
 
     #[tokio::test]

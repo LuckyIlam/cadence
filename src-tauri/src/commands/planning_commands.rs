@@ -200,61 +200,65 @@ mod tests {
     use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
     use crate::infrastructure::db::{init_app_state, AppState};
-    use sqlx::SqlitePool;
+    use libsql::Connection;
     use tauri::Manager;
 
-    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, SqlitePool) {
+    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, Connection) {
         let app = tauri::test::mock_app();
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        app.manage(init_app_state(pool.clone()));
-        (app, pool)
+        app.manage(init_app_state(conn.clone()));
+        (app, conn)
     }
 
-    async fn seed_activite(pool: &SqlitePool, nom: &str) -> i64 {
-        let row = sqlx::query_as::<_, crate::domain::activite::Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?) RETURNING *",
-        )
-        .bind(nom)
-        .bind(None::<String>)
-        .bind(None::<i64>)
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed activite");
-        row.id
+    async fn seed_activite(conn: &Connection, nom: &str) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO activites (nom, description, capacite_max)
+                 VALUES (?, ?, ?) RETURNING *",
+                libsql::params![nom, None::<String>, None::<i64>],
+            )
+            .await
+            .expect("failed to seed activite");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<crate::domain::activite::Activite>(&row)
+            .expect("failed to read activite")
+            .id
     }
 
-    async fn seed_personne(pool: &SqlitePool) -> i64 {
-        sqlx::query_scalar::<_, i64>(
-            "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
-             VALUES (?, ?, ?) RETURNING id",
-        )
-        .bind("Test")
-        .bind("User")
-        .bind("2000-01-15")
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed personne")
+    async fn seed_personne(conn: &Connection) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
+                 VALUES (?, ?, ?) RETURNING *",
+                libsql::params!["Test", "User", "2000-01-15"],
+            )
+            .await
+            .expect("failed to seed personne");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<crate::domain::personne::Personne>(&row)
+            .expect("failed to read personne")
+            .id
     }
 
-    async fn seed_inscrit(pool: &SqlitePool, activite_id: i64, personne_id: i64, annee: &str) {
-        sqlx::query(
+    async fn seed_inscrit(conn: &Connection, activite_id: i64, personne_id: i64, annee: &str) {
+        conn.execute(
             "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
              VALUES (?, ?, ?, ?)",
+            libsql::params![
+                activite_id,
+                personne_id,
+                annee,
+                Role::Participant.to_string()
+            ],
         )
-        .bind(activite_id)
-        .bind(personne_id)
-        .bind(annee)
-        .bind(Role::Participant)
-        .execute(pool)
         .await
         .expect("failed to seed inscrit");
     }

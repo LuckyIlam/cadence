@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::SqlitePool;
+use libsql::Connection;
 
 use crate::domain::personne::{
     CreatePersonne, CriteresRecherchePersonnes, Pagination, Personne, ResultatRecherchePersonnes,
@@ -19,63 +19,94 @@ pub trait PersonneRepository: Send + Sync {
     ) -> Result<ResultatRecherchePersonnes, AppError>;
 }
 
-pub struct SqlitePersonneRepository {
-    pool: SqlitePool,
+pub struct LibsqlPersonneRepository {
+    conn: Connection,
 }
 
-impl SqlitePersonneRepository {
-    pub fn new(pool: SqlitePool) -> Self {
-        Self { pool }
+impl LibsqlPersonneRepository {
+    pub fn new(conn: Connection) -> Self {
+        Self { conn }
+    }
+}
+
+async fn fetch_one<T>(
+    conn: &Connection,
+    sql: &str,
+    params: impl libsql::params::IntoParams,
+) -> Result<T, AppError>
+where
+    T: for<'de> serde::Deserialize<'de>,
+{
+    let mut rows = conn.query(sql, params).await?;
+    let row = rows
+        .next()
+        .await?
+        .ok_or(AppError::NotFound("Enregistrement introuvable".into()))?;
+    Ok(libsql::de::from_row::<T>(&row)?)
+}
+
+async fn fetch_optional<T>(
+    conn: &Connection,
+    sql: &str,
+    params: impl libsql::params::IntoParams,
+) -> Result<Option<T>, AppError>
+where
+    T: for<'de> serde::Deserialize<'de>,
+{
+    let mut rows = conn.query(sql, params).await?;
+    match rows.next().await? {
+        Some(row) => Ok(Some(libsql::de::from_row::<T>(&row)?)),
+        None => Ok(None),
     }
 }
 
 #[async_trait]
-impl PersonneRepository for SqlitePersonneRepository {
+impl PersonneRepository for LibsqlPersonneRepository {
     async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError> {
-        let row = sqlx::query_as::<_, Personne>(
+        fetch_one(
+            &self.conn,
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id)
              VALUES (?, ?, ?, ?, ?, ?)
              RETURNING *",
+            libsql::params![
+                input.nom,
+                input.prenom,
+                input.date_naissance.to_string(),
+                input.email,
+                input.telephone,
+                input.responsable_id
+            ],
         )
-        .bind(&input.nom)
-        .bind(&input.prenom)
-        .bind(input.date_naissance)
-        .bind(&input.email)
-        .bind(&input.telephone)
-        .bind(input.responsable_id)
-        .fetch_one(&self.pool)
-        .await?;
-
-        Ok(row)
+        .await
     }
 
     async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
-        let row = sqlx::query_as::<_, Personne>(
+        fetch_one(
+            &self.conn,
             "UPDATE personnes_physiques
              SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
              WHERE id = ?
              RETURNING *",
+            libsql::params![
+                input.nom,
+                input.prenom,
+                input.date_naissance.to_string(),
+                input.email,
+                input.telephone,
+                input.responsable_id,
+                id
+            ],
         )
-        .bind(&input.nom)
-        .bind(&input.prenom)
-        .bind(input.date_naissance)
-        .bind(&input.email)
-        .bind(&input.telephone)
-        .bind(input.responsable_id)
-        .bind(id)
-        .fetch_one(&self.pool)
-        .await?;
-
-        Ok(row)
+        .await
     }
 
     async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError> {
-        let row = sqlx::query_as::<_, Personne>("SELECT * FROM personnes_physiques WHERE id = ?")
-            .bind(id)
-            .fetch_optional(&self.pool)
-            .await?;
-
-        Ok(row)
+        fetch_optional(
+            &self.conn,
+            "SELECT * FROM personnes_physiques WHERE id = ?",
+            libsql::params![id],
+        )
+        .await
     }
 
     async fn rechercher(
@@ -111,21 +142,33 @@ impl PersonneRepository for SqlitePersonneRepository {
         };
 
         // --- count ---
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct TotalRow {
+            count: i64,
+        }
+
         let count_sql = format!(
-            "SELECT COUNT(*) FROM personnes_physiques pp{}",
+            "SELECT COUNT(*) AS count FROM personnes_physiques pp{}",
             where_clause
         );
 
-        let mut count_query = sqlx::query_scalar::<_, i64>(sqlx::AssertSqlSafe(count_sql.as_str()));
-
+        let mut count_params: Vec<libsql::Value> = Vec::new();
         if let Some(ref p) = pattern {
-            count_query = count_query.bind(p).bind(p).bind(p).bind(p);
+            count_params.push(libsql::Value::from(p.clone()));
+            count_params.push(libsql::Value::from(p.clone()));
+            count_params.push(libsql::Value::from(p.clone()));
+            count_params.push(libsql::Value::from(p.clone()));
         }
         if criteres.adherent_uniquement {
-            count_query = count_query.bind(&annee_scolaire);
+            count_params.push(libsql::Value::from(annee_scolaire.clone()));
         }
 
-        let total: i64 = count_query.fetch_one(&self.pool).await?;
+        let mut rows = self.conn.query(&count_sql, count_params).await?;
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
+        let total = libsql::de::from_row::<TotalRow>(&row)?.count;
 
         // --- data ---
         let offset = if pagination.par_page > 0 {
@@ -146,19 +189,26 @@ impl PersonneRepository for SqlitePersonneRepository {
             )
         };
 
-        let mut data_query = sqlx::query_as::<_, Personne>(sqlx::AssertSqlSafe(data_sql.as_str()));
-
+        let mut data_params: Vec<libsql::Value> = Vec::new();
         if let Some(ref p) = pattern {
-            data_query = data_query.bind(p).bind(p).bind(p).bind(p);
+            data_params.push(libsql::Value::from(p.clone()));
+            data_params.push(libsql::Value::from(p.clone()));
+            data_params.push(libsql::Value::from(p.clone()));
+            data_params.push(libsql::Value::from(p.clone()));
         }
         if criteres.adherent_uniquement {
-            data_query = data_query.bind(&annee_scolaire);
+            data_params.push(libsql::Value::from(annee_scolaire));
         }
         if pagination.par_page > 0 {
-            data_query = data_query.bind(pagination.par_page).bind(offset);
+            data_params.push(libsql::Value::from(pagination.par_page as i64));
+            data_params.push(libsql::Value::from(offset as i64));
         }
 
-        let donnees = data_query.fetch_all(&self.pool).await?;
+        let mut rows = self.conn.query(&data_sql, data_params).await?;
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<Personne>(&row)?);
+        }
 
         let pages = if pagination.par_page > 0 {
             (total as f64 / pagination.par_page as f64).ceil() as u32
@@ -179,63 +229,57 @@ impl PersonneRepository for SqlitePersonneRepository {
 mod tests {
     use super::*;
 
-    async fn setup_db() -> SqlitePool {
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+    async fn setup_db() -> Connection {
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        pool
+        conn
     }
 
-    fn repo(pool: SqlitePool) -> SqlitePersonneRepository {
-        SqlitePersonneRepository::new(pool)
+    fn repo(conn: Connection) -> LibsqlPersonneRepository {
+        LibsqlPersonneRepository::new(conn)
     }
 
     async fn seed_personne(
-        pool: &SqlitePool,
+        conn: &Connection,
         nom: &str,
         prenom: &str,
         email: Option<&str>,
         telephone: Option<&str>,
     ) -> Personne {
-        sqlx::query_as::<_, Personne>(
+        fetch_one(
+            conn,
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone)
              VALUES (?, ?, ?, ?, ?) RETURNING *",
+            libsql::params![nom, prenom, "2000-01-15", email, telephone],
         )
-        .bind(nom)
-        .bind(prenom)
-        .bind("2000-01-15")
-        .bind(email)
-        .bind(telephone)
-        .fetch_one(pool)
         .await
         .expect("failed to seed personne")
     }
 
-    async fn seed_adhesion(pool: &SqlitePool, personne_id: i64, annee_scolaire: &str) {
-        sqlx::query(
+    async fn seed_adhesion(conn: &Connection, personne_id: i64, annee_scolaire: &str) {
+        conn.execute(
             "INSERT INTO adhesions (personne_id, annee_scolaire, reglee)
              VALUES (?, ?, 1)",
+            libsql::params![personne_id, annee_scolaire],
         )
-        .bind(personne_id)
-        .bind(annee_scolaire)
-        .execute(pool)
         .await
         .expect("failed to seed adhesion");
     }
 
     #[tokio::test]
     async fn test_texte_libre_cherche_nom() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", None, None).await;
-        seed_personne(&pool, "Martin", "Alice", None, None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", None, None).await;
+        seed_personne(&conn, "Martin", "Alice", None, None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -257,12 +301,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_texte_libre_cherche_prenom() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", None, None).await;
-        seed_personne(&pool, "Martin", "Jeanne", None, None).await;
-        seed_personne(&pool, "Durand", "Pierre", None, None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", None, None).await;
+        seed_personne(&conn, "Martin", "Jeanne", None, None).await;
+        seed_personne(&conn, "Durand", "Pierre", None, None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -282,11 +326,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_texte_libre_cherche_email() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", Some("jean@example.com"), None).await;
-        seed_personne(&pool, "Martin", "Alice", Some("alice@gmail.com"), None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", Some("jean@example.com"), None).await;
+        seed_personne(&conn, "Martin", "Alice", Some("alice@gmail.com"), None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -307,11 +351,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_texte_libre_cherche_telephone() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", None, Some("0612345678")).await;
-        seed_personne(&pool, "Martin", "Alice", None, Some("0798765432")).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", None, Some("0612345678")).await;
+        seed_personne(&conn, "Martin", "Alice", None, Some("0798765432")).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -332,12 +376,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_sans_criteres() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "C", "X", None, None).await;
-        seed_personne(&pool, "A", "Y", None, None).await;
-        seed_personne(&pool, "B", "Z", None, None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "C", "X", None, None).await;
+        seed_personne(&conn, "A", "Y", None, None).await;
+        seed_personne(&conn, "B", "Z", None, None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -359,10 +403,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_aucun_resultat() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", None, None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", None, None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -384,12 +428,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_pagination_page_1() {
-        let pool = setup_db().await;
+        let conn = setup_db().await;
         for i in 0..25 {
-            seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
+            seed_personne(&conn, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -412,12 +456,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_pagination_page_2() {
-        let pool = setup_db().await;
+        let conn = setup_db().await;
         for i in 0..25 {
-            seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
+            seed_personne(&conn, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -440,12 +484,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_pagination_par_page_0() {
-        let pool = setup_db().await;
+        let conn = setup_db().await;
         for i in 0..25 {
-            seed_personne(&pool, &format!("Nom{:02}", i), "Prenom", None, None).await;
+            seed_personne(&conn, &format!("Nom{:02}", i), "Prenom", None, None).await;
         }
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -467,16 +511,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_adherent_uniquement() {
-        let pool = setup_db().await;
-        let p1 = seed_personne(&pool, "Dupont", "Jean", None, None).await;
-        let _p2 = seed_personne(&pool, "Martin", "Alice", None, None).await;
-        let p3 = seed_personne(&pool, "Durand", "Pierre", None, None).await;
+        let conn = setup_db().await;
+        let p1 = seed_personne(&conn, "Dupont", "Jean", None, None).await;
+        let _p2 = seed_personne(&conn, "Martin", "Alice", None, None).await;
+        let p3 = seed_personne(&conn, "Durand", "Pierre", None, None).await;
 
         let annee = crate::domain::personne::current_annee_scolaire();
-        seed_adhesion(&pool, p1.id, &annee).await;
-        seed_adhesion(&pool, p3.id, &annee).await;
+        seed_adhesion(&conn, p1.id, &annee).await;
+        seed_adhesion(&conn, p3.id, &annee).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -497,14 +541,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_texte_libre_et_adherent() {
-        let pool = setup_db().await;
-        let p1 = seed_personne(&pool, "Dupont", "Jean", None, None).await;
-        let _p2 = seed_personne(&pool, "Dupond", "Alice", None, None).await;
+        let conn = setup_db().await;
+        let p1 = seed_personne(&conn, "Dupont", "Jean", None, None).await;
+        let _p2 = seed_personne(&conn, "Dupond", "Alice", None, None).await;
 
         let annee = crate::domain::personne::current_annee_scolaire();
-        seed_adhesion(&pool, p1.id, &annee).await;
+        seed_adhesion(&conn, p1.id, &annee).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
         let resultat = r
             .rechercher(
                 CriteresRecherchePersonnes {
@@ -525,10 +569,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_casse_insensible() {
-        let pool = setup_db().await;
-        seed_personne(&pool, "Dupont", "Jean", None, None).await;
+        let conn = setup_db().await;
+        seed_personne(&conn, "Dupont", "Jean", None, None).await;
 
-        let r = repo(pool);
+        let r = repo(conn);
 
         let resultat_min = r
             .rechercher(

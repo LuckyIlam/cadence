@@ -471,7 +471,7 @@ mod tests {
 
         async fn supprimer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             _id: i64,
         ) -> Result<(), AppError> {
             unimplemented!()
@@ -479,7 +479,7 @@ mod tests {
 
         async fn deplacer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             _id: i64,
             _heure_debut: &str,
             _heure_fin: &str,

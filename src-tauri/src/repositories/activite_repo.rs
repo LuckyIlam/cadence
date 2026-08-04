@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::SqlitePool;
+use libsql::Connection;
 
 use crate::domain::activite::{
     Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite,
@@ -62,60 +62,66 @@ pub trait ActiviteRepository: Send + Sync {
     ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError>;
 }
 
-pub struct SqliteActiviteRepository {
-    pub(crate) pool: SqlitePool,
+pub struct LibsqlActiviteRepository {
+    pub(crate) conn: Connection,
 }
 
-impl SqliteActiviteRepository {
-    pub fn new(pool: SqlitePool) -> Self {
-        Self { pool }
+impl LibsqlActiviteRepository {
+    pub fn new(conn: Connection) -> Self {
+        Self { conn }
     }
 }
 
 #[async_trait]
-impl ActiviteRepository for SqliteActiviteRepository {
+impl ActiviteRepository for LibsqlActiviteRepository {
     async fn create(&self, input: CreateActivite) -> Result<Activite, AppError> {
-        let row = sqlx::query_as::<_, Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?)
-             RETURNING *",
-        )
-        .bind(&input.nom)
-        .bind(&input.description)
-        .bind(input.capacite_max)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "INSERT INTO activites (nom, description, capacite_max)
+                 VALUES (?, ?, ?)
+                 RETURNING *",
+                libsql::params![input.nom, input.description, input.capacite_max],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+        Ok(libsql::de::from_row::<Activite>(&row)?)
     }
 
     async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError> {
         let annee_scolaire = input.annee_scolaire.clone();
         let tarif = input.tarif;
 
-        let mut tx = self.pool.begin().await?;
+        let tx = self.conn.transaction().await?;
 
-        let activite = sqlx::query_as::<_, Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?)
-             RETURNING *",
-        )
-        .bind(&input.nom)
-        .bind(&input.description)
-        .bind(input.capacite_max)
-        .fetch_one(&mut *tx)
-        .await?;
+        let activite = {
+            let mut rows = tx
+                .query(
+                    "INSERT INTO activites (nom, description, capacite_max)
+                     VALUES (?, ?, ?)
+                     RETURNING *",
+                    libsql::params![input.nom, input.description, input.capacite_max],
+                )
+                .await?;
 
-        if let Some(ref annee) = annee_scolaire {
-            sqlx::query(
+            let row = rows
+                .next()
+                .await?
+                .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+            libsql::de::from_row::<Activite>(&row)?
+        };
+
+        if let Some(annee) = annee_scolaire {
+            tx.execute(
                 "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
                  VALUES (?, ?, ?)
                  ON CONFLICT(activite_id, annee_scolaire) DO UPDATE SET tarif = excluded.tarif",
+                libsql::params![activite.id, annee, tarif.unwrap_or(0.0)],
             )
-            .bind(activite.id)
-            .bind(annee)
-            .bind(tarif.unwrap_or(0.0))
-            .execute(&mut *tx)
             .await?;
         }
 
@@ -124,46 +130,54 @@ impl ActiviteRepository for SqliteActiviteRepository {
     }
 
     async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
-        let row = sqlx::query_as::<_, Activite>(
-            "UPDATE activites
-             SET nom = ?, description = ?, capacite_max = ?
-             WHERE id = ?
-             RETURNING *",
-        )
-        .bind(&input.nom)
-        .bind(&input.description)
-        .bind(input.capacite_max)
-        .bind(id)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "UPDATE activites
+                 SET nom = ?, description = ?, capacite_max = ?
+                 WHERE id = ?
+                 RETURNING *",
+                libsql::params![input.nom, input.description, input.capacite_max, id],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+        Ok(libsql::de::from_row::<Activite>(&row)?)
     }
 
     async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError> {
-        let row = sqlx::query_as::<_, Activite>("SELECT * FROM activites WHERE id = ?")
-            .bind(id)
-            .fetch_optional(&self.pool)
+        let mut rows = self
+            .conn
+            .query("SELECT * FROM activites WHERE id = ?", libsql::params![id])
             .await?;
 
-        Ok(row)
+        match rows.next().await? {
+            Some(row) => Ok(Some(libsql::de::from_row::<Activite>(&row)?)),
+            None => Ok(None),
+        }
     }
 
     async fn upsert_tarif(&self, input: CreateTarifActivite) -> Result<TarifActivite, AppError> {
-        let row = sqlx::query_as::<_, TarifActivite>(
-            "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
-             VALUES (?, ?, ?)
-             ON CONFLICT(activite_id, annee_scolaire)
-             DO UPDATE SET tarif = excluded.tarif
-             RETURNING *",
-        )
-        .bind(input.activite_id)
-        .bind(&input.annee_scolaire)
-        .bind(input.tarif)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
+                 VALUES (?, ?, ?)
+                 ON CONFLICT(activite_id, annee_scolaire)
+                 DO UPDATE SET tarif = excluded.tarif
+                 RETURNING *",
+                libsql::params![input.activite_id, input.annee_scolaire, input.tarif],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Tarif introuvable".into()))?;
+        Ok(libsql::de::from_row::<TarifActivite>(&row)?)
     }
 
     async fn get_tarif(
@@ -171,34 +185,44 @@ impl ActiviteRepository for SqliteActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<TarifActivite>, AppError> {
-        let row = sqlx::query_as::<_, TarifActivite>(
-            "SELECT * FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_optional(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(row)
+        match rows.next().await? {
+            Some(row) => Ok(Some(libsql::de::from_row::<TarifActivite>(&row)?)),
+            None => Ok(None),
+        }
     }
 
     async fn ajouter_personne(
         &self,
         input: CreateLiaisonActivitePersonne,
     ) -> Result<LiaisonActivitePersonne, AppError> {
-        let row = sqlx::query_as::<_, LiaisonActivitePersonne>(
-            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-             VALUES (?, ?, ?, ?)
-             RETURNING *",
-        )
-        .bind(input.activite_id)
-        .bind(input.personne_id)
-        .bind(&input.annee_scolaire)
-        .bind(&input.role)
-        .fetch_one(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)
+                 RETURNING *",
+                libsql::params![
+                    input.activite_id,
+                    input.personne_id,
+                    input.annee_scolaire,
+                    input.role.to_string()
+                ],
+            )
+            .await?;
 
-        Ok(row)
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Inscription introuvable".into()))?;
+        Ok(libsql::de::from_row::<LiaisonActivitePersonne>(&row)?)
     }
 
     async fn retirer_personne(
@@ -207,14 +231,12 @@ impl ActiviteRepository for SqliteActiviteRepository {
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<(), AppError> {
-        sqlx::query(
-            "DELETE FROM activite_personnes WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
-        )
-        .bind(activite_id)
-        .bind(personne_id)
-        .bind(annee_scolaire)
-        .execute(&self.pool)
-        .await?;
+        self.conn
+            .execute(
+                "DELETE FROM activite_personnes WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, personne_id, annee_scolaire],
+            )
+            .await?;
 
         Ok(())
     }
@@ -224,16 +246,25 @@ impl ActiviteRepository for SqliteActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError> {
-        let count: (i64,) = sqlx::query_as(
-            "SELECT COUNT(*) FROM activite_personnes
-             WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_one(&self.pool)
-        .await?;
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct CompteurRow {
+            count: i64,
+        }
 
-        Ok(count.0)
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT COUNT(*) AS count FROM activite_personnes
+                 WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
+
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
+        Ok(libsql::de::from_row::<CompteurRow>(&row)?.count)
     }
 
     async fn trouver_liaison(
@@ -242,17 +273,19 @@ impl ActiviteRepository for SqliteActiviteRepository {
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<LiaisonActivitePersonne>, AppError> {
-        let row = sqlx::query_as::<_, LiaisonActivitePersonne>(
-            "SELECT * FROM activite_personnes
-             WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
-        )
-        .bind(activite_id)
-        .bind(personne_id)
-        .bind(annee_scolaire)
-        .fetch_optional(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT * FROM activite_personnes
+                 WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, personne_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(row)
+        match rows.next().await? {
+            Some(row) => Ok(Some(libsql::de::from_row::<LiaisonActivitePersonne>(&row)?)),
+            None => Ok(None),
+        }
     }
 
     async fn lister_encadrants(
@@ -260,19 +293,24 @@ impl ActiviteRepository for SqliteActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<PersonneActivite>, AppError> {
-        let rows = sqlx::query_as::<_, PersonneActivite>(
-            "SELECT pp.id, pp.nom, pp.prenom
-             FROM activite_personnes ap
-             JOIN personnes_physiques pp ON pp.id = ap.personne_id
-             WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'encadrant'
-             ORDER BY pp.nom, pp.prenom",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT pp.id, pp.nom, pp.prenom
+                 FROM activite_personnes ap
+                 JOIN personnes_physiques pp ON pp.id = ap.personne_id
+                 WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'encadrant'
+                 ORDER BY pp.nom, pp.prenom",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<PersonneActivite>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_participants(
@@ -280,26 +318,31 @@ impl ActiviteRepository for SqliteActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<PersonneActivite>, AppError> {
-        let rows = sqlx::query_as::<_, PersonneActivite>(
-            "SELECT pp.id, pp.nom, pp.prenom
-             FROM activite_personnes ap
-             JOIN personnes_physiques pp ON pp.id = ap.personne_id
-             WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'participant'
-             ORDER BY pp.nom, pp.prenom",
-        )
-        .bind(activite_id)
-        .bind(annee_scolaire)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT pp.id, pp.nom, pp.prenom
+                 FROM activite_personnes ap
+                 JOIN personnes_physiques pp ON pp.id = ap.personne_id
+                 WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'participant'
+                 ORDER BY pp.nom, pp.prenom",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
-        Ok(rows)
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<PersonneActivite>(&row)?);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_activites_personne(
         &self,
         personne_id: i64,
     ) -> Result<Vec<ActivitePersonne>, AppError> {
-        #[derive(Debug, Clone, sqlx::FromRow)]
+        #[derive(Debug, Clone, serde::Deserialize)]
         struct ActivitePersonneRow {
             id: i64,
             nom: String,
@@ -308,20 +351,22 @@ impl ActiviteRepository for SqliteActiviteRepository {
             role: Role,
         }
 
-        let rows = sqlx::query_as::<_, ActivitePersonneRow>(
-            "SELECT a.id, a.nom, a.description, a.capacite_max, ap.role
-             FROM activite_personnes ap
-             JOIN activites a ON a.id = ap.activite_id
-             WHERE ap.personne_id = ?
-             ORDER BY a.nom",
-        )
-        .bind(personne_id)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT a.id, a.nom, a.description, a.capacite_max, ap.role
+                 FROM activite_personnes ap
+                 JOIN activites a ON a.id = ap.activite_id
+                 WHERE ap.personne_id = ?
+                 ORDER BY a.nom",
+                libsql::params![personne_id],
+            )
+            .await?;
 
-        Ok(rows
-            .into_iter()
-            .map(|r| ActivitePersonne {
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            let r = libsql::de::from_row::<ActivitePersonneRow>(&row)?;
+            donnees.push(ActivitePersonne {
                 activite: Activite {
                     id: r.id,
                     nom: r.nom,
@@ -329,25 +374,39 @@ impl ActiviteRepository for SqliteActiviteRepository {
                     capacite_max: r.capacite_max,
                 },
                 role: r.role,
-            })
-            .collect())
+            });
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_annees_disponibles(&self) -> Result<Vec<String>, AppError> {
-        let rows = sqlx::query_scalar::<_, String>(
-            "SELECT DISTINCT annee_scolaire FROM tarifs_activite ORDER BY annee_scolaire DESC",
-        )
-        .fetch_all(&self.pool)
-        .await?;
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct AnneeRow {
+            annee_scolaire: String,
+        }
 
-        Ok(rows)
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT DISTINCT annee_scolaire FROM tarifs_activite ORDER BY annee_scolaire DESC",
+                libsql::params![],
+            )
+            .await?;
+
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<AnneeRow>(&row)?.annee_scolaire);
+        }
+
+        Ok(donnees)
     }
 
     async fn lister_activites_par_annee(
         &self,
         annee_scolaire: &str,
     ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError> {
-        #[derive(Debug, Clone, sqlx::FromRow)]
+        #[derive(Debug, Clone, serde::Deserialize)]
         struct ActiviteAnneeRow {
             id: i64,
             nom: String,
@@ -357,34 +416,35 @@ impl ActiviteRepository for SqliteActiviteRepository {
             nb_participants: i64,
         }
 
-        let rows = sqlx::query_as::<_, ActiviteAnneeRow>(
-            "SELECT a.id, a.nom, a.description, a.capacite_max, ta.tarif,
-                    (SELECT COUNT(*) FROM activite_personnes ap2
-                     WHERE ap2.activite_id = a.id AND ap2.annee_scolaire = ? AND ap2.role = 'participant') AS nb_participants
-             FROM activites a
-             JOIN tarifs_activite ta ON ta.activite_id = a.id AND ta.annee_scolaire = ?
-             ORDER BY a.nom",
-        )
-        .bind(annee_scolaire)
-        .bind(annee_scolaire)
-        .fetch_all(&self.pool)
-        .await?;
+        let mut rows = self
+            .conn
+            .query(
+                "SELECT a.id, a.nom, a.description, a.capacite_max, ta.tarif,
+                        (SELECT COUNT(*) FROM activite_personnes ap2
+                         WHERE ap2.activite_id = a.id AND ap2.annee_scolaire = ? AND ap2.role = 'participant') AS nb_participants
+                 FROM activites a
+                 JOIN tarifs_activite ta ON ta.activite_id = a.id AND ta.annee_scolaire = ?
+                 ORDER BY a.nom",
+                libsql::params![annee_scolaire, annee_scolaire],
+            )
+            .await?;
 
-        Ok(rows
-            .into_iter()
-            .map(|r| {
-                (
-                    Activite {
-                        id: r.id,
-                        nom: r.nom,
-                        description: r.description,
-                        capacite_max: r.capacite_max,
-                    },
-                    r.tarif,
-                    r.nb_participants,
-                )
-            })
-            .collect())
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            let r = libsql::de::from_row::<ActiviteAnneeRow>(&row)?;
+            donnees.push((
+                Activite {
+                    id: r.id,
+                    nom: r.nom,
+                    description: r.description,
+                    capacite_max: r.capacite_max,
+                },
+                r.tarif,
+                r.nb_participants,
+            ));
+        }
+
+        Ok(donnees)
     }
 }
 
@@ -393,23 +453,22 @@ mod tests {
     use super::*;
     use crate::domain::activite::CreateActivite;
     use crate::domain::activite::Role;
-    use sqlx::SqlitePool;
 
-    async fn setup_db() -> SqlitePool {
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+    async fn setup_db() -> Connection {
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        pool
+        conn
     }
 
-    fn repo(pool: SqlitePool) -> SqliteActiviteRepository {
-        SqliteActiviteRepository::new(pool)
+    fn repo(conn: Connection) -> LibsqlActiviteRepository {
+        LibsqlActiviteRepository::new(conn)
     }
 
     fn create_activite_input(nom: &str) -> CreateActivite {
@@ -423,30 +482,28 @@ mod tests {
     }
 
     #[allow(dead_code)]
-    async fn seed_activite(pool: &SqlitePool, nom: &str) -> Activite {
-        SqliteActiviteRepository::new(pool.clone())
+    async fn seed_activite(conn: &Connection, nom: &str) -> Activite {
+        LibsqlActiviteRepository::new(conn.clone())
             .create(create_activite_input(nom))
             .await
             .expect("failed to seed activite")
     }
 
-    async fn seed_personne(pool: &SqlitePool) -> i64 {
-        sqlx::query_scalar::<_, i64>(
+    async fn seed_personne(conn: &Connection) -> i64 {
+        conn.execute(
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
-             VALUES (?, ?, ?) RETURNING id",
+             VALUES ('Test', 'User', '2000-01-15')",
+            libsql::params![],
         )
-        .bind("Test")
-        .bind("User")
-        .bind("2000-01-15")
-        .fetch_one(pool)
         .await
-        .expect("failed to seed personne")
+        .expect("failed to seed personne");
+        1
     }
 
     #[tokio::test]
     async fn test_create_activite() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
         assert_eq!(a.nom, "Poterie");
         assert_eq!(a.id, 1);
@@ -454,8 +511,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_sans_tarif() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let input = CreateActivite {
             nom: "Théâtre".into(),
             description: None,
@@ -469,8 +526,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_avec_tarif() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let input = CreateActivite {
             nom: "Poterie".into(),
             description: None,
@@ -488,8 +545,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_sans_annee_n_insere_pas_tarif() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let input = CreateActivite {
             nom: "Danse".into(),
             description: None,
@@ -506,8 +563,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_liste_activites_par_annee() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
 
         r.upsert_tarif(CreateTarifActivite {
@@ -525,8 +582,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_tarif_upsert() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn);
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
 
         let t = r
@@ -552,10 +609,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_ajouter_personne() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn.clone());
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
-        let pid = seed_personne(&r.pool).await;
+        let pid = seed_personne(&r.conn).await;
 
         let liaison = r
             .ajouter_personne(CreateLiaisonActivitePersonne {
@@ -574,10 +631,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_activites_personne() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn.clone());
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
-        let pid = seed_personne(&r.pool).await;
+        let pid = seed_personne(&r.conn).await;
 
         r.ajouter_personne(CreateLiaisonActivitePersonne {
             activite_id: a.id,
@@ -596,10 +653,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_retirer_personne() {
-        let pool = setup_db().await;
-        let r = repo(pool);
+        let conn = setup_db().await;
+        let r = repo(conn.clone());
         let a = r.create(create_activite_input("Poterie")).await.unwrap();
-        let pid = seed_personne(&r.pool).await;
+        let pid = seed_personne(&r.conn).await;
 
         r.ajouter_personne(CreateLiaisonActivitePersonne {
             activite_id: a.id,

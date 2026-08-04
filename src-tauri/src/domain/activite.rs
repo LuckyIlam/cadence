@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, sqlx::Type)]
-#[sqlx(rename_all = "lowercase")]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
     Encadrant,
@@ -17,7 +16,7 @@ impl std::fmt::Display for Role {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Activite {
     pub id: i64,
     pub nom: String,
@@ -41,7 +40,7 @@ pub struct UpdateActivite {
     pub capacite_max: Option<i64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TarifActivite {
     pub activite_id: i64,
     pub annee_scolaire: String,
@@ -55,7 +54,7 @@ pub struct CreateTarifActivite {
     pub tarif: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiaisonActivitePersonne {
     pub activite_id: i64,
     pub personne_id: i64,
@@ -71,7 +70,7 @@ pub struct CreateLiaisonActivitePersonne {
     pub role: Role,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PersonneActivite {
     pub id: i64,
     pub nom: String,

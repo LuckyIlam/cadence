@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sqlx::SqlitePool;
+use libsql::Connection;
 
 use crate::domain::parametre::{
     trouver_place_deplacement, valider_plage_horaire, ImpactAction, ImpactCreneau,
@@ -15,15 +15,15 @@ use crate::repositories::{ParametreRepository, PlanningRepository};
 pub struct ParametreService<'a, R: ParametreRepository, P: PlanningRepository> {
     param_repo: &'a R,
     planning_repo: &'a P,
-    pool: SqlitePool,
+    conn: Connection,
 }
 
 impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, P> {
-    pub fn new(param_repo: &'a R, planning_repo: &'a P, pool: SqlitePool) -> Self {
+    pub fn new(param_repo: &'a R, planning_repo: &'a P, conn: Connection) -> Self {
         Self {
             param_repo,
             planning_repo,
-            pool,
+            conn,
         }
     }
 
@@ -296,7 +296,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
             )));
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.conn.transaction().await?;
 
         for imp in &impacts {
             match imp.action {
@@ -366,7 +366,7 @@ mod tests {
 
         async fn mettre_a_jour_plage_horaire_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             heure_ouverture: &str,
             heure_fermeture: &str,
         ) -> Result<ParametresPlanning, AppError> {
@@ -497,7 +497,7 @@ mod tests {
 
         async fn supprimer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             id: i64,
         ) -> Result<(), AppError> {
             self.suppressions.lock().unwrap().push(id);
@@ -507,7 +507,7 @@ mod tests {
 
         async fn deplacer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             id: i64,
             heure_debut: &str,
             heure_fin: &str,
@@ -591,18 +591,21 @@ mod tests {
         }
     }
 
-    async fn make_pool() -> SqlitePool {
-        SqlitePool::connect("sqlite::memory:")
+    async fn make_conn() -> Connection {
+        libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool")
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db")
     }
 
     fn make_service<'a, R: ParametreRepository, P: PlanningRepository>(
         param_repo: &'a R,
         planning_repo: &'a P,
-        pool: SqlitePool,
+        conn: Connection,
     ) -> ParametreService<'a, R, P> {
-        ParametreService::new(param_repo, planning_repo, pool)
+        ParametreService::new(param_repo, planning_repo, conn)
     }
 
     #[tokio::test]
@@ -614,8 +617,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "20:00")
@@ -642,8 +645,8 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "20:00")
@@ -657,8 +660,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "18:00")
@@ -673,8 +676,8 @@ mod tests {
     async fn test_apercu_plage_invalide() {
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(Vec::new());
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
             .apercu_impact_plage("20:00", "08:00")
@@ -688,8 +691,8 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let params = service
             .appliquer_plage("08:00", "20:00", false)
@@ -707,8 +710,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
             .appliquer_plage("08:00", "20:00", false)
@@ -726,8 +729,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let params = service
             .appliquer_plage("08:00", "20:00", true)
@@ -748,8 +751,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
             .appliquer_plage("09:00", "18:00", true)
@@ -775,8 +778,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -803,8 +806,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -826,8 +829,8 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -850,8 +853,8 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -876,8 +879,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 2)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "20:00")
@@ -900,8 +903,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 0)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "20:00")

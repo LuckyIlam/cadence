@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::activite::Role;
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreneauActivite {
     pub id: i64,
     pub activite_id: i64,
@@ -22,7 +22,7 @@ pub struct CreateCreneau {
     pub annee_scolaire: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemaineBanalisee {
     pub id: i64,
     pub activite_id: i64,
@@ -56,7 +56,7 @@ pub struct Collision {
 
 /// Créneau d'activité sortant (totalement ou partiellement) de la plage horaire d'ouverture,
 /// avec le nom de l'activité et le nombre d'inscrits pour décider du traitement.
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreneauHorsPlage {
     pub creneau_id: i64,
     pub activite_id: i64,
@@ -70,7 +70,7 @@ pub struct CreneauHorsPlage {
 
 /// Inscription d'une personne à une activité pour une année scolaire donnée,
 /// avec le nom de l'activité (jointure `activites`) pour le contrôle adhérent.
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Inscription {
     pub activite_id: i64,
     pub personne_id: i64,
