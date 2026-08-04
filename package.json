@@ -18,7 +18,7 @@
     "@tauri-apps/api": "^2.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.0.0"
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.6",
