@@ -3,6 +3,7 @@ use libsql::Connection;
 
 use crate::domain::adhesion::{Adhesion, CreateAdhesion, UpdateAdhesion};
 use crate::error::AppError;
+use crate::infrastructure::hrana_guard;
 
 #[async_trait]
 pub trait AdhesionRepository: Send + Sync {
@@ -30,28 +31,29 @@ impl LibsqlAdhesionRepository {
 impl AdhesionRepository for LibsqlAdhesionRepository {
     async fn create(&self, input: CreateAdhesion, utilisateur: &str) -> Result<Adhesion, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = self
-            .conn
-            .query(
-                "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement, modifie_par, modifie_le)
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?)
                  RETURNING id, personne_id, annee_scolaire, reglee, note_paiement, version",
-                libsql::params![
-                    input.personne_id,
-                    input.annee_scolaire,
-                    input.reglee,
-                    input.note_paiement,
-                    utilisateur,
-                    maintenant
-                ],
-            )
-            .await?;
+            libsql::params![
+                input.personne_id,
+                input.annee_scolaire,
+                input.reglee,
+                input.note_paiement,
+                utilisateur,
+                maintenant
+            ],
+        )
+        .await?;
 
         let row = rows
             .next()
             .await?
             .ok_or(AppError::NotFound("Adhésion introuvable".into()))?;
-        Ok(libsql::de::from_row::<Adhesion>(&row)?)
+        let valeur = libsql::de::from_row::<Adhesion>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn update(
@@ -61,30 +63,30 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
         utilisateur: &str,
     ) -> Result<Adhesion, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let affected = self
-            .conn
-            .execute(
-                "UPDATE adhesions
+        let affected = hrana_guard::execute_avec_retry(
+            &self.conn,
+            "UPDATE adhesions
                  SET reglee = ?, note_paiement = ?, modifie_par = ?, modifie_le = ?, version = version + 1
                  WHERE id = ? AND version = ?",
-                libsql::params![
-                    input.reglee,
-                    input.note_paiement,
-                    utilisateur,
-                    maintenant,
-                    id,
-                    input.version
-                ],
+            libsql::params![
+                input.reglee,
+                input.note_paiement,
+                utilisateur,
+                maintenant,
+                id,
+                input.version
+            ],
+        )
+        .await?;
+        if affected == 0 {
+            let mut existe_rows = hrana_guard::query_avec_retry(
+                &self.conn,
+                "SELECT id FROM adhesions WHERE id = ?",
+                libsql::params![id],
             )
             .await?;
-        if affected == 0 {
-            let existe = self
-                .conn
-                .query("SELECT id FROM adhesions WHERE id = ?", libsql::params![id])
-                .await?
-                .next()
-                .await?
-                .is_some();
+            let existe = existe_rows.next().await?.is_some();
+            hrana_guard::vider_cursor(&mut existe_rows).await?;
             if existe {
                 return Err(AppError::Conflict(
                     crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
@@ -92,30 +94,30 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
             }
             return Err(AppError::NotFound("Adhésion introuvable".into()));
         }
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
                  FROM adhesions WHERE id = ?",
-                libsql::params![id],
-            )
-            .await?;
+            libsql::params![id],
+        )
+        .await?;
         let row = rows
             .next()
             .await?
             .ok_or(AppError::NotFound("Adhésion introuvable".into()))?;
-        Ok(libsql::de::from_row::<Adhesion>(&row)?)
+        let valeur = libsql::de::from_row::<Adhesion>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn list_by_personne(&self, personne_id: i64) -> Result<Vec<Adhesion>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
                  FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
-                libsql::params![personne_id],
-            )
-            .await?;
+            libsql::params![personne_id],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {

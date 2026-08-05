@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
-    "mtime": 1785939452.327617,
-    "ast_hash": "da5119a68467799bcd759e72e8126957",
+    "mtime": 1785942628.940548,
+    "ast_hash": "c6c544a91a33266a6c7d385d87936c3b",
     "semantic_hash": ""
   },
   "src-tauri/src/main.rs": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "src/components/Nav.tsx": {
-    "mtime": 1785937823.3839061,
-    "ast_hash": "807ff4e22dd807287c0ede9521eea088",
+    "mtime": 1785942254.6210392,
+    "ast_hash": "00cb6e92f9a00c7895a71c675691eb11",
     "semantic_hash": ""
   },
   "src/components/PersonneForm.tsx": {
@@ -865,8 +865,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/migrations.rs": {
-    "mtime": 1785939579.4336004,
-    "ast_hash": "b53e1d226e8a359477bea3776fbd47a6",
+    "mtime": 1785940884.010801,
+    "ast_hash": "9897c38a37b33b061f432365f1bef93b",
     "semantic_hash": ""
   },
   "src/errors.ts": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/multi-utilisateurs-turso/design.md": {
-    "mtime": 1785938723.0284219,
-    "ast_hash": "18eda754e0dc2bff79aecf904c382b62",
+    "mtime": 1785940923.5191946,
+    "ast_hash": "0c2cf7908eba6feeb5ff21b6b21efa15",
     "semantic_hash": ""
   },
   "openspec/changes/multi-utilisateurs-turso/proposal.md": {
@@ -900,8 +900,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/multi-utilisateurs-turso/tasks.md": {
-    "mtime": 1785939748.7950692,
-    "ast_hash": "0751d9c2e0468c4d08a869e9386c5957",
+    "mtime": 1785940937.1055539,
+    "ast_hash": "c02c7789d8c73a4ade87e0a55866e017",
     "semantic_hash": ""
   },
   "src-tauri/migrations/20260803000001_add_audit.sql": {
@@ -925,13 +925,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/e2e_mono.rs": {
-    "mtime": 1785939650.088971,
-    "ast_hash": "fa7fb25d6beaecd1b0c4209242e29660",
+    "mtime": 1785941017.1492705,
+    "ast_hash": "b707509ff55e14b0c3b02eadd3a6b0d7",
     "semantic_hash": ""
   },
   "src-tauri/src/e2e_multi.rs": {
-    "mtime": 1785939655.3608549,
-    "ast_hash": "df72830a66f70edb7ea344118dadfb14",
+    "mtime": 1785941017.1532688,
+    "ast_hash": "e7c3871ae72110c2f8fdab820ca2962f",
     "semantic_hash": ""
   },
   "docs/fonctionnel/connexion.md": {

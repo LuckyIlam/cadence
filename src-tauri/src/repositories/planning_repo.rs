@@ -7,6 +7,7 @@ use crate::domain::planning::{
     Inscription, PlanningCreneau, SemaineBanalisee,
 };
 use crate::error::AppError;
+use crate::infrastructure::hrana_guard;
 
 #[async_trait]
 pub trait PlanningRepository: Send + Sync {
@@ -109,9 +110,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         utilisateur: &str,
     ) -> Result<CreneauActivite, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = self
-            .conn
-            .query(
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
                 "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?, ?)
                  RETURNING id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version",
@@ -131,16 +131,18 @@ impl PlanningRepository for LibsqlPlanningRepository {
             .next()
             .await?
             .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
-        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
+        let valeur = libsql::de::from_row::<CreneauActivite>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn supprimer_creneau(&self, id: i64) -> Result<(), AppError> {
-        self.conn
-            .execute(
-                "DELETE FROM creneaux_activite WHERE id = ?",
-                libsql::params![id],
-            )
-            .await?;
+        hrana_guard::execute_avec_retry(
+            &self.conn,
+            "DELETE FROM creneaux_activite WHERE id = ?",
+            libsql::params![id],
+        )
+        .await?;
 
         Ok(())
     }
@@ -153,35 +155,32 @@ impl PlanningRepository for LibsqlPlanningRepository {
         utilisateur: &str,
     ) -> Result<CreneauActivite, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let affected = self
-            .conn
-            .execute(
-                "UPDATE creneaux_activite
+        let affected = hrana_guard::execute_avec_retry(
+            &self.conn,
+            "UPDATE creneaux_activite
                  SET jour_semaine = ?, heure_debut = ?, heure_fin = ?,
                      modifie_par = ?, modifie_le = ?, version = version + 1
                  WHERE id = ? AND version = ?",
-                libsql::params![
-                    input.jour_semaine,
-                    input.heure_debut,
-                    input.heure_fin,
-                    utilisateur,
-                    maintenant,
-                    id,
-                    version
-                ],
+            libsql::params![
+                input.jour_semaine,
+                input.heure_debut,
+                input.heure_fin,
+                utilisateur,
+                maintenant,
+                id,
+                version
+            ],
+        )
+        .await?;
+        if affected == 0 {
+            let mut existe_rows = hrana_guard::query_avec_retry(
+                &self.conn,
+                "SELECT id FROM creneaux_activite WHERE id = ?",
+                libsql::params![id],
             )
             .await?;
-        if affected == 0 {
-            let existe = self
-                .conn
-                .query(
-                    "SELECT id FROM creneaux_activite WHERE id = ?",
-                    libsql::params![id],
-                )
-                .await?
-                .next()
-                .await?
-                .is_some();
+            let existe = existe_rows.next().await?.is_some();
+            hrana_guard::vider_cursor(&mut existe_rows).await?;
             if existe {
                 return Err(AppError::Conflict(
                     crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
@@ -189,19 +188,20 @@ impl PlanningRepository for LibsqlPlanningRepository {
             }
             return Err(AppError::NotFound("Créneau introuvable".into()));
         }
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
                  FROM creneaux_activite WHERE id = ?",
-                libsql::params![id],
-            )
-            .await?;
+            libsql::params![id],
+        )
+        .await?;
         let row = rows
             .next()
             .await?
             .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
-        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
+        let valeur = libsql::de::from_row::<CreneauActivite>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn lister_creneaux(
@@ -209,16 +209,15 @@ impl PlanningRepository for LibsqlPlanningRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<CreneauActivite>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
                  FROM creneaux_activite
                  WHERE activite_id = ? AND annee_scolaire = ?
                  ORDER BY jour_semaine, heure_debut",
-                libsql::params![activite_id, annee_scolaire],
-            )
-            .await?;
+            libsql::params![activite_id, annee_scolaire],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -229,14 +228,13 @@ impl PlanningRepository for LibsqlPlanningRepository {
     }
 
     async fn lister_tous_creneaux(&self) -> Result<Vec<CreneauActivite>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
                  FROM creneaux_activite ORDER BY id",
-                libsql::params![],
-            )
-            .await?;
+            libsql::params![],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -251,10 +249,9 @@ impl PlanningRepository for LibsqlPlanningRepository {
         heure_ouverture: &str,
         heure_fermeture: &str,
     ) -> Result<Vec<CreneauHorsPlage>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT c.id AS creneau_id,
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT c.id AS creneau_id,
                         c.activite_id AS activite_id,
                         a.nom AS activite_nom,
                         c.jour_semaine AS jour_semaine,
@@ -268,9 +265,9 @@ impl PlanningRepository for LibsqlPlanningRepository {
                  JOIN activites a ON a.id = c.activite_id
                  WHERE c.heure_debut < ? OR c.heure_fin > ?
                  ORDER BY c.id",
-                libsql::params![heure_ouverture, heure_fermeture],
-            )
-            .await?;
+            libsql::params![heure_ouverture, heure_fermeture],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -281,19 +278,18 @@ impl PlanningRepository for LibsqlPlanningRepository {
     }
 
     async fn lister_inscriptions(&self) -> Result<Vec<Inscription>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT ap.activite_id AS activite_id,
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT ap.activite_id AS activite_id,
                         ap.personne_id AS personne_id,
                         ap.annee_scolaire AS annee_scolaire,
                         a.nom AS activite_nom
                  FROM activite_personnes ap
                  JOIN activites a ON a.id = ap.activite_id
                  ORDER BY ap.activite_id, ap.personne_id",
-                libsql::params![],
-            )
-            .await?;
+            libsql::params![],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -340,7 +336,9 @@ impl PlanningRepository for LibsqlPlanningRepository {
             .next()
             .await?
             .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
-        Ok(libsql::de::from_row::<CreneauActivite>(&row)?)
+        let valeur = libsql::de::from_row::<CreneauActivite>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn ajouter_semaine_banalisee(
@@ -349,9 +347,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         utilisateur: &str,
     ) -> Result<SemaineBanalisee, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = self
-            .conn
-            .query(
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
                 "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?)
                  RETURNING id, activite_id, date_debut, motif, annee_scolaire",
@@ -370,16 +367,18 @@ impl PlanningRepository for LibsqlPlanningRepository {
             .next()
             .await?
             .ok_or(AppError::NotFound("Semaine banalisée introuvable".into()))?;
-        Ok(libsql::de::from_row::<SemaineBanalisee>(&row)?)
+        let valeur = libsql::de::from_row::<SemaineBanalisee>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn supprimer_semaine_banalisee(&self, id: i64) -> Result<(), AppError> {
-        self.conn
-            .execute(
-                "DELETE FROM semaines_banalisees WHERE id = ?",
-                libsql::params![id],
-            )
-            .await?;
+        hrana_guard::execute_avec_retry(
+            &self.conn,
+            "DELETE FROM semaines_banalisees WHERE id = ?",
+            libsql::params![id],
+        )
+        .await?;
 
         Ok(())
     }
@@ -388,16 +387,15 @@ impl PlanningRepository for LibsqlPlanningRepository {
         &self,
         activite_id: i64,
     ) -> Result<Vec<SemaineBanalisee>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, activite_id, date_debut, motif, annee_scolaire
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, activite_id, date_debut, motif, annee_scolaire
                  FROM semaines_banalisees
                  WHERE activite_id = ?
                  ORDER BY date_debut",
-                libsql::params![activite_id],
-            )
-            .await?;
+            libsql::params![activite_id],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -416,10 +414,9 @@ impl PlanningRepository for LibsqlPlanningRepository {
         heure_fin: &str,
         exclure_id: Option<i64>,
     ) -> Result<Vec<CreneauActivite>, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
                  FROM creneaux_activite
                  WHERE activite_id = ?
                    AND annee_scolaire = ?
@@ -427,17 +424,17 @@ impl PlanningRepository for LibsqlPlanningRepository {
                    AND heure_debut < ?
                    AND heure_fin > ?
                    AND (? IS NULL OR id != ?)",
-                libsql::params![
-                    activite_id,
-                    annee_scolaire,
-                    jour_semaine,
-                    heure_fin,
-                    heure_debut,
-                    exclure_id,
-                    exclure_id
-                ],
-            )
-            .await?;
+            libsql::params![
+                activite_id,
+                annee_scolaire,
+                jour_semaine,
+                heure_fin,
+                heure_debut,
+                exclure_id,
+                exclure_id
+            ],
+        )
+        .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -452,20 +449,21 @@ impl PlanningRepository for LibsqlPlanningRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT COUNT(*) AS count FROM activite_personnes
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT COUNT(*) AS count FROM activite_personnes
                  WHERE activite_id = ? AND annee_scolaire = ?",
-                libsql::params![activite_id, annee_scolaire],
-            )
-            .await?;
+            libsql::params![activite_id, annee_scolaire],
+        )
+        .await?;
 
         let row = rows
             .next()
             .await?
             .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
-        Ok(libsql::de::from_row::<CompteurRow>(&row)?.count)
+        let count = libsql::de::from_row::<CompteurRow>(&row)?.count;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(count)
     }
 
     async fn verifier_collision(
@@ -489,14 +487,13 @@ impl PlanningRepository for LibsqlPlanningRepository {
             return Ok(None);
         }
 
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT activite_id FROM activite_personnes
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT activite_id FROM activite_personnes
                  WHERE personne_id = ? AND annee_scolaire = ? AND activite_id != ?",
-                libsql::params![personne_id, annee_scolaire, activite_id],
-            )
-            .await?;
+            libsql::params![personne_id, annee_scolaire, activite_id],
+        )
+        .await?;
 
         let mut autres_activites = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -523,6 +520,7 @@ impl PlanningRepository for LibsqlPlanningRepository {
                             .await?
                             .ok_or(AppError::NotFound("Activité introuvable".into()))?;
                         let nom = libsql::de::from_row::<NomActiviteRow>(&nom_row)?.nom;
+                        hrana_guard::vider_cursor(&mut nom_rows).await?;
 
                         return Ok(Some(Collision {
                             activite_conflit: nom,
@@ -560,9 +558,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
             role: Role,
         }
 
-        let mut rows = self
-            .conn
-            .query(
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
                 "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max, a.version AS activite_version,
                         c.id AS creneau_id, c.jour_semaine, c.heure_debut, c.heure_fin, c.annee_scolaire,
                         c.version AS creneau_version,

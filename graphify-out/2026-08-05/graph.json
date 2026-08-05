@@ -2330,7 +2330,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite",
-      "community": 17,
+      "community": 12,
       "norm_label": "activite.rs"
     },
     {
@@ -2340,7 +2340,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_role",
-      "community": 17,
+      "community": 12,
       "norm_label": "role"
     },
     {
@@ -2350,7 +2350,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "display",
-      "community": 17,
+      "community": 12,
       "norm_label": "display"
     },
     {
@@ -2360,7 +2360,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_role_fmt",
-      "community": 17,
+      "community": 12,
       "norm_label": ".fmt()"
     },
     {
@@ -2370,7 +2370,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "formatter",
-      "community": 17,
+      "community": 12,
       "norm_label": "formatter"
     },
     {
@@ -2380,7 +2380,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_rs_result",
-      "community": 17,
+      "community": 12,
       "norm_label": "result"
     },
     {
@@ -2390,7 +2390,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_activite",
-      "community": 17,
+      "community": 12,
       "norm_label": "activite"
     },
     {
@@ -2400,7 +2400,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_rs_string",
-      "community": 17,
+      "community": 12,
       "norm_label": "string"
     },
     {
@@ -2410,7 +2410,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_rs_option",
-      "community": 17,
+      "community": 12,
       "norm_label": "option"
     },
     {
@@ -2420,7 +2420,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_createactivite",
-      "community": 17,
+      "community": 12,
       "norm_label": "createactivite"
     },
     {
@@ -2430,7 +2430,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_updateactivite",
-      "community": 17,
+      "community": 12,
       "norm_label": "updateactivite"
     },
     {
@@ -2450,7 +2450,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_createtarifactivite",
-      "community": 17,
+      "community": 12,
       "norm_label": "createtarifactivite"
     },
     {
@@ -2460,7 +2460,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_liaisonactivitepersonne",
-      "community": 7,
+      "community": 12,
       "norm_label": "liaisonactivitepersonne"
     },
     {
@@ -2470,7 +2470,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_createliaisonactivitepersonne",
-      "community": 17,
+      "community": 12,
       "norm_label": "createliaisonactivitepersonne"
     },
     {
@@ -2480,7 +2480,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_personneactivite",
-      "community": 17,
+      "community": 12,
       "norm_label": "personneactivite"
     },
     {
@@ -2490,7 +2490,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_detailactivite",
-      "community": 17,
+      "community": 12,
       "norm_label": "detailactivite"
     },
     {
@@ -2500,7 +2500,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_rs_vec",
-      "community": 17,
+      "community": 12,
       "norm_label": "vec"
     },
     {
@@ -2510,7 +2510,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_activitepersonne",
-      "community": 17,
+      "community": 12,
       "norm_label": "activitepersonne"
     },
     {
@@ -2520,7 +2520,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_verifier_capacite_max",
-      "community": 17,
+      "community": 12,
       "norm_label": "verifier_capacite_max()"
     },
     {
@@ -2530,7 +2530,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_role_deserialisation",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_role_deserialisation()"
     },
     {
@@ -2540,7 +2540,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_capacite_max_non_atteinte",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_capacite_max_non_atteinte()"
     },
     {
@@ -2550,7 +2550,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_capacite_max_atteinte",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_capacite_max_atteinte()"
     },
     {
@@ -2560,7 +2560,7 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_capacite_max_depassee",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_capacite_max_depassee()"
     },
     {
@@ -2570,7 +2570,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_capacite_max_sans_limite",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_capacite_max_sans_limite()"
     },
     {
@@ -2580,7 +2580,7 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_test_capacite_max_0",
-      "community": 17,
+      "community": 12,
       "norm_label": "test_capacite_max_0()"
     },
     {
@@ -3000,7 +3000,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne",
-      "community": 8,
+      "community": 76,
       "norm_label": "personne.rs"
     },
     {
@@ -3010,7 +3010,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personne",
-      "community": 8,
+      "community": 76,
       "norm_label": "personne"
     },
     {
@@ -3020,7 +3020,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_string",
-      "community": 8,
+      "community": 76,
       "norm_label": "string"
     },
     {
@@ -3030,7 +3030,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_naivedate",
-      "community": 8,
+      "community": 76,
       "norm_label": "naivedate"
     },
     {
@@ -3040,7 +3040,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_option",
-      "community": 8,
+      "community": 76,
       "norm_label": "option"
     },
     {
@@ -3050,7 +3050,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_createpersonne",
-      "community": 8,
+      "community": 76,
       "norm_label": "createpersonne"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_updatepersonne",
-      "community": 8,
+      "community": 76,
       "norm_label": "updatepersonne"
     },
     {
@@ -3070,7 +3070,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personnedetail",
-      "community": 8,
+      "community": 76,
       "norm_label": "personnedetail"
     },
     {
@@ -3080,7 +3080,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_vec",
-      "community": 8,
+      "community": 76,
       "norm_label": "vec"
     },
     {
@@ -3090,7 +3090,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_adhesion",
-      "community": 8,
+      "community": 76,
       "norm_label": "adhesion"
     },
     {
@@ -3100,7 +3100,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_criteresrecherchepersonnes",
-      "community": 8,
+      "community": 76,
       "norm_label": "criteresrecherchepersonnes"
     },
     {
@@ -3110,7 +3110,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_pagination",
-      "community": 8,
+      "community": 76,
       "norm_label": "pagination"
     },
     {
@@ -3120,7 +3120,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_resultatrecherchepersonnes",
-      "community": 8,
+      "community": 76,
       "norm_label": "resultatrecherchepersonnes"
     },
     {
@@ -3130,7 +3130,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_current_annee_scolaire",
-      "community": 8,
+      "community": 76,
       "norm_label": "current_annee_scolaire()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_annee_scolaire_from_date",
-      "community": 8,
+      "community": 76,
       "norm_label": "annee_scolaire_from_date()"
     },
     {
@@ -3150,7 +3150,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_age_from_date_naissance",
-      "community": 8,
+      "community": 76,
       "norm_label": "age_from_date_naissance()"
     },
     {
@@ -3160,7 +3160,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_est_mineur",
-      "community": 8,
+      "community": 76,
       "norm_label": "est_mineur()"
     },
     {
@@ -3170,7 +3170,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_valider_date_naissance",
-      "community": 8,
+      "community": 76,
       "norm_label": "valider_date_naissance()"
     },
     {
@@ -3180,7 +3180,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_result",
-      "community": 8,
+      "community": 76,
       "norm_label": "result"
     },
     {
@@ -3190,7 +3190,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_janvier",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_annee_scolaire_janvier()"
     },
     {
@@ -3200,7 +3200,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_aout",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_annee_scolaire_aout()"
     },
     {
@@ -3210,7 +3210,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_septembre",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_annee_scolaire_septembre()"
     },
     {
@@ -3220,7 +3220,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_decembre",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_annee_scolaire_decembre()"
     },
     {
@@ -3230,7 +3230,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_annee_complete",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_annee_scolaire_annee_complete()"
     },
     {
@@ -3240,7 +3240,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_current_annee_scolaire_returns_valid_format",
-      "community": 8,
+      "community": 76,
       "norm_label": "test_current_annee_scolaire_returns_valid_format()"
     },
     {
@@ -3650,7 +3650,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_e2e_mono",
-      "community": 25,
+      "community": 76,
       "norm_label": "e2e_mono.rs"
     },
     {
@@ -3660,7 +3660,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_tauri_src_e2e_mono_e2e_mono_fichier_crud_persiste",
-      "community": 25,
+      "community": 76,
       "norm_label": "e2e_mono_fichier_crud_persiste()"
     },
     {
@@ -3670,7 +3670,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_e2e_multi",
-      "community": 25,
+      "community": 76,
       "norm_label": "e2e_multi.rs"
     },
     {
@@ -3680,7 +3680,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_tauri_src_e2e_multi_e2e_multi_crud",
-      "community": 25,
+      "community": 76,
       "norm_label": "e2e_multi_crud()"
     },
     {
@@ -3990,7 +3990,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db",
-      "community": 25,
+      "community": 76,
       "norm_label": "db.rs"
     },
     {
@@ -4010,7 +4010,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_rs_connection",
-      "community": 25,
+      "community": 76,
       "norm_label": "connection"
     },
     {
@@ -4020,7 +4020,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_idrow",
-      "community": 25,
+      "community": 76,
       "norm_label": "idrow"
     },
     {
@@ -4030,7 +4030,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_init_connection",
-      "community": 25,
+      "community": 76,
       "norm_label": "init_connection()"
     },
     {
@@ -4040,7 +4040,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_rs_path",
-      "community": 25,
+      "community": 76,
       "norm_label": "path"
     },
     {
@@ -4050,7 +4050,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_rs_result",
-      "community": 25,
+      "community": 76,
       "norm_label": "result"
     },
     {
@@ -4060,7 +4060,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_init_app_state",
-      "community": 25,
+      "community": 76,
       "norm_label": "init_app_state()"
     },
     {
@@ -4094,14 +4094,14 @@
       "norm_label": "string"
     },
     {
-      "label": "table_existe()",
+      "label": "migration_appliquee()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
       "source_location": "L48",
       "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_migrations_table_existe",
+      "id": "src_tauri_src_infrastructure_migrations_migration_appliquee",
       "community": 73,
-      "norm_label": "table_existe()"
+      "norm_label": "migration_appliquee()"
     },
     {
       "label": "Connection",
@@ -4124,30 +4124,10 @@
       "norm_label": "result"
     },
     {
-      "label": "migration_appliquee()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L58",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_migrations_migration_appliquee",
-      "community": 73,
-      "norm_label": "migration_appliquee()"
-    },
-    {
-      "label": "copier_bookkeeping_sqlx()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L68",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "community": 73,
-      "norm_label": "copier_bookkeeping_sqlx()"
-    },
-    {
       "label": "cadence_migrations()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L99",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_cadence_migrations",
       "community": 73,
@@ -4157,7 +4137,7 @@
       "label": "mem_conn()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L132",
+      "source_location": "L89",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_mem_conn",
       "community": 73,
@@ -4167,7 +4147,7 @@
       "label": "CompteurRow",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L142",
+      "source_location": "L99",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_compteurrow",
       "community": 73,
@@ -4177,7 +4157,7 @@
       "label": "nb_migrations()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L146",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_nb_migrations",
       "community": 73,
@@ -4187,7 +4167,7 @@
       "label": "applique_toutes_les_migrations()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L159",
+      "source_location": "L116",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_applique_toutes_les_migrations",
       "community": 73,
@@ -4197,21 +4177,11 @@
       "label": "ne_reapplique_pas()",
       "file_type": "code",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L178",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_migrations_ne_reapplique_pas",
       "community": 73,
       "norm_label": "ne_reapplique_pas()"
-    },
-    {
-      "label": "adopte_le_bookkeeping_sqlx_existant()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L187",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_migrations_adopte_le_bookkeeping_sqlx_existant",
-      "community": 73,
-      "norm_label": "adopte_le_bookkeeping_sqlx_existant()"
     },
     {
       "label": "mod.rs",
@@ -4230,7 +4200,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_lib",
-      "community": 25,
+      "community": 76,
       "norm_label": "lib.rs"
     },
     {
@@ -4240,7 +4210,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_tauri_src_lib_write_crash_log",
-      "community": 25,
+      "community": 76,
       "norm_label": "write_crash_log()"
     },
     {
@@ -4250,7 +4220,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_tauri_src_lib_run",
-      "community": 25,
+      "community": 76,
       "norm_label": "run()"
     },
     {
@@ -5200,7 +5170,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_tauri_src_repositories_personne_repo_personnerepository",
-      "community": 25,
+      "community": 76,
       "norm_label": "personnerepository"
     },
     {
@@ -5210,7 +5180,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_repositories_personne_repo_rs_send",
-      "community": 25,
+      "community": 76,
       "norm_label": "send"
     },
     {
@@ -5220,7 +5190,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_repositories_personne_repo_rs_sync",
-      "community": 25,
+      "community": 76,
       "norm_label": "sync"
     },
     {
@@ -13207,7 +13177,7 @@
       "label": "3. Rewrites m\u00e9caniques des repositories",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L45",
+      "source_location": "L44",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_3_rewrites_m\u00e9caniques_des_repositories",
       "community": 69,
@@ -13217,7 +13187,7 @@
       "label": "4. Config de connexion stock\u00e9e localement (`cadence_config.json`)",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L56",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_4_config_de_connexion_stock\u00e9e_localement_cadence_config_json",
       "community": 69,
@@ -13227,7 +13197,7 @@
       "label": "5. Stack pour le dev : `RUST_MIN_STACK` 512 MiB",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L66",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_5_stack_pour_le_dev_rust_min_stack_512_mib",
       "community": 69,
@@ -13237,7 +13207,7 @@
       "label": "6. Audit des \u00e9critures (Phase 3)",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L70",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_6_audit_des_\u00e9critures_phase_3",
       "community": 69,
@@ -13247,7 +13217,7 @@
       "label": "7. Changement de mode : red\u00e9marrage requis",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L74",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_7_changement_de_mode_red\u00e9marrage_requis",
       "community": 69,
@@ -13257,7 +13227,7 @@
       "label": "8. D\u00e9tection des modifications concurrentes (optimistic locking, Phase 3)",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L82",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_8_d\u00e9tection_des_modifications_concurrentes_optimistic_locking_phase_3",
       "community": 69,
@@ -13267,7 +13237,7 @@
       "label": "9. Rafra\u00eechissement",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L91",
+      "source_location": "L90",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_9_rafra\u00eechissement",
       "community": 69,
@@ -13277,7 +13247,7 @@
       "label": "Risks / Trade-offs",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L95",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_risks_trade_offs",
       "community": 69,
@@ -13287,7 +13257,7 @@
       "label": "Migration Plan",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L106",
+      "source_location": "L105",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_migration_plan",
       "community": 69,
@@ -13297,7 +13267,7 @@
       "label": "Open Questions",
       "file_type": "document",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L115",
+      "source_location": "L114",
       "_origin": "ast",
       "id": "openspec_changes_multi_utilisateurs_turso_design_open_questions",
       "community": 69,
@@ -27038,7 +27008,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src-tauri/src/e2e_mono.rs",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0,
       "source": "src_tauri_src_e2e_mono_e2e_mono_fichier_crud_persiste",
       "target": "src_tauri_src_infrastructure_db_init_app_state"
@@ -27263,7 +27233,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L99",
+      "source_location": "L58",
       "weight": 1.0,
       "context": "generic_arg",
       "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
@@ -27274,32 +27244,10 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L68",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L58",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
       "source_location": "L48",
       "weight": 1.0,
       "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_migrations_table_existe",
+      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
       "target": "src_tauri_src_error_apperror",
       "confidence_score": 1.0
     },
@@ -29437,7 +29385,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src-tauri/src/lib.rs",
-      "source_location": "L47",
+      "source_location": "L53",
       "weight": 1.0,
       "source": "src_tauri_src_lib_run",
       "target": "src_tauri_src_infrastructure_db_init_connection"
@@ -29448,7 +29396,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src-tauri/src/lib.rs",
-      "source_location": "L50",
+      "source_location": "L59",
       "weight": 1.0,
       "source": "src_tauri_src_lib_run",
       "target": "src_tauri_src_infrastructure_db_init_app_state"
@@ -29457,17 +29405,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L187",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_adopte_le_bookkeeping_sqlx_existant",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L159",
+      "source_location": "L116",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_applique_toutes_les_migrations",
@@ -29477,7 +29415,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L99",
+      "source_location": "L58",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_cadence_migrations",
@@ -29487,20 +29425,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L142",
+      "source_location": "L99",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_compteurrow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L68",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
       "confidence_score": 1.0
     },
     {
@@ -29517,7 +29445,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L132",
+      "source_location": "L89",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_mem_conn",
@@ -29527,7 +29455,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L58",
+      "source_location": "L48",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_migration_appliquee",
@@ -29537,7 +29465,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L146",
+      "source_location": "L103",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_nb_migrations",
@@ -29547,7 +29475,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L178",
+      "source_location": "L135",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_ne_reapplique_pas",
@@ -29562,16 +29490,6 @@
       "context": "import",
       "source": "src_tauri_src_infrastructure_migrations",
       "target": "src_tauri_src_infrastructure_migrations_rs_connection",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_table_existe",
       "confidence_score": 1.0
     },
     {
@@ -29590,10 +29508,10 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L75",
+      "source_location": "L68",
       "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "target": "src_tauri_src_infrastructure_migrations_table_existe",
+      "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
+      "target": "src_tauri_src_infrastructure_migrations_migration_appliquee",
       "confidence_score": 1.0
     },
     {
@@ -29603,7 +29521,7 @@
       "source_location": "L48",
       "weight": 1.0,
       "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_migrations_table_existe",
+      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
       "target": "src_tauri_src_infrastructure_migrations_rs_connection",
       "confidence_score": 1.0
     },
@@ -29614,7 +29532,7 @@
       "source_location": "L48",
       "weight": 1.0,
       "context": "return_type",
-      "source": "src_tauri_src_infrastructure_migrations_table_existe",
+      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
       "target": "src_tauri_src_infrastructure_migrations_rs_result",
       "confidence_score": 1.0
     },
@@ -29622,7 +29540,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L99",
+      "source_location": "L58",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
@@ -29633,18 +29551,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L68",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "target": "src_tauri_src_infrastructure_migrations_rs_connection",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L132",
+      "source_location": "L89",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_tauri_src_infrastructure_migrations_mem_conn",
@@ -29655,18 +29562,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L58",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
-      "target": "src_tauri_src_infrastructure_migrations_rs_connection",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L146",
+      "source_location": "L103",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_tauri_src_infrastructure_migrations_nb_migrations",
@@ -29677,32 +29573,10 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L99",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L68",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "target": "src_tauri_src_infrastructure_migrations_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
       "source_location": "L58",
       "weight": 1.0,
       "context": "return_type",
-      "source": "src_tauri_src_infrastructure_migrations_migration_appliquee",
+      "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
       "target": "src_tauri_src_infrastructure_migrations_rs_result",
       "confidence_score": 1.0
     },
@@ -29711,40 +29585,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L111",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_migration_appliquee",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L108",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations_cadence_migrations",
-      "target": "src_tauri_src_infrastructure_migrations_copier_bookkeeping_sqlx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L215",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations_adopte_le_bookkeeping_sqlx_existant",
-      "target": "src_tauri_src_infrastructure_migrations_cadence_migrations",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L161",
+      "source_location": "L118",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations_applique_toutes_les_migrations",
       "target": "src_tauri_src_infrastructure_migrations_cadence_migrations",
@@ -29755,7 +29596,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L180",
+      "source_location": "L137",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations_ne_reapplique_pas",
       "target": "src_tauri_src_infrastructure_migrations_cadence_migrations",
@@ -29766,18 +29607,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L188",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_migrations_adopte_le_bookkeeping_sqlx_existant",
-      "target": "src_tauri_src_infrastructure_migrations_mem_conn",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L160",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations_applique_toutes_les_migrations",
       "target": "src_tauri_src_infrastructure_migrations_mem_conn",
@@ -29788,7 +29618,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/migrations.rs",
-      "source_location": "L179",
+      "source_location": "L136",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_migrations_ne_reapplique_pas",
       "target": "src_tauri_src_infrastructure_migrations_mem_conn",
@@ -29819,7 +29649,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/lib.rs",
-      "source_location": "L93",
+      "source_location": "L102",
       "weight": 1.0,
       "source": "src_tauri_src_lib_run",
       "target": "src_tauri_src_lib_write_crash_log",
@@ -44672,37 +44502,15 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/Nav.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "src_components_nav",
-      "target": "src_utilisateur_invaliderutilisateur",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/Nav.tsx",
-      "source_location": "L30",
+      "source_location": "L29",
       "weight": 1.0,
       "source": "src_components_nav_nav",
       "target": "src_utilisateur_abonnerutilisateur"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/Nav.tsx",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "src_components_nav_nav",
-      "target": "src_utilisateur_invaliderutilisateur"
     },
     {
       "relation": "contains",
@@ -49947,7 +49755,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L106",
+      "source_location": "L105",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design",
       "target": "openspec_changes_multi_utilisateurs_turso_design_migration_plan",
@@ -49957,7 +49765,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L115",
+      "source_location": "L114",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design",
       "target": "openspec_changes_multi_utilisateurs_turso_design_open_questions",
@@ -49967,7 +49775,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L95",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design",
       "target": "openspec_changes_multi_utilisateurs_turso_design_risks_trade_offs",
@@ -49997,7 +49805,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L45",
+      "source_location": "L44",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_3_rewrites_m\u00e9caniques_des_repositories",
@@ -50007,7 +49815,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L56",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_4_config_de_connexion_stock\u00e9e_localement_cadence_config_json",
@@ -50017,7 +49825,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L66",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_5_stack_pour_le_dev_rust_min_stack_512_mib",
@@ -50027,7 +49835,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L70",
+      "source_location": "L69",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_6_audit_des_\u00e9critures_phase_3",
@@ -50037,7 +49845,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L74",
+      "source_location": "L73",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_7_changement_de_mode_red\u00e9marrage_requis",
@@ -50047,7 +49855,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L82",
+      "source_location": "L81",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_8_d\u00e9tection_des_modifications_concurrentes_optimistic_locking_phase_3",
@@ -50057,7 +49865,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/multi-utilisateurs-turso/design.md",
-      "source_location": "L91",
+      "source_location": "L90",
       "weight": 1.0,
       "source": "openspec_changes_multi_utilisateurs_turso_design_decisions",
       "target": "openspec_changes_multi_utilisateurs_turso_design_9_rafra\u00eechissement",
@@ -54115,5 +53923,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "14f3583f072c1ea076d41446a3cdacad0b197961"
+  "built_at_commit": "bd4ae0fcde3093d37fb07c268c78bf79c78ab6d1"
 }

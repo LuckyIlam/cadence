@@ -6,6 +6,7 @@ use crate::domain::personne::{
     UpdatePersonne,
 };
 use crate::error::AppError;
+use crate::infrastructure::hrana_guard;
 
 #[async_trait]
 pub trait PersonneRepository: Send + Sync {
@@ -42,12 +43,14 @@ async fn fetch_one<T>(
 where
     T: for<'de> serde::Deserialize<'de>,
 {
-    let mut rows = conn.query(sql, params).await?;
+    let mut rows = hrana_guard::query_avec_retry(conn, sql, params).await?;
     let row = rows
         .next()
         .await?
         .ok_or(AppError::NotFound("Enregistrement introuvable".into()))?;
-    Ok(libsql::de::from_row::<T>(&row)?)
+    let valeur = libsql::de::from_row::<T>(&row)?;
+    hrana_guard::vider_cursor(&mut rows).await?;
+    Ok(valeur)
 }
 
 async fn fetch_optional<T>(
@@ -58,9 +61,13 @@ async fn fetch_optional<T>(
 where
     T: for<'de> serde::Deserialize<'de>,
 {
-    let mut rows = conn.query(sql, params).await?;
+    let mut rows = hrana_guard::query_avec_retry(conn, sql, params).await?;
     match rows.next().await? {
-        Some(row) => Ok(Some(libsql::de::from_row::<T>(&row)?)),
+        Some(row) => {
+            let valeur = libsql::de::from_row::<T>(&row)?;
+            hrana_guard::vider_cursor(&mut rows).await?;
+            Ok(Some(valeur))
+        }
         None => Ok(None),
     }
 }
@@ -95,27 +102,26 @@ impl PersonneRepository for LibsqlPersonneRepository {
         utilisateur: &str,
     ) -> Result<Personne, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let affected = self
-            .conn
-            .execute(
-                "UPDATE personnes_physiques
+        let affected = hrana_guard::execute_avec_retry(
+            &self.conn,
+            "UPDATE personnes_physiques
                  SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?,
                      modifie_par = ?, modifie_le = ?, version = version + 1
                  WHERE id = ? AND version = ?",
-                libsql::params![
-                    input.nom,
-                    input.prenom,
-                    input.date_naissance.to_string(),
-                    input.email,
-                    input.telephone,
-                    input.responsable_id,
-                    utilisateur,
-                    maintenant,
-                    id,
-                    input.version
-                ],
-            )
-            .await?;
+            libsql::params![
+                input.nom,
+                input.prenom,
+                input.date_naissance.to_string(),
+                input.email,
+                input.telephone,
+                input.responsable_id,
+                utilisateur,
+                maintenant,
+                id,
+                input.version
+            ],
+        )
+        .await?;
         if affected == 0 {
             if self.find_by_id(id).await?.is_some() {
                 return Err(AppError::Conflict(
@@ -193,12 +199,13 @@ impl PersonneRepository for LibsqlPersonneRepository {
             count_params.push(libsql::Value::from(annee_scolaire.clone()));
         }
 
-        let mut rows = self.conn.query(&count_sql, count_params).await?;
+        let mut rows = hrana_guard::query_avec_retry(&self.conn, &count_sql, count_params).await?;
         let row = rows
             .next()
             .await?
             .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
         let total = libsql::de::from_row::<TotalRow>(&row)?.count;
+        hrana_guard::vider_cursor(&mut rows).await?;
 
         // --- data ---
         let offset = if pagination.par_page > 0 {
@@ -236,7 +243,7 @@ impl PersonneRepository for LibsqlPersonneRepository {
             data_params.push(libsql::Value::from(offset as i64));
         }
 
-        let mut rows = self.conn.query(&data_sql, data_params).await?;
+        let mut rows = hrana_guard::query_avec_retry(&self.conn, &data_sql, data_params).await?;
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
             donnees.push(libsql::de::from_row::<Personne>(&row)?);

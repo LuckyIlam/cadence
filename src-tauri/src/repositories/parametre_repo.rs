@@ -3,6 +3,7 @@ use libsql::Connection;
 
 use crate::domain::parametre::ParametresPlanning;
 use crate::error::AppError;
+use crate::infrastructure::hrana_guard;
 
 #[async_trait]
 pub trait ParametreRepository: Send + Sync {
@@ -29,19 +30,20 @@ impl LibsqlParametreRepository {
 #[async_trait]
 impl ParametreRepository for LibsqlParametreRepository {
     async fn obtenir_parametres_planning(&self) -> Result<ParametresPlanning, AppError> {
-        let mut rows = self
-            .conn
-            .query(
-                "SELECT id, heure_ouverture, heure_fermeture FROM parametres WHERE id = 1",
-                libsql::params![],
-            )
-            .await?;
+        let mut rows = hrana_guard::query_avec_retry(
+            &self.conn,
+            "SELECT id, heure_ouverture, heure_fermeture FROM parametres WHERE id = 1",
+            libsql::params![],
+        )
+        .await?;
 
         let row = rows
             .next()
             .await?
             .ok_or(AppError::NotFound("Paramètres introuvables".into()))?;
-        Ok(libsql::de::from_row::<ParametresPlanning>(&row)?)
+        let valeur = libsql::de::from_row::<ParametresPlanning>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 
     async fn mettre_a_jour_plage_horaire_tx(
@@ -66,7 +68,9 @@ impl ParametreRepository for LibsqlParametreRepository {
             .next()
             .await?
             .ok_or(AppError::NotFound("Paramètres introuvables".into()))?;
-        Ok(libsql::de::from_row::<ParametresPlanning>(&row)?)
+        let valeur = libsql::de::from_row::<ParametresPlanning>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
     }
 }
 

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { abonnerUtilisateur, invaliderUtilisateur } from "../utilisateur";
+import { abonnerUtilisateur } from "../utilisateur";
 
 const links = [
   { to: "/", label: "Personnes" },
@@ -17,7 +17,6 @@ export default function Nav() {
   useEffect(() => {
     let actif = true;
     const rafraichir = () => {
-      invaliderUtilisateur();
       invoke<{ utilisateur: string | null }>("obtenir_config")
         .then((c) => {
           if (actif) setUtilisateur(c.utilisateur ?? null);

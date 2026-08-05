@@ -2,6 +2,7 @@ mod commands;
 mod domain;
 mod e2e_mono;
 mod e2e_multi;
+mod e2e_stream;
 mod error;
 mod infrastructure;
 mod repositories;
@@ -44,7 +45,16 @@ pub fn run() {
                 config.utilisateur = "local".to_string();
             }
 
-            let conn = tauri::async_runtime::block_on(init_connection(&config, &app_dir))
+            // Le chemin distant (TLS/hyper) en build debug consomme ~256 MiB de pile
+            // (design.md, décision 5). Le setup s'exécute sur le thread main (pile
+            // par défaut ~1 Mo) : on passe par un thread dédié à grande pile.
+            let conn = std::thread::Builder::new()
+                .name("cadence-db".into())
+                .stack_size(512 * 1024 * 1024)
+                .spawn(move || tauri::async_runtime::block_on(init_connection(&config, &app_dir)))
+                .map_err(|e| format!("échec création du thread base de données : {e}"))?
+                .join()
+                .map_err(|_| "le thread base de données a paniqué".to_string())?
                 .map_err(|e| format!("échec base de données : {e}"))?;
 
             app.manage(init_app_state(conn));

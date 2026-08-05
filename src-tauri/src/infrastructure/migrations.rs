@@ -1,6 +1,7 @@
 use libsql::Connection;
 
 use crate::error::AppError;
+use crate::infrastructure::hrana_guard;
 
 const MIGRATIONS: &[(&str, &str)] = &[
     (
@@ -46,13 +47,15 @@ fn maintenant_utc() -> String {
 }
 
 async fn migration_appliquee(conn: &Connection, nom: &str) -> Result<bool, AppError> {
-    let mut rows = conn
-        .query(
-            "SELECT 1 FROM _cadence_migrations WHERE nom = ?",
-            libsql::params![nom],
-        )
-        .await?;
-    Ok(rows.next().await?.is_some())
+    let mut rows = hrana_guard::query_avec_retry(
+        conn,
+        "SELECT 1 FROM _cadence_migrations WHERE nom = ?",
+        libsql::params![nom],
+    )
+    .await?;
+    let appliquee = rows.next().await?.is_some();
+    hrana_guard::vider_cursor(&mut rows).await?;
+    Ok(appliquee)
 }
 
 pub async fn cadence_migrations(conn: &Connection) -> Result<(), AppError> {
