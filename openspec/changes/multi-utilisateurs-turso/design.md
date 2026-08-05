@@ -30,7 +30,7 @@ Le SDK `libsql` est le client officiel du protocole Turso, et il sait aussi ouvr
 - **Alternative écartée** : client Hrana HTTP maison — réinventer ce que `libsql` fait déjà.
 
 `AppState.pool: SqlitePool` devient `AppState.conn: libsql::Connection` (clonage léger). `init_pool(database_url)` devient `init_connection(config: &ConnexionConfig, app_dir: &Path) -> Result<libsql::Connection, AppError>` qui choisit selon le mode :
-- `mono` → `Builder::new_local(app_dir.join("cadence.db")).build()` (mode fichier validé sur `:memory:` par le spike ; compatibilité avec un `cadence.db` existant via l'adoption du bookkeeping SQLx, voir décision 2) ;
+- `mono` → `Builder::new_local(app_dir.join("cadence.db")).build()` (mode fichier validé sur `:memory:` par le spike) ;
 - `multi` → `Builder::new_remote(url, token).build()` ;
 puis application des migrations (communes). Features `remote`/`core`/`tls` (le spike compile `new_local(":memory:")` avec ces features) ; la feature `local` est ajoutée si nécessaire pour le mode fichier réel (à confirmer en Phase 1). `max_connections(1)` n'a plus de sens (la `Connection` gère ses connexions internes).
 
@@ -39,8 +39,7 @@ puis application des migrations (communes). Features `remote`/`core`/`tls` (le s
 `sqlx::migrate!` disparaît. Nouveau runner `cadence_migrations(conn: &libsql::Connection)` :
 - liste statique des 8 fichiers SQL via `include_str!` (les fichiers `src-tauri/migrations/*.sql` restent la source de vérité) ;
 - table `_cadence_migrations` (nom, appliquée_le) pour le suivi ;
-- chaque fichier exécuté via `conn.execute_batch("BEGIN; ...; COMMIT;")`, vérifié dans la transaction (validé par le spike : `execute_batch` fonctionne en local et à distance, triggers compris) ;
-- **adoption d'une base locale existante** : un `cadence.db` créé par SQLx contient déjà les tables et la table `_sqlx_migrations`. Pour éviter de re-exécuter les 8 migrations (erreur « table already exists »), au premier passage `cadence_migrations` copie les entrées de `_sqlx_migrations` dans `_cadence_migrations` si elle existe. La base Turso (vide) exécute les 8 migrations normalement.
+- chaque fichier exécuté via `conn.execute_batch("BEGIN; ...; COMMIT;")`, vérifié dans la transaction (validé par le spike : `execute_batch` fonctionne en local et à distance, triggers compris). L'application n'a pas été exploitée : toute base existante est jetable, le runner part d'une base vide (pas d'adoption de traces SQLx).
 
 ### 3. Rewrites mécaniques des repositories
 
@@ -105,7 +104,7 @@ Aucune cache front ni backend : chaque commande interroge la base active (distan
 
 ## Migration Plan
 
-1. **Phase 1 — socle** : `infrastructure/migrations.rs` (liste + `cadence_migrations` + adoption `_sqlx_migrations`), `RUST_MIN_STACK`, `init_connection` selon le mode (mono local / multi distant) + `AppState.conn`, suppression de SQLx. `cargo test` (local `:memory:`) + `cargo tauri dev` (distant, debug).
+1. **Phase 1 — socle** : `infrastructure/migrations.rs` (liste + `cadence_migrations`), `RUST_MIN_STACK`, `init_connection` selon le mode (mono local / multi distant) + `AppState.conn`, suppression de SQLx. `cargo test` (local `:memory:`) + `cargo tauri dev` (distant, debug).
 2. **Phase 2 — repositories** : bascule query/transactions/derive, `AppError`, services, commandes. Suite de tests complète en local (les deux modes partagent le même code).
 3. **Phase 3 — audit** : migration `modifie_par`/`modifie_le`/`version` + paramètre `utilisateur` sur les commandes d'écriture (les deux modes).
 4. **Phase 4 — config** : `cadence_config.json` (mode + champs selon le mode), commandes config/test, écran premier lancement (choix du mode), carte Paramètres (sélecteur de mode, redémarrage requis), `Nav.tsx` (nom utilisateur).
@@ -114,5 +113,5 @@ Aucune cache front ni backend : chaque commande interroge la base active (distan
 
 ## Open Questions
 
-- **Import/export des données entre les bases mono et multi** : nécessaire ou non (un bénévole qui passe du local au partagé, et inversement) ? Réponse sans impact sur les Phases 1-4 (l'import, si besoin, serait un utilitaire one-shot en Phase 5). **Décision à demander avant la Phase 5.**
+- **Import/export des données entre les bases mono et multi** : **décision (Phase 5) : pas d'import pour l'instant.** Les données des deux modes restent indépendantes ; un outil d'import one-shot (local → distant) pourra être ajouté plus tard si un bénévole doit migrer ses données locales vers la base partagée.
 - Nom exact du fichier/écran de premier lancement et libellés de la carte Paramètres (détail d'UI, décidé en Phase 4).

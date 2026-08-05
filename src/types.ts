@@ -240,6 +240,21 @@ export interface ImpactCreneau {
   raison: string | null;
 }
 
+export type ModeConnexion = "mono" | "multi";
+
+export interface ConfigAffichee {
+  configuree: boolean;
+  mode: ModeConnexion | null;
+  url: string | null;
+  utilisateur: string | null;
+  a_une_cle: boolean;
+}
+
+export interface ResultatSauvegarde {
+  config: ConfigAffichee;
+  redemarrage_requis: boolean;
+}
+
 const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
 
 export function jourSemaineTexte(jour: number): string {

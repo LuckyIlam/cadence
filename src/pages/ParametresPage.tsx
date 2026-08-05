@@ -1,12 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
+import ConnexionConfigForm from "../components/ConnexionConfigForm";
 import { erreurMessage } from "../errors";
-import type { ImpactCreneau, ParametresPlanning } from "../types";
+import type { ConfigAffichee, ImpactCreneau, ParametresPlanning } from "../types";
 import { jourSemaineTexte } from "../types";
 import { utilisateurCourant } from "../utilisateur";
 
 export default function ParametresPage() {
   const [parametres, setParametres] = useState<ParametresPlanning | null>(null);
+  const [config, setConfig] = useState<ConfigAffichee | null>(null);
   const [ouverture, setOuverture] = useState("08:00");
   const [fermeture, setFermeture] = useState("20:00");
   const [message, setMessage] = useState<string | null>(null);
@@ -23,6 +25,10 @@ export default function ParametresPage() {
         setFermeture(p.heure_fermeture);
       })
       .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    invoke<ConfigAffichee>("obtenir_config").then(setConfig).catch(console.error);
   }, []);
 
   const sauvegarderPlage = async (confirmerSuppression: boolean) => {
@@ -141,6 +147,15 @@ export default function ParametresPage() {
         >
           {saving ? "Enregistrement..." : "Enregistrer"}
         </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-lg mt-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Connexion à la base</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Choix du mode de fonctionnement : base locale mono-utilisateur ou base partagée multi-utilisateurs (Turso). Un
+          changement de mode, d'URL ou de clé nécessite un redémarrage de l'application.
+        </p>
+        {config && <ConnexionConfigForm config={config} />}
       </div>
 
       {impacts && (

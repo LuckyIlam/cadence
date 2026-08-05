@@ -7,7 +7,7 @@
 - [x] 1.5 Passer `AppState.pool: SqlitePool` → `AppState.conn: libsql::Connection` et adapter `lib.rs` (création via `tauri::async_runtime::block_on`)
 - [x] 1.6 Ajouter `std::env::set_var("RUST_MIN_STACK", "536870912")` en tête de `run()` et vérifier en debug distant (mode multi) que Tauri n'override pas la stack (sinon thread dédié grande pile)
 - [x] 1.7 Adapter `AppError` : `From<sqlx::Error>` → `From<libsql::Error>` (variante `Database` conservée)
-- [x] 1.8 Adoption du bookkeeping SQLx dans `cadence_migrations` : copier `_sqlx_migrations` → `_cadence_migrations` si elle existe ; vérifier l'ouverture d'un `cadence.db` existant avec `new_local` (pas de re-run)
+- [~] 1.8 Adoption du bookkeeping SQLx dans `cadence_migrations` (copie `_sqlx_migrations` → `_cadence_migrations`) — **annulée** : l'application n'a pas été exploitée, on part d'une base vide (décision de ménage post-Phase 5)
 - [x] 1.9 Migrer les helpers de tests (`setup_db`/`setup_app`) vers libsql `:memory:` + `cadence_migrations` ; `cargo check` + `cargo test` + `cargo clippy`
 
 ## 2. Basculer les repositories sur libsql
@@ -39,16 +39,16 @@
 
 - [x] 4.1 Module config : charger / sauvegarder `cadence_config.json` dans `app_data_dir` (mode, url/token selon le mode, utilisateur)
 - [x] 4.2 Commandes `obtenir_config`, `sauvegarder_config`, `tester_connexion` (connexion éphémère + `SELECT 1`, mode multi uniquement ; le token n'est pas renvoyé en clair au front)
-- [ ] 4.3 Écran de premier lancement dans `App.tsx` (garde si non configuré) : choix du mode + champs selon le mode
-- [ ] 4.4 Carte « Connexion à la base » dans `ParametresPage.tsx` : sélecteur mono/multi, champs adaptés au mode, bouton tester (multi), modal « redémarrage requis » au changement de mode/URL/token
-- [ ] 4.5 Transmettre le nom d'utilisateur aux commandes d'écriture (les deux modes) et l'afficher dans `Nav.tsx`
-- [ ] 4.6 Tests config : sauvegarde mono et multi, changement de mode → redémarrage demandé, nom d'utilisateur seul → immédiat
-- [ ] 4.7 `npm run typecheck` + `npm run lint` + `npm run build`
+- [x] 4.3 Écran de premier lancement dans `App.tsx` (garde si non configuré) : choix du mode + champs selon le mode
+- [x] 4.4 Carte « Connexion à la base » dans `ParametresPage.tsx` : sélecteur mono/multi, champs adaptés au mode, bouton tester (multi), modal « redémarrage requis » au changement de mode/URL/token
+- [x] 4.5 Transmettre le nom d'utilisateur aux commandes d'écriture (les deux modes) et l'afficher dans `Nav.tsx`
+- [x] 4.6 Tests config : sauvegarde mono et multi, changement de mode → redémarrage demandé, nom d'utilisateur seul → immédiat
+- [x] 4.7 `npm run typecheck` + `npm run lint` + `npm run build`
 
 ## 5. Vérifications et livraison
 
-- [ ] 5.1 `cargo test`, `cargo check`, `cargo clippy -- -D warnings`, `cargo fmt --check`, `cargo audit`, `cargo deny check`
-- [ ] 5.2 `npm run typecheck`, `npm run lint`, `npm run build`
-- [ ] 5.3 Validation end-to-end : mode multi sur la base de test `cadence-dev` (debug RUST_MIN_STACK + release) et mode mono sur base locale (migrations + CRUD)
-- [ ] 5.4 Documentation fonctionnelle : base partagée, écran de configuration, RGPD (Turso sous-traitant UE) — l'import éventuel des données locales existantes dépend de la décision utilisateur (voir design.md, Open Questions)
-- [ ] 5.5 `graphify update .`
+- [x] 5.1 `cargo test`, `cargo check`, `cargo clippy -- -D warnings`, `cargo fmt --check`, `cargo audit`, `cargo deny check`
+- [x] 5.2 `npm run typecheck`, `npm run lint`, `npm run build`
+- [x] 5.3 Validation end-to-end : mode multi sur la base de test `cadence-dev` (debug RUST_MIN_STACK + release) et mode mono sur base locale (migrations + CRUD)
+- [x] 5.4 Documentation fonctionnelle : base partagée, écran de configuration, RGPD (Turso sous-traitant UE) — l'import éventuel des données locales existantes dépend de la décision utilisateur (voir design.md, Open Questions)
+- [x] 5.5 `graphify update .`

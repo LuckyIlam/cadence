@@ -1,5 +1,7 @@
 mod commands;
 mod domain;
+mod e2e_mono;
+mod e2e_multi;
 mod error;
 mod infrastructure;
 mod repositories;
@@ -26,6 +28,7 @@ pub fn run() {
     std::env::set_var("RUST_MIN_STACK", "536870912");
 
     let result = tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             let app_dir = app

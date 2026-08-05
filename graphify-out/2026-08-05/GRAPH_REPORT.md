@@ -1,16 +1,16 @@
-# Graph Report - cadence  (2026-08-04)
+# Graph Report - cadence  (2026-08-05)
 
 ## Corpus Check
-- 120 files · ~78,983 words
+- 127 files · ~83,761 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1731 nodes · 3276 edges · 118 communities (88 shown, 30 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.81)
+- 1782 nodes · 3422 edges · 118 communities (88 shown, 30 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 28 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3fcc4460`
+- Built from commit: `14f3583f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -81,7 +81,7 @@
 - adhesion.rs
 - Documentation fonctionnelle — Cadence
 - Paramètres
-- activite.rs
+- MockPlanningRepository
 - adhesion_repo.rs
 - ADDED Requirements
 - Decisions
@@ -118,7 +118,7 @@
 - Thin Frontend Pattern — Business Logic in Backend
 
 ## God Nodes (most connected - your core abstractions)
-1. `AppError` - 186 edges
+1. `AppError` - 188 edges
 2. `repo()` - 50 edges
 3. `setup_db()` - 48 edges
 4. `seed_activite()` - 45 edges
@@ -134,8 +134,8 @@
   index.html → README.md
 - `CI Workflow` --references--> `Pre-submission Verification Checklist`  [INFERRED]
   .github/workflows/ci.yml → AGENTS.md
-- `modifier_plage_horaire()` --calls--> `valider_plage_horaire()`  [INFERRED]
-  src-tauri/src/commands/parametre_commands.rs → src-tauri/src/domain/parametre.rs
+- `setup_app()` --calls--> `init_app_state()`  [INFERRED]
+  src-tauri/src/commands/parametre_commands.rs → src-tauri/src/infrastructure/db.rs
 - `ajouter_creneau()` --calls--> `valider_creneau()`  [INFERRED]
   src-tauri/src/commands/planning_commands.rs → src-tauri/src/domain/planning.rs
 - `valider_creneau_dans_plage_global()` --calls--> `valider_creneau_dans_plage()`  [INFERRED]
@@ -155,7 +155,7 @@ Cohesion: 0.18
 Nodes (10): Check for context, Ending Discovery, Guardrails, Handling Different Entry Points, OpenSpec Awareness, The Stance, What You Don't Have To Do, What You Might Do (+2 more)
 
 ### Community 3 - "Dev Setup & Conventions"
-Cohesion: 0.24
+Cohesion: 0.21
 Nodes (3): Activités, Concepts, Description
 
 ### Community 4 - "CI/CD Pipelines"
@@ -164,11 +164,11 @@ Nodes (5): CI Workflow, CI Verification Pipeline, Release Workflow, Release Pipe
 
 ### Community 6 - "App Shell"
 Cohesion: 0.06
-Nodes (59): App(), AdhesionForm(), Props, links, Nav(), PersonneForm(), Props, hauteurBloc() (+51 more)
+Nodes (68): AdhesionForm(), Props, ConnexionConfigForm(), Props, links, Nav(), PersonneForm(), Props (+60 more)
 
 ### Community 7 - "Formulaire Adhésion"
 Cohesion: 0.07
-Nodes (40): Display, Error, From, LiaisonActivitePersonne, Role, Collision, AppError, Self (+32 more)
+Nodes (42): Error, From, LiaisonActivitePersonne, Collision, AppError, Self, String, maintenant_utc() (+34 more)
 
 ### Community 8 - "Navigation"
 Cohesion: 0.07
@@ -179,16 +179,16 @@ Cohesion: 0.11
 Nodes (68): CompteurRow, IdRow, LibsqlPlanningRepository, PlanningRepository, repo(), Connection, CreateCreneau, CreateSemaineBanalisee (+60 more)
 
 ### Community 10 - "Détail Personne"
-Cohesion: 0.06
-Nodes (74): ajouter_personne_activite(), creer_activite(), definir_tarif_activite(), lister_activites(), lister_activites_personne(), lister_annees_activites(), modifier_activite(), obtenir_activite() (+66 more)
+Cohesion: 0.09
+Nodes (49): ajouter_personne_activite(), creer_activite(), definir_tarif_activite(), lister_activites(), lister_activites_personne(), lister_annees_activites(), modifier_activite(), obtenir_activite() (+41 more)
 
 ### Community 11 - "Liste Personnes"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (58): ajouter_creneau(), ajouter_semaine_banalisee(), lister_creneaux(), lister_semaines_banalisees(), modifier_creneau(), planning_personne(), App, Connection (+50 more)
 
 ### Community 12 - "Type Activité"
 Cohesion: 0.12
-Nodes (32): TarifActivite, ActiviteRepository, create_activite_input(), LibsqlActiviteRepository, repo(), Activite, ActivitePersonne, Connection (+24 more)
+Nodes (34): TarifActivite, ActiviteRepository, create_activite_input(), LibsqlActiviteRepository, repo(), Activite, ActivitePersonne, Connection (+26 more)
 
 ### Community 13 - "Type ActivitéPersonne"
 Cohesion: 0.04
@@ -207,12 +207,12 @@ Cohesion: 0.05
 Nodes (36): Purpose, Requirement: Afficher les activités d'une personne, Requirement: Ajouter une personne à une activité, Requirement: Consulter le détail d'une activité, Requirement: Créer une activité, Requirement: Définir le tarif d'une activité pour une année scolaire, Requirement: Filtrer les activités par année scolaire, Requirement: Lister les activités (+28 more)
 
 ### Community 17 - "Type CreateAdhesion"
-Cohesion: 0.09
-Nodes (20): CreateCreneau, CreateSemaineBanalisee, CreneauActivite, est_lundi(), PlanningCreneau, Activite, Option, Result (+12 more)
+Cohesion: 0.06
+Nodes (39): Display, Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite (+31 more)
 
 ### Community 18 - "Type CreateLiaison"
-Cohesion: 0.15
-Nodes (34): IntoParams, fetch_one(), fetch_optional(), LibsqlPersonneRepository, PersonneRepository, repo(), Connection, CreatePersonne (+26 more)
+Cohesion: 0.16
+Nodes (36): IntoParams, fetch_one(), fetch_optional(), LibsqlPersonneRepository, repo(), Connection, CreatePersonne, CriteresRecherchePersonnes (+28 more)
 
 ### Community 19 - "Type CreatePersonne"
 Cohesion: 0.06
@@ -223,8 +223,8 @@ Cohesion: 0.06
 Nodes (33): Architecture, Contexte, `creneaux_activite`, D1 — Créneaux récurrents plutôt que séances individuelles, D2 — Collision à l'inscription, pas à la création du créneau, D3 — Rôles et collisions, D4 — Semaines banalisées par activité, pas globales, D5 — Affichage planning par personne (encadrant ou adhérent) (+25 more)
 
 ### Community 21 - "Type Critères Recherche"
-Cohesion: 0.07
-Nodes (29): dependencies, react, react-dom, react-router-dom, @tauri-apps/api, devDependencies, @biomejs/biome, lefthook (+21 more)
+Cohesion: 0.06
+Nodes (30): dependencies, react, react-dom, react-router-dom, @tauri-apps/api, @tauri-apps/plugin-process, devDependencies, @biomejs/biome (+22 more)
 
 ### Community 22 - "Type DateValidation"
 Cohesion: 0.07
@@ -239,8 +239,8 @@ Cohesion: 0.08
 Nodes (25): ADDED Requirements, MODIFIED Requirements, REMOVED Requirements, RENAMED Requirements, Requirement: Ajouter une personne à une activité, Requirement: Consulter le détail d'une activité, Requirement: Créer une activité, Requirement: Définir le tarif d'une activité pour une année scolaire (+17 more)
 
 ### Community 25 - "Type AnnéeScolaire"
-Cohesion: 0.13
-Nodes (40): AppHandle, Default, app_dir(), appliquer_config(), ConfigAffichee, lire_config(), obtenir_config(), ResultatSauvegarde (+32 more)
+Cohesion: 0.08
+Nodes (55): AppHandle, Default, ModeConnexion, app_dir(), appliquer_config(), ConfigAffichee, lire_config(), normaliser_url() (+47 more)
 
 ### Community 26 - "Type Mineur"
 Cohesion: 0.11
@@ -287,8 +287,8 @@ Cohesion: 0.15
 Nodes (12): 1. SQLx avec SQLite local, interchangeable avec Postgres, 2. Architecture clean mais légère (pas d'hexagonal overhead), 3. React 19 + Tailwind CSS + Vite en frontend Tauri, 4. Deux états pour l'adhésion : adhesion = ligne avec booléen `reglee`, 5. Responsable légal : `responsable_id` nullable sur `personnes_physiques`, 6. Validation date de naissance : <= 1920 et pas dans le futur, 7. Format d'affichage des dates : JJ/MM/AAAA, 8. Désactivation du bouton d'ajout d'adhésion si l'année en cours existe déjà (+4 more)
 
 ### Community 37 - "parametre.rs"
-Cohesion: 0.11
-Nodes (27): creneau(), heure_en_minutes(), ImpactAction, ImpactCreneau, minutes_en_heure(), ParametresPlanning, CreateCreneau, Option (+19 more)
+Cohesion: 0.07
+Nodes (47): apercu_creneaux_hors_plage(), modifier_plage_horaire(), obtenir_parametres_planning(), App, Connection, ImpactCreneau, MockRuntime, ParametresPlanning (+39 more)
 
 ### Community 38 - "Règles de développement"
 Cohesion: 0.15
@@ -395,20 +395,20 @@ Cohesion: 0.60
 Nodes (5): Adhesion, CreateAdhesion, Option, String, UpdateAdhesion
 
 ### Community 64 - "Documentation fonctionnelle — Cadence"
-Cohesion: 0.40
-Nodes (5): Concepts généraux, Documentation fonctionnelle — Cadence, Flux principaux, Modules fonctionnels, Public visé
+Cohesion: 0.33
+Nodes (6): Concepts généraux, Documentation fonctionnelle — Cadence, Données et vie privée (RGPD), Flux principaux, Modules fonctionnels, Public visé
 
 ### Community 65 - "Paramètres"
 Cohesion: 0.40
 Nodes (5): Description, Impact de la plage, Modifier la plage horaire, Paramètres, Réduire la plage horaire
 
-### Community 66 - "activite.rs"
-Cohesion: 0.16
-Nodes (17): Formatter, Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite, PersonneActivite (+9 more)
+### Community 66 - "MockPlanningRepository"
+Cohesion: 0.20
+Nodes (10): Choisir son mode dans les Paramètres, Connexion et mode de fonctionnement, Description, Données indépendantes, Mode mono-utilisateur, Mode multi-utilisateurs, Nom d'utilisateur et traçabilité, Premier lancement (+2 more)
 
 ### Community 67 - "adhesion_repo.rs"
-Cohesion: 0.21
-Nodes (17): AdhesionRepository, LibsqlAdhesionRepository, repo(), Adhesion, Connection, CreateAdhesion, Result, Self (+9 more)
+Cohesion: 0.22
+Nodes (19): AdhesionRepository, LibsqlAdhesionRepository, repo(), Adhesion, Connection, CreateAdhesion, Result, Self (+11 more)
 
 ### Community 68 - "ADDED Requirements"
 Cohesion: 0.11
@@ -419,8 +419,8 @@ Cohesion: 0.12
 Nodes (15): 1. Remplacer SQLx/SQLite par `libsql` 0.9.30, qui pilote les deux modes, 2. Runner de migrations maison (`infrastructure/migrations.rs`), 3. Rewrites mécaniques des repositories, 4. Config de connexion stockée localement (`cadence_config.json`), 5. Stack pour le dev : `RUST_MIN_STACK` 512 MiB, 6. Audit des écritures (Phase 3), 7. Changement de mode : redémarrage requis, 8. Détection des modifications concurrentes (optimistic locking, Phase 3) (+7 more)
 
 ### Community 73 - "migrations.rs"
-Cohesion: 0.32
-Nodes (13): applique_toutes_les_migrations(), cadence_migrations(), CompteurRow, copier_bookkeeping_sqlx(), maintenant_utc(), mem_conn(), migration_appliquee(), nb_migrations() (+5 more)
+Cohesion: 0.30
+Nodes (14): adopte_le_bookkeeping_sqlx_existant(), applique_toutes_les_migrations(), cadence_migrations(), CompteurRow, copier_bookkeeping_sqlx(), maintenant_utc(), mem_conn(), migration_appliquee() (+6 more)
 
 ### Community 74 - "proposal.md"
 Cohesion: 0.29
@@ -431,24 +431,24 @@ Cohesion: 0.33
 Nodes (5): 1. Socle — dépendance libsql, connexion (mono/multi) et migrations, 2. Basculer les repositories sur libsql, 3. Audit des modifications et conflits, 4. Configuration de la connexion et choix du mode, 5. Vérifications et livraison
 
 ## Knowledge Gaps
-- **664 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+659 more)
+- **675 isolated node(s):** `$schema`, `plugin`, `@opencode-ai/plugin`, `$schema`, `enabled` (+670 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppError` connect `Formulaire Adhésion` to `adhesion_repo.rs`, `Navigation`, `migrations.rs`, `Détail Personne`, `Liste Personnes`, `Type Activité`, `Pages Activités`, `Type CreateLiaison`, `Type AnnéeScolaire`, `Type CurrentAnnée`, `AppError`?**
-  _High betweenness centrality (0.149) - this node is a cross-community bridge._
-- **Why does `Role` connect `Formulaire Adhésion` to `Type CreateAdhesion`, `activite.rs`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `AppState` connect `Détail Personne` to `adhesion_repo.rs`, `Pages Activités`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type CurrentAnnée`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `AppError` connect `Formulaire Adhésion` to `adhesion_repo.rs`, `parametre.rs`, `Navigation`, `migrations.rs`, `Détail Personne`, `Liste Personnes`, `Type Activité`, `Pages Activités`, `Type CreateLiaison`, `Type AnnéeScolaire`, `Type CurrentAnnée`, `AppError`?**
+  _High betweenness centrality (0.152) - this node is a cross-community bridge._
+- **Why does `AppState` connect `Détail Personne` to `adhesion_repo.rs`, `parametre.rs`, `Pages Activités`, `Liste Personnes`, `Type Activité`, `Type CreateLiaison`, `Type AnnéeScolaire`, `Type CurrentAnnée`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `ajouter_creneau()` connect `Liste Personnes` to `Type CreateAdhesion`, `Détail Personne`, `Formulaire Adhésion`?**
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `$schema`, `plugin`, `@opencode-ai/plugin` to the rest of the system?**
-  _677 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _688 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Shell` be split into smaller, more focused modules?**
-  _Cohesion score 0.06350877192982456 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05847803881511747 - nodes in this community are weakly interconnected._
 - **Should `Formulaire Adhésion` be split into smaller, more focused modules?**
-  _Cohesion score 0.06880076445293837 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06517357222844344 - nodes in this community are weakly interconnected._
 - **Should `Navigation` be split into smaller, more focused modules?**
   _Cohesion score 0.06559356136820925 - nodes in this community are weakly interconnected._

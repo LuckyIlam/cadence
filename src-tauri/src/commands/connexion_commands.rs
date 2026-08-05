@@ -51,6 +51,13 @@ fn lire_config(dir: &std::path::Path) -> Result<ConfigAffichee, AppError> {
     Ok(vers_config_affichee(load_config(dir)?.as_ref()))
 }
 
+/// Turso fournit des URLs `turso://…` ; libsql n'accepte que `libsql://…`.
+fn normaliser_url(url: String) -> String {
+    url.strip_prefix("turso://")
+        .map(|reste| format!("libsql://{reste}"))
+        .unwrap_or(url)
+}
+
 /// Applique et enregistre la configuration dans `dir`. `token` absent ou vide
 /// conserve la clé existante (la clé n'est jamais renvoyée au front en clair).
 fn appliquer_config(
@@ -70,7 +77,7 @@ fn appliquer_config(
     let url = match mode {
         ModeConnexion::Mono => None,
         ModeConnexion::Multi => {
-            let url = url.map(|u| u.trim().to_string());
+            let url = url.map(|u| normaliser_url(u.trim().to_string()));
             match url {
                 Some(u) if u.is_empty() => {
                     return Err(AppError::Validation(
@@ -107,7 +114,9 @@ fn appliquer_config(
     save_config(dir, &config)?;
 
     let redemarrage_requis = match &avant {
-        None => true,
+        // Premier lancement : l'application est déjà connectée à la base locale,
+        // seul un passage en mode multi-utilisateurs nécessite un redémarrage.
+        None => config.mode == ModeConnexion::Multi,
         Some(avant) => {
             avant.mode != config.mode || avant.url != config.url || avant.token != config.token
         }
@@ -142,7 +151,7 @@ pub async fn sauvegarder_config<R: tauri::Runtime>(
 /// Vérifie qu'une base Turso distante est joignable avec l'URL et la clé fournies.
 #[tauri::command]
 pub async fn tester_connexion(url: String, token: String) -> Result<(), AppError> {
-    let url = url.trim();
+    let url = normaliser_url(url.trim().to_string());
     let token = token.trim();
     if url.is_empty() || token.is_empty() {
         return Err(AppError::Validation(
@@ -150,7 +159,7 @@ pub async fn tester_connexion(url: String, token: String) -> Result<(), AppError
         ));
     }
 
-    let db = libsql::Builder::new_remote(url.to_string(), token.to_string())
+    let db = libsql::Builder::new_remote(url, token.to_string())
         .build()
         .await
         .map_err(|e| AppError::Database(format!("Connexion impossible : {e}")))?;
@@ -176,6 +185,19 @@ mod tests {
     }
 
     #[test]
+    fn test_normaliser_url_turso() {
+        assert_eq!(
+            normaliser_url("turso://base.turso.io".to_string()),
+            "libsql://base.turso.io"
+        );
+        assert_eq!(
+            normaliser_url("libsql://base.turso.io".to_string()),
+            "libsql://base.turso.io"
+        );
+        assert_eq!(normaliser_url("".to_string()), "");
+    }
+
+    #[test]
     fn test_obtenir_config_absente() {
         let dir = tmp_dir("absente");
         std::fs::create_dir_all(&dir).unwrap();
@@ -193,7 +215,7 @@ mod tests {
 
         let resultat =
             appliquer_config(&dir, ModeConnexion::Mono, None, None, "Jean".to_string()).unwrap();
-        assert!(resultat.redemarrage_requis);
+        assert!(!resultat.redemarrage_requis);
         assert_eq!(resultat.config.mode, Some(ModeConnexion::Mono));
         assert_eq!(resultat.config.utilisateur.as_deref(), Some("Jean"));
 

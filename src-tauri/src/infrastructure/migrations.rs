@@ -45,16 +45,6 @@ fn maintenant_utc() -> String {
     chrono::Utc::now().to_rfc3339()
 }
 
-async fn table_existe(conn: &Connection, nom: &str) -> Result<bool, AppError> {
-    let mut rows = conn
-        .query(
-            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
-            libsql::params![nom],
-        )
-        .await?;
-    Ok(rows.next().await?.is_some())
-}
-
 async fn migration_appliquee(conn: &Connection, nom: &str) -> Result<bool, AppError> {
     let mut rows = conn
         .query(
@@ -65,37 +55,6 @@ async fn migration_appliquee(conn: &Connection, nom: &str) -> Result<bool, AppEr
     Ok(rows.next().await?.is_some())
 }
 
-async fn copier_bookkeeping_sqlx(conn: &Connection) -> Result<(), AppError> {
-    #[derive(Debug, Clone, serde::Deserialize)]
-    struct SqlxMigrationRow {
-        version: i64,
-        description: String,
-    }
-
-    if !table_existe(conn, "_sqlx_migrations").await? {
-        return Ok(());
-    }
-
-    let mut rows = conn
-        .query(
-            "SELECT version, description FROM _sqlx_migrations WHERE success = 1",
-            libsql::params![],
-        )
-        .await?;
-
-    while let Some(row) = rows.next().await? {
-        let r = libsql::de::from_row::<SqlxMigrationRow>(&row)?;
-        let nom = format!("{}_{}.sql", r.version, r.description);
-        conn.execute(
-            "INSERT OR IGNORE INTO _cadence_migrations (nom, appliquee_le) VALUES (?, ?)",
-            libsql::params![nom, maintenant_utc()],
-        )
-        .await?;
-    }
-
-    Ok(())
-}
-
 pub async fn cadence_migrations(conn: &Connection) -> Result<(), AppError> {
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS _cadence_migrations (
@@ -104,8 +63,6 @@ pub async fn cadence_migrations(conn: &Connection) -> Result<(), AppError> {
         );",
     )
     .await?;
-
-    copier_bookkeeping_sqlx(conn).await?;
 
     for (nom, sql) in MIGRATIONS {
         if migration_appliquee(conn, nom).await? {
