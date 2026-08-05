@@ -9,8 +9,13 @@ use crate::error::AppError;
 
 #[async_trait]
 pub trait PersonneRepository: Send + Sync {
-    async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError>;
-    async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError>;
+    async fn create(&self, input: CreatePersonne, utilisateur: &str) -> Result<Personne, AppError>;
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdatePersonne,
+        utilisateur: &str,
+    ) -> Result<Personne, AppError>;
     async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError>;
     async fn rechercher(
         &self,
@@ -62,31 +67,13 @@ where
 
 #[async_trait]
 impl PersonneRepository for LibsqlPersonneRepository {
-    async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError> {
+    async fn create(&self, input: CreatePersonne, utilisateur: &str) -> Result<Personne, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         fetch_one(
             &self.conn,
-            "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id)
-             VALUES (?, ?, ?, ?, ?, ?)
-             RETURNING *",
-            libsql::params![
-                input.nom,
-                input.prenom,
-                input.date_naissance.to_string(),
-                input.email,
-                input.telephone,
-                input.responsable_id
-            ],
-        )
-        .await
-    }
-
-    async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
-        fetch_one(
-            &self.conn,
-            "UPDATE personnes_physiques
-             SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?
-             WHERE id = ?
-             RETURNING *",
+            "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone, responsable_id, modifie_par, modifie_le)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+             RETURNING id, nom, prenom, date_naissance, email, telephone, responsable_id, version",
             libsql::params![
                 input.nom,
                 input.prenom,
@@ -94,16 +81,59 @@ impl PersonneRepository for LibsqlPersonneRepository {
                 input.email,
                 input.telephone,
                 input.responsable_id,
-                id
+                utilisateur,
+                maintenant
             ],
         )
         .await
     }
 
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdatePersonne,
+        utilisateur: &str,
+    ) -> Result<Personne, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let affected = self
+            .conn
+            .execute(
+                "UPDATE personnes_physiques
+                 SET nom = ?, prenom = ?, date_naissance = ?, email = ?, telephone = ?, responsable_id = ?,
+                     modifie_par = ?, modifie_le = ?, version = version + 1
+                 WHERE id = ? AND version = ?",
+                libsql::params![
+                    input.nom,
+                    input.prenom,
+                    input.date_naissance.to_string(),
+                    input.email,
+                    input.telephone,
+                    input.responsable_id,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    input.version
+                ],
+            )
+            .await?;
+        if affected == 0 {
+            if self.find_by_id(id).await?.is_some() {
+                return Err(AppError::Conflict(
+                    crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
+                ));
+            }
+            return Err(AppError::NotFound("Personne introuvable".into()));
+        }
+        self.find_by_id(id)
+            .await?
+            .ok_or(AppError::NotFound("Personne introuvable".into()))
+    }
+
     async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError> {
         fetch_optional(
             &self.conn,
-            "SELECT * FROM personnes_physiques WHERE id = ?",
+            "SELECT id, nom, prenom, date_naissance, email, telephone, responsable_id, version
+             FROM personnes_physiques WHERE id = ?",
             libsql::params![id],
         )
         .await
@@ -179,12 +209,14 @@ impl PersonneRepository for LibsqlPersonneRepository {
 
         let data_sql = if pagination.par_page > 0 {
             format!(
-                "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom LIMIT ? OFFSET ?",
+                "SELECT pp.id, pp.nom, pp.prenom, pp.date_naissance, pp.email, pp.telephone, pp.responsable_id, pp.version
+                 FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom LIMIT ? OFFSET ?",
                 where_clause
             )
         } else {
             format!(
-                "SELECT pp.* FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom",
+                "SELECT pp.id, pp.nom, pp.prenom, pp.date_naissance, pp.email, pp.telephone, pp.responsable_id, pp.version
+                 FROM personnes_physiques pp{} ORDER BY pp.nom, pp.prenom",
                 where_clause
             )
         };
@@ -256,7 +288,7 @@ mod tests {
         fetch_one(
             conn,
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance, email, telephone)
-             VALUES (?, ?, ?, ?, ?) RETURNING *",
+             VALUES (?, ?, ?, ?, ?) RETURNING id, nom, prenom, date_naissance, email, telephone, responsable_id, version",
             libsql::params![nom, prenom, "2000-01-15", email, telephone],
         )
         .await
@@ -604,5 +636,207 @@ mod tests {
 
         assert_eq!(resultat_min.total, 1);
         assert_eq!(resultat_maj.total, 1);
+    }
+
+    #[tokio::test]
+    async fn test_create_enregistre_audit() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+
+        let creee = r
+            .create(
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(creee.version, 1);
+
+        let mut rows = r
+            .conn
+            .query(
+                "SELECT modifie_par, modifie_le FROM personnes_physiques WHERE id = ?",
+                libsql::params![creee.id],
+            )
+            .await
+            .unwrap();
+        let row = rows.next().await.unwrap().unwrap();
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct AuditRow {
+            modifie_par: String,
+            modifie_le: String,
+        }
+        let audit = libsql::de::from_row::<AuditRow>(&row).unwrap();
+        assert_eq!(audit.modifie_par, "alice");
+        assert!(!audit.modifie_le.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_update_enregistre_audit_et_incremente_version() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+        let creee = r
+            .create(
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
+            .await
+            .unwrap();
+
+        let modifiee = r
+            .update(
+                creee.id,
+                UpdatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean-Marc".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                    version: creee.version,
+                },
+                "bob",
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(modifiee.version, creee.version + 1);
+
+        let mut rows = r
+            .conn
+            .query(
+                "SELECT modifie_par FROM personnes_physiques WHERE id = ?",
+                libsql::params![creee.id],
+            )
+            .await
+            .unwrap();
+        let row = rows.next().await.unwrap().unwrap();
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct ModifieParRow {
+            modifie_par: String,
+        }
+        let audit = libsql::de::from_row::<ModifieParRow>(&row).unwrap();
+        assert_eq!(audit.modifie_par, "bob");
+    }
+
+    #[tokio::test]
+    async fn test_update_version_obsolete_conflit() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+        let creee = r
+            .create(
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
+            .await
+            .unwrap();
+
+        r.update(
+            creee.id,
+            UpdatePersonne {
+                nom: "Dupont".into(),
+                prenom: "Jean-Marc".into(),
+                date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                email: None,
+                telephone: None,
+                responsable_id: None,
+                version: creee.version,
+            },
+            "bob",
+        )
+        .await
+        .unwrap();
+
+        let err = r
+            .update(
+                creee.id,
+                UpdatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Quelqu'un d'autre".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                    version: creee.version,
+                },
+                "carol",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::Conflict(_)));
+    }
+
+    #[tokio::test]
+    async fn test_update_personne_inexistante_not_found() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+
+        let err = r
+            .update(
+                999,
+                UpdatePersonne {
+                    nom: "X".into(),
+                    prenom: "Y".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                    version: 1,
+                },
+                "alice",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::NotFound(_)));
+    }
+
+    #[tokio::test]
+    async fn test_version_transmise_et_audit_non_expose() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+        let creee = r
+            .create(
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean".into(),
+                    date_naissance: chrono::NaiveDate::from_ymd_opt(2000, 1, 15).unwrap(),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
+            .await
+            .unwrap();
+
+        let json = serde_json::to_string(&creee).unwrap();
+        assert!(json.contains("version"));
+        assert!(!json.contains("modifie_par"));
+        assert!(!json.contains("modifie_le"));
+        assert!(json.contains("Dupont"));
     }
 }

@@ -12,6 +12,7 @@ pub struct Personne {
     pub email: Option<String>,
     pub telephone: Option<String>,
     pub responsable_id: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -32,6 +33,7 @@ pub struct UpdatePersonne {
     pub email: Option<String>,
     pub telephone: Option<String>,
     pub responsable_id: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

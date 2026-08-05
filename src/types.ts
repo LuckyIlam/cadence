@@ -6,6 +6,7 @@ export interface Personne {
   email: string | null;
   telephone: string | null;
   responsable_id: number | null;
+  version: number;
 }
 
 export interface CreatePersonne {
@@ -24,6 +25,7 @@ export interface UpdatePersonne {
   email: string | null;
   telephone: string | null;
   responsable_id: number | null;
+  version: number;
 }
 
 export interface Adhesion {
@@ -32,6 +34,7 @@ export interface Adhesion {
   annee_scolaire: string;
   reglee: boolean;
   note_paiement: string | null;
+  version: number;
 }
 
 export interface CreateAdhesion {
@@ -44,6 +47,7 @@ export interface CreateAdhesion {
 export interface UpdateAdhesion {
   reglee: boolean;
   note_paiement: string | null;
+  version: number;
 }
 
 export interface PersonneDetail {
@@ -126,6 +130,7 @@ export interface Activite {
   nom: string;
   description: string | null;
   capacite_max: number | null;
+  version: number;
 }
 
 export interface CreateActivite {
@@ -140,6 +145,7 @@ export interface UpdateActivite {
   nom: string;
   description: string | null;
   capacite_max: number | null;
+  version: number;
 }
 
 export interface CreateTarifActivite {
@@ -180,6 +186,7 @@ export interface CreneauActivite {
   heure_debut: string;
   heure_fin: string;
   annee_scolaire: string;
+  version: number;
 }
 
 export interface CreateCreneau {

@@ -22,6 +22,7 @@ pub struct Activite {
     pub nom: String,
     pub description: Option<String>,
     pub capacite_max: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -38,6 +39,7 @@ pub struct UpdateActivite {
     pub nom: String,
     pub description: Option<String>,
     pub capacite_max: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

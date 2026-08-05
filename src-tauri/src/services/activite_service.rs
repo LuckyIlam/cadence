@@ -19,23 +19,34 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         }
     }
 
-    pub async fn creer(&self, input: CreateActivite) -> Result<Activite, AppError> {
+    pub async fn creer(
+        &self,
+        utilisateur: &str,
+        input: CreateActivite,
+    ) -> Result<Activite, AppError> {
         if input.nom.trim().is_empty() {
             return Err(AppError::Validation(
                 "Le nom de l'activité est requis".into(),
             ));
         }
 
-        self.activite_repo.creer_avec_tarif(input).await
+        self.activite_repo
+            .creer_avec_tarif(input, utilisateur)
+            .await
     }
 
-    pub async fn modifier(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
+    pub async fn modifier(
+        &self,
+        utilisateur: &str,
+        id: i64,
+        input: UpdateActivite,
+    ) -> Result<Activite, AppError> {
         if input.nom.trim().is_empty() {
             return Err(AppError::Validation(
                 "Le nom de l'activité est requis".into(),
             ));
         }
-        self.activite_repo.update(id, input).await
+        self.activite_repo.update(id, input, utilisateur).await
     }
 
     pub async fn obtenir(&self, id: i64) -> Result<Option<Activite>, AppError> {
@@ -86,8 +97,12 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
             .await
     }
 
-    pub async fn definir_tarif(&self, input: CreateTarifActivite) -> Result<(), AppError> {
-        self.activite_repo.upsert_tarif(input).await?;
+    pub async fn definir_tarif(
+        &self,
+        utilisateur: &str,
+        input: CreateTarifActivite,
+    ) -> Result<(), AppError> {
+        self.activite_repo.upsert_tarif(input, utilisateur).await?;
         Ok(())
     }
 
@@ -163,6 +178,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
 
     pub async fn ajouter_personne(
         &self,
+        utilisateur: &str,
         input: CreateLiaisonActivitePersonne,
     ) -> Result<(), AppError> {
         self.verifier_liaison_existante(
@@ -183,7 +199,9 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         )
         .await?;
 
-        self.activite_repo.ajouter_personne(input).await?;
+        self.activite_repo
+            .ajouter_personne(input, utilisateur)
+            .await?;
         Ok(())
     }
 
@@ -248,23 +266,37 @@ mod tests {
     #[async_trait]
     impl ActiviteRepository for MockActiviteRepository {
         #[allow(dead_code)]
-        async fn create(&self, input: CreateActivite) -> Result<Activite, AppError> {
+        async fn create(
+            &self,
+            input: CreateActivite,
+            _utilisateur: &str,
+        ) -> Result<Activite, AppError> {
             let id = self.activites.lock().unwrap().len() as i64 + 1;
             let a = Activite {
                 id,
                 nom: input.nom,
                 description: input.description,
                 capacite_max: *self.capacite_max.lock().unwrap(),
+                version: 1,
             };
             self.activites.lock().unwrap().push(a.clone());
             Ok(a)
         }
 
-        async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError> {
-            self.create(input).await
+        async fn creer_avec_tarif(
+            &self,
+            input: CreateActivite,
+            utilisateur: &str,
+        ) -> Result<Activite, AppError> {
+            self.create(input, utilisateur).await
         }
 
-        async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
+        async fn update(
+            &self,
+            id: i64,
+            input: UpdateActivite,
+            _utilisateur: &str,
+        ) -> Result<Activite, AppError> {
             let mut activites = self.activites.lock().unwrap();
             let a = activites
                 .iter_mut()
@@ -289,6 +321,7 @@ mod tests {
         async fn upsert_tarif(
             &self,
             _input: CreateTarifActivite,
+            _utilisateur: &str,
         ) -> Result<TarifActivite, AppError> {
             unimplemented!()
         }
@@ -304,6 +337,7 @@ mod tests {
         async fn ajouter_personne(
             &self,
             input: CreateLiaisonActivitePersonne,
+            _utilisateur: &str,
         ) -> Result<LiaisonActivitePersonne, AppError> {
             let liaison = LiaisonActivitePersonne {
                 activite_id: input.activite_id,
@@ -425,6 +459,7 @@ mod tests {
         async fn creer_creneau(
             &self,
             _input: crate::domain::planning::CreateCreneau,
+            _utilisateur: &str,
         ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
             unimplemented!()
         }
@@ -437,6 +472,8 @@ mod tests {
             &self,
             _id: i64,
             _input: crate::domain::planning::CreateCreneau,
+            _version: i64,
+            _utilisateur: &str,
         ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
             unimplemented!()
         }
@@ -483,6 +520,7 @@ mod tests {
             _id: i64,
             _heure_debut: &str,
             _heure_fin: &str,
+            _utilisateur: &str,
         ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
             unimplemented!()
         }
@@ -490,6 +528,7 @@ mod tests {
         async fn ajouter_semaine_banalisee(
             &self,
             _input: crate::domain::planning::CreateSemaineBanalisee,
+            _utilisateur: &str,
         ) -> Result<crate::domain::planning::SemaineBanalisee, AppError> {
             unimplemented!()
         }
@@ -558,23 +597,29 @@ mod tests {
         let service = make_service(&repo, &planning);
 
         let activite = repo
-            .create(CreateActivite {
-                nom: "Poterie".into(),
-                description: None,
-                capacite_max: None,
-                annee_scolaire: None,
-                tarif: None,
-            })
+            .create(
+                CreateActivite {
+                    nom: "Poterie".into(),
+                    description: None,
+                    capacite_max: None,
+                    annee_scolaire: None,
+                    tarif: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
         let result = service
-            .ajouter_personne(CreateLiaisonActivitePersonne {
-                activite_id: activite.id,
-                personne_id: 1,
-                annee_scolaire: "2025-2026".into(),
-                role: Role::Participant,
-            })
+            .ajouter_personne(
+                "alice",
+                CreateLiaisonActivitePersonne {
+                    activite_id: activite.id,
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    role: Role::Participant,
+                },
+            )
             .await;
 
         assert!(result.is_ok());
@@ -590,13 +635,16 @@ mod tests {
         let service = make_service(&repo, &planning);
 
         let activite = repo
-            .create(CreateActivite {
-                nom: "Poterie".into(),
-                description: None,
-                capacite_max: None,
-                annee_scolaire: None,
-                tarif: None,
-            })
+            .create(
+                CreateActivite {
+                    nom: "Poterie".into(),
+                    description: None,
+                    capacite_max: None,
+                    annee_scolaire: None,
+                    tarif: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
@@ -607,9 +655,12 @@ mod tests {
             role: Role::Participant,
         };
 
-        service.ajouter_personne(input.clone()).await.unwrap();
+        service
+            .ajouter_personne("alice", input.clone())
+            .await
+            .unwrap();
 
-        let result = service.ajouter_personne(input).await;
+        let result = service.ajouter_personne("alice", input).await;
         assert!(result.is_err());
         match result.unwrap_err() {
             AppError::Conflict(msg) => assert!(msg.contains("déjà inscrite")),
@@ -624,33 +675,42 @@ mod tests {
         let service = make_service(&repo, &planning);
 
         let activite = repo
-            .create(CreateActivite {
-                nom: "Poterie".into(),
-                description: None,
-                capacite_max: None,
-                annee_scolaire: None,
-                tarif: None,
-            })
+            .create(
+                CreateActivite {
+                    nom: "Poterie".into(),
+                    description: None,
+                    capacite_max: None,
+                    annee_scolaire: None,
+                    tarif: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
         service
-            .ajouter_personne(CreateLiaisonActivitePersonne {
-                activite_id: activite.id,
-                personne_id: 1,
-                annee_scolaire: "2025-2026".into(),
-                role: Role::Participant,
-            })
+            .ajouter_personne(
+                "alice",
+                CreateLiaisonActivitePersonne {
+                    activite_id: activite.id,
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    role: Role::Participant,
+                },
+            )
             .await
             .unwrap();
 
         let result = service
-            .ajouter_personne(CreateLiaisonActivitePersonne {
-                activite_id: activite.id,
-                personne_id: 2,
-                annee_scolaire: "2025-2026".into(),
-                role: Role::Participant,
-            })
+            .ajouter_personne(
+                "alice",
+                CreateLiaisonActivitePersonne {
+                    activite_id: activite.id,
+                    personne_id: 2,
+                    annee_scolaire: "2025-2026".into(),
+                    role: Role::Participant,
+                },
+            )
             .await;
 
         assert!(result.is_err());
@@ -667,23 +727,29 @@ mod tests {
         let service = make_service(&repo, &planning);
 
         let activite = repo
-            .create(CreateActivite {
-                nom: "Poterie".into(),
-                description: None,
-                capacite_max: None,
-                annee_scolaire: None,
-                tarif: None,
-            })
+            .create(
+                CreateActivite {
+                    nom: "Poterie".into(),
+                    description: None,
+                    capacite_max: None,
+                    annee_scolaire: None,
+                    tarif: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
         let result = service
-            .ajouter_personne(CreateLiaisonActivitePersonne {
-                activite_id: activite.id,
-                personne_id: 1,
-                annee_scolaire: "2025-2026".into(),
-                role: Role::Participant,
-            })
+            .ajouter_personne(
+                "alice",
+                CreateLiaisonActivitePersonne {
+                    activite_id: activite.id,
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    role: Role::Participant,
+                },
+            )
             .await;
 
         assert!(result.is_err());

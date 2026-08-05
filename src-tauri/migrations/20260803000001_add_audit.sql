@@ -1,0 +1,31 @@
+ALTER TABLE personnes_physiques ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE personnes_physiques ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE personnes_physiques ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE adhesions ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE adhesions ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE adhesions ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE activites ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE activites ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE activites ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE tarifs_activite ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE tarifs_activite ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE tarifs_activite ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE activite_personnes ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE activite_personnes ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE activite_personnes ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE creneaux_activite ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE creneaux_activite ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE creneaux_activite ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE semaines_banalisees ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE semaines_banalisees ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE semaines_banalisees ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+
+ALTER TABLE parametres ADD COLUMN modifie_par TEXT NOT NULL DEFAULT '';
+ALTER TABLE parametres ADD COLUMN modifie_le TEXT NOT NULL DEFAULT '';
+ALTER TABLE parametres ADD COLUMN version INTEGER NOT NULL DEFAULT 1;

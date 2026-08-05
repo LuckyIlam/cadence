@@ -10,6 +10,7 @@ import {
   type ResultatRecherchePersonnes,
   type UpdatePersonne,
 } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 interface Props {
   personne?: Personne;
@@ -105,10 +106,12 @@ export default function PersonneForm({ personne, onClose, onSaved }: Props) {
       if (personne) {
         await invoke<Personne>("modifier_personne", {
           id: personne.id,
-          input: input as UpdatePersonne,
+          utilisateur: await utilisateurCourant(),
+          input: { ...input, version: personne.version } as UpdatePersonne,
         });
       } else {
         await invoke<Personne>("creer_personne", {
+          utilisateur: await utilisateurCourant(),
           input: input as CreatePersonne,
         });
       }

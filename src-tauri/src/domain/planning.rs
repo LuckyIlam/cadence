@@ -11,6 +11,7 @@ pub struct CreneauActivite {
     pub heure_debut: String,
     pub heure_fin: String,
     pub annee_scolaire: String,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

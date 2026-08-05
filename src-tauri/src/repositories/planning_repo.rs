@@ -10,12 +10,18 @@ use crate::error::AppError;
 
 #[async_trait]
 pub trait PlanningRepository: Send + Sync {
-    async fn creer_creneau(&self, input: CreateCreneau) -> Result<CreneauActivite, AppError>;
+    async fn creer_creneau(
+        &self,
+        input: CreateCreneau,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError>;
     async fn supprimer_creneau(&self, id: i64) -> Result<(), AppError>;
     async fn modifier_creneau(
         &self,
         id: i64,
         input: CreateCreneau,
+        version: i64,
+        utilisateur: &str,
     ) -> Result<CreneauActivite, AppError>;
     async fn lister_creneaux(
         &self,
@@ -40,10 +46,12 @@ pub trait PlanningRepository: Send + Sync {
         id: i64,
         heure_debut: &str,
         heure_fin: &str,
+        utilisateur: &str,
     ) -> Result<CreneauActivite, AppError>;
     async fn ajouter_semaine_banalisee(
         &self,
         input: CreateSemaineBanalisee,
+        utilisateur: &str,
     ) -> Result<SemaineBanalisee, AppError>;
     async fn supprimer_semaine_banalisee(&self, id: i64) -> Result<(), AppError>;
     async fn lister_semaines_banalisees(
@@ -95,19 +103,26 @@ struct CompteurRow {
 
 #[async_trait]
 impl PlanningRepository for LibsqlPlanningRepository {
-    async fn creer_creneau(&self, input: CreateCreneau) -> Result<CreneauActivite, AppError> {
+    async fn creer_creneau(
+        &self,
+        input: CreateCreneau,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
-                 VALUES (?, ?, ?, ?, ?)
-                 RETURNING *",
+                "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)
+                 RETURNING id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version",
                 libsql::params![
                     input.activite_id,
                     input.jour_semaine,
                     input.heure_debut,
                     input.heure_fin,
-                    input.annee_scolaire
+                    input.annee_scolaire,
+                    utilisateur,
+                    maintenant
                 ],
             )
             .await?;
@@ -134,18 +149,54 @@ impl PlanningRepository for LibsqlPlanningRepository {
         &self,
         id: i64,
         input: CreateCreneau,
+        version: i64,
+        utilisateur: &str,
     ) -> Result<CreneauActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let affected = self
+            .conn
+            .execute(
+                "UPDATE creneaux_activite
+                 SET jour_semaine = ?, heure_debut = ?, heure_fin = ?,
+                     modifie_par = ?, modifie_le = ?, version = version + 1
+                 WHERE id = ? AND version = ?",
+                libsql::params![
+                    input.jour_semaine,
+                    input.heure_debut,
+                    input.heure_fin,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    version
+                ],
+            )
+            .await?;
+        if affected == 0 {
+            let existe = self
+                .conn
+                .query(
+                    "SELECT id FROM creneaux_activite WHERE id = ?",
+                    libsql::params![id],
+                )
+                .await?
+                .next()
+                .await?
+                .is_some();
+            if existe {
+                return Err(AppError::Conflict(
+                    crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
+                ));
+            }
+            return Err(AppError::NotFound("Créneau introuvable".into()));
+        }
         let mut rows = self
             .conn
             .query(
-                "UPDATE creneaux_activite
-                 SET jour_semaine = ?, heure_debut = ?, heure_fin = ?
-                 WHERE id = ?
-                 RETURNING *",
-                libsql::params![input.jour_semaine, input.heure_debut, input.heure_fin, id],
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite WHERE id = ?",
+                libsql::params![id],
             )
             .await?;
-
         let row = rows
             .next()
             .await?
@@ -161,7 +212,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM creneaux_activite
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite
                  WHERE activite_id = ? AND annee_scolaire = ?
                  ORDER BY jour_semaine, heure_debut",
                 libsql::params![activite_id, annee_scolaire],
@@ -180,7 +232,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM creneaux_activite ORDER BY id",
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite ORDER BY id",
                 libsql::params![],
             )
             .await?;
@@ -270,14 +323,16 @@ impl PlanningRepository for LibsqlPlanningRepository {
         id: i64,
         heure_debut: &str,
         heure_fin: &str,
+        utilisateur: &str,
     ) -> Result<CreneauActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = tx
             .query(
                 "UPDATE creneaux_activite
-                 SET heure_debut = ?, heure_fin = ?
+                 SET heure_debut = ?, heure_fin = ?, modifie_par = ?, modifie_le = ?
                  WHERE id = ?
-                 RETURNING *",
-                libsql::params![heure_debut, heure_fin, id],
+                 RETURNING id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version",
+                libsql::params![heure_debut, heure_fin, utilisateur, maintenant, id],
             )
             .await?;
 
@@ -291,18 +346,22 @@ impl PlanningRepository for LibsqlPlanningRepository {
     async fn ajouter_semaine_banalisee(
         &self,
         input: CreateSemaineBanalisee,
+        utilisateur: &str,
     ) -> Result<SemaineBanalisee, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire)
-                 VALUES (?, ?, ?, ?)
-                 RETURNING *",
+                "INSERT INTO semaines_banalisees (activite_id, date_debut, motif, annee_scolaire, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?)
+                 RETURNING id, activite_id, date_debut, motif, annee_scolaire",
                 libsql::params![
                     input.activite_id,
                     input.date_debut,
                     input.motif,
-                    input.annee_scolaire
+                    input.annee_scolaire,
+                    utilisateur,
+                    maintenant
                 ],
             )
             .await?;
@@ -332,7 +391,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM semaines_banalisees
+                "SELECT id, activite_id, date_debut, motif, annee_scolaire
+                 FROM semaines_banalisees
                  WHERE activite_id = ?
                  ORDER BY date_debut",
                 libsql::params![activite_id],
@@ -359,7 +419,8 @@ impl PlanningRepository for LibsqlPlanningRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM creneaux_activite
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite
                  WHERE activite_id = ?
                    AND annee_scolaire = ?
                    AND jour_semaine = ?
@@ -489,19 +550,22 @@ impl PlanningRepository for LibsqlPlanningRepository {
             nom: String,
             description: Option<String>,
             capacite_max: Option<i64>,
+            activite_version: i64,
             creneau_id: i64,
             jour_semaine: i64,
             heure_debut: String,
             heure_fin: String,
             annee_scolaire: String,
+            creneau_version: i64,
             role: Role,
         }
 
         let mut rows = self
             .conn
             .query(
-                "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max,
+                "SELECT a.id AS activite_id, a.nom, a.description, a.capacite_max, a.version AS activite_version,
                         c.id AS creneau_id, c.jour_semaine, c.heure_debut, c.heure_fin, c.annee_scolaire,
+                        c.version AS creneau_version,
                         ap.role
                  FROM activite_personnes ap
                  JOIN activites a ON a.id = ap.activite_id
@@ -529,12 +593,14 @@ impl PlanningRepository for LibsqlPlanningRepository {
                     heure_debut: r.heure_debut,
                     heure_fin: r.heure_fin,
                     annee_scolaire: r.annee_scolaire,
+                    version: r.creneau_version,
                 },
                 activite: crate::domain::activite::Activite {
                     id: r.activite_id,
                     nom: r.nom,
                     description: r.description,
                     capacite_max: r.capacite_max,
+                    version: r.activite_version,
                 },
                 role: r.role,
             });
@@ -619,13 +685,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .expect("failed to create creneau");
 
@@ -641,23 +710,29 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 3,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "12:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 3,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -673,13 +748,16 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2024-2025".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2024-2025".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -694,13 +772,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -717,13 +798,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -737,6 +821,8 @@ mod tests {
                     heure_fin: "11:00".to_string(),
                     annee_scolaire: "2025-2026".to_string(),
                 },
+                c.version,
+                "test",
             )
             .await
             .unwrap();
@@ -753,12 +839,15 @@ mod tests {
         let r = repo(conn.clone());
 
         let sb = r
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id,
-                date_debut: "2025-12-22".to_string(),
-                motif: Some("Vacances de Noël".to_string()),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: Some("Vacances de Noël".to_string()),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -773,12 +862,15 @@ mod tests {
         let r = repo(conn.clone());
 
         let sb = r
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id,
-                date_debut: "2025-12-22".to_string(),
-                motif: None,
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: None,
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -791,21 +883,27 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
-            activite_id,
-            date_debut: "2025-12-22".to_string(),
-            motif: Some("Noël".to_string()),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.ajouter_semaine_banalisee(
+            CreateSemaineBanalisee {
+                activite_id,
+                date_debut: "2025-12-22".to_string(),
+                motif: Some("Noël".to_string()),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
-            activite_id,
-            date_debut: "2026-02-23".to_string(),
-            motif: Some("Hiver".to_string()),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.ajouter_semaine_banalisee(
+            CreateSemaineBanalisee {
+                activite_id,
+                date_debut: "2026-02-23".to_string(),
+                motif: Some("Hiver".to_string()),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -822,12 +920,15 @@ mod tests {
         let r = repo(conn.clone());
 
         let sb = r
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id,
-                date_debut: "2025-12-22".to_string(),
-                motif: None,
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: None,
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -865,13 +966,16 @@ mod tests {
         let a = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -889,13 +993,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -912,13 +1019,16 @@ mod tests {
         let a = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a,
-            jour_semaine: 1,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "12:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -935,13 +1045,16 @@ mod tests {
         let a = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -959,13 +1072,16 @@ mod tests {
         let a2 = seed_activite(&conn, "Théâtre").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -982,13 +1098,16 @@ mod tests {
         let a = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2024-2025".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2024-2025".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1005,13 +1124,16 @@ mod tests {
         let a = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1030,23 +1152,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 3,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "12:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 3,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1064,23 +1192,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "15:00".to_string(),
-            heure_fin: "17:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "15:00".to_string(),
+                heure_fin: "17:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1106,13 +1240,16 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1130,23 +1267,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 3,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "12:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 3,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1177,22 +1320,28 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
-            activite_id: a1,
-            date_debut: "2025-12-22".to_string(),
-            motif: Some("Noël".to_string()),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.ajouter_semaine_banalisee(
+            CreateSemaineBanalisee {
+                activite_id: a1,
+                date_debut: "2025-12-22".to_string(),
+                motif: Some("Noël".to_string()),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1232,23 +1381,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1266,23 +1421,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "18:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "18:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1307,23 +1468,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "16:00".to_string(),
-            heure_fin: "18:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "16:00".to_string(),
+                heure_fin: "18:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1341,13 +1508,16 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1364,13 +1534,16 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1428,23 +1601,29 @@ mod tests {
         let pid = seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a1,
-            jour_semaine: 1,
-            heure_debut: "16:00".to_string(),
-            heure_fin: "18:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a1,
+                jour_semaine: 1,
+                heure_debut: "16:00".to_string(),
+                heure_fin: "18:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id: a2,
-            jour_semaine: 1,
-            heure_debut: "10:00".to_string(),
-            heure_fin: "12:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id: a2,
+                jour_semaine: 1,
+                heure_debut: "10:00".to_string(),
+                heure_fin: "12:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1468,24 +1647,30 @@ mod tests {
         let r = repo(conn.clone());
 
         let c1 = r
-            .creer_creneau(CreateCreneau {
-                activite_id: a1,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a1,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let c2 = r
-            .creer_creneau(CreateCreneau {
-                activite_id: a2,
-                jour_semaine: 3,
-                heure_debut: "10:00".to_string(),
-                heure_fin: "12:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a2,
+                    jour_semaine: 3,
+                    heure_debut: "10:00".to_string(),
+                    heure_fin: "12:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1501,22 +1686,28 @@ mod tests {
         let r = repo(conn.clone());
 
         let sb1 = r
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id: a1,
-                date_debut: "2025-12-22".to_string(),
-                motif: Some("Noël".to_string()),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id: a1,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: Some("Noël".to_string()),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let sb2 = r
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id: a2,
-                date_debut: "2025-12-22".to_string(),
-                motif: Some("Noël".to_string()),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id: a2,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: Some("Noël".to_string()),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1530,23 +1721,29 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 3,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 3,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 1,
-            heure_debut: "14:00".to_string(),
-            heure_fin: "16:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "14:00".to_string(),
+                heure_fin: "16:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1571,6 +1768,8 @@ mod tests {
                     heure_fin: "16:00".to_string(),
                     annee_scolaire: "2025-2026".to_string(),
                 },
+                1,
+                "test",
             )
             .await;
 
@@ -1608,21 +1807,27 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
-            activite_id,
-            date_debut: "2025-12-22".to_string(),
-            motif: None,
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.ajouter_semaine_banalisee(
+            CreateSemaineBanalisee {
+                activite_id,
+                date_debut: "2025-12-22".to_string(),
+                motif: None,
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
-        r.ajouter_semaine_banalisee(CreateSemaineBanalisee {
-            activite_id,
-            date_debut: "2025-12-29".to_string(),
-            motif: None,
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.ajouter_semaine_banalisee(
+            CreateSemaineBanalisee {
+                activite_id,
+                date_debut: "2025-12-29".to_string(),
+                motif: None,
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1638,46 +1843,58 @@ mod tests {
         let r = repo(conn.clone());
 
         let c1 = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "07:00".to_string(),
-                heure_fin: "08:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "07:00".to_string(),
+                    heure_fin: "08:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let c2 = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "09:00".to_string(),
-                heure_fin: "11:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "09:00".to_string(),
+                    heure_fin: "11:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let c3 = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 2,
-                heure_debut: "19:00".to_string(),
-                heure_fin: "21:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 2,
+                    heure_debut: "19:00".to_string(),
+                    heure_fin: "21:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let c4 = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 3,
-                heure_debut: "07:30".to_string(),
-                heure_fin: "09:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 3,
+                    heure_debut: "07:30".to_string(),
+                    heure_fin: "09:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1703,13 +1920,16 @@ mod tests {
         let activite_id = seed_activite(&conn, "Poterie").await;
         let r = repo(conn.clone());
 
-        r.creer_creneau(CreateCreneau {
-            activite_id,
-            jour_semaine: 1,
-            heure_debut: "09:00".to_string(),
-            heure_fin: "11:00".to_string(),
-            annee_scolaire: "2025-2026".to_string(),
-        })
+        r.creer_creneau(
+            CreateCreneau {
+                activite_id,
+                jour_semaine: 1,
+                heure_debut: "09:00".to_string(),
+                heure_fin: "11:00".to_string(),
+                annee_scolaire: "2025-2026".to_string(),
+            },
+            "test",
+        )
         .await
         .unwrap();
 
@@ -1728,24 +1948,30 @@ mod tests {
         let r = repo(conn.clone());
 
         let c1 = r
-            .creer_creneau(CreateCreneau {
-                activite_id: a1,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a1,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let c2 = r
-            .creer_creneau(CreateCreneau {
-                activite_id: a2,
-                jour_semaine: 3,
-                heure_debut: "10:00".to_string(),
-                heure_fin: "12:00".to_string(),
-                annee_scolaire: "2024-2025".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a2,
+                    jour_semaine: 3,
+                    heure_debut: "10:00".to_string(),
+                    heure_fin: "12:00".to_string(),
+                    annee_scolaire: "2024-2025".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1762,13 +1988,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1787,13 +2016,16 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1812,18 +2044,21 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "07:00".to_string(),
-                heure_fin: "09:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "07:00".to_string(),
+                    heure_fin: "09:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let mut tx = conn.transaction().await.unwrap();
-        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
+        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00", "test")
             .await
             .unwrap();
         tx.commit().await.unwrap();
@@ -1840,18 +2075,21 @@ mod tests {
         let r = repo(conn.clone());
 
         let c = r
-            .creer_creneau(CreateCreneau {
-                activite_id,
-                jour_semaine: 1,
-                heure_debut: "07:00".to_string(),
-                heure_fin: "09:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id,
+                    jour_semaine: 1,
+                    heure_debut: "07:00".to_string(),
+                    heure_fin: "09:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let mut tx = conn.transaction().await.unwrap();
-        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00")
+        r.deplacer_creneau_tx(&mut tx, c.id, "09:00", "11:00", "test")
             .await
             .unwrap();
         tx.rollback().await.unwrap();

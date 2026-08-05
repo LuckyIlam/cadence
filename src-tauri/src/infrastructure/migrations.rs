@@ -35,6 +35,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "20260802000001_create_parametres.sql",
         include_str!("../../migrations/20260802000001_create_parametres.sql"),
     ),
+    (
+        "20260803000001_add_audit.sql",
+        include_str!("../../migrations/20260803000001_add_audit.sql"),
+    ),
 ];
 
 fn maintenant_utc() -> String {

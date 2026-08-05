@@ -8,18 +8,22 @@ use crate::repositories::AdhesionRepository;
 #[tauri::command]
 pub async fn creer_adhesion(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateAdhesion,
 ) -> Result<Adhesion, AppError> {
-    state.adhesion_repo.create(input).await
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
+    state.adhesion_repo.create(input, &utilisateur).await
 }
 
 #[tauri::command]
 pub async fn modifier_adhesion(
     state: State<'_, AppState>,
     id: i64,
+    utilisateur: String,
     input: UpdateAdhesion,
 ) -> Result<Adhesion, AppError> {
-    state.adhesion_repo.update(id, input).await
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
+    state.adhesion_repo.update(id, input, &utilisateur).await
 }
 
 #[tauri::command]

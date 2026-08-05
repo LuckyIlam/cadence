@@ -8,3 +8,6 @@ Thumbs.db
 
 # Liaison locale vers .opencode/skills (non versionnée)
 .claude/
+
+# Cache d'extraction graphify (régénérable via `graphify update .`)
+graphify-out/cache/

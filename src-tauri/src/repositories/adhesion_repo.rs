@@ -6,8 +6,13 @@ use crate::error::AppError;
 
 #[async_trait]
 pub trait AdhesionRepository: Send + Sync {
-    async fn create(&self, input: CreateAdhesion) -> Result<Adhesion, AppError>;
-    async fn update(&self, id: i64, input: UpdateAdhesion) -> Result<Adhesion, AppError>;
+    async fn create(&self, input: CreateAdhesion, utilisateur: &str) -> Result<Adhesion, AppError>;
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdateAdhesion,
+        utilisateur: &str,
+    ) -> Result<Adhesion, AppError>;
     async fn list_by_personne(&self, personne_id: i64) -> Result<Vec<Adhesion>, AppError>;
 }
 
@@ -23,18 +28,21 @@ impl LibsqlAdhesionRepository {
 
 #[async_trait]
 impl AdhesionRepository for LibsqlAdhesionRepository {
-    async fn create(&self, input: CreateAdhesion) -> Result<Adhesion, AppError> {
+    async fn create(&self, input: CreateAdhesion, utilisateur: &str) -> Result<Adhesion, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement)
-                 VALUES (?, ?, ?, ?)
-                 RETURNING *",
+                "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?)
+                 RETURNING id, personne_id, annee_scolaire, reglee, note_paiement, version",
                 libsql::params![
                     input.personne_id,
                     input.annee_scolaire,
                     input.reglee,
-                    input.note_paiement
+                    input.note_paiement,
+                    utilisateur,
+                    maintenant
                 ],
             )
             .await?;
@@ -46,18 +54,52 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
         Ok(libsql::de::from_row::<Adhesion>(&row)?)
     }
 
-    async fn update(&self, id: i64, input: UpdateAdhesion) -> Result<Adhesion, AppError> {
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdateAdhesion,
+        utilisateur: &str,
+    ) -> Result<Adhesion, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let affected = self
+            .conn
+            .execute(
+                "UPDATE adhesions
+                 SET reglee = ?, note_paiement = ?, modifie_par = ?, modifie_le = ?, version = version + 1
+                 WHERE id = ? AND version = ?",
+                libsql::params![
+                    input.reglee,
+                    input.note_paiement,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    input.version
+                ],
+            )
+            .await?;
+        if affected == 0 {
+            let existe = self
+                .conn
+                .query("SELECT id FROM adhesions WHERE id = ?", libsql::params![id])
+                .await?
+                .next()
+                .await?
+                .is_some();
+            if existe {
+                return Err(AppError::Conflict(
+                    crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
+                ));
+            }
+            return Err(AppError::NotFound("Adhésion introuvable".into()));
+        }
         let mut rows = self
             .conn
             .query(
-                "UPDATE adhesions
-                 SET reglee = ?, note_paiement = ?
-                 WHERE id = ?
-                 RETURNING *",
-                libsql::params![input.reglee, input.note_paiement, id],
+                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+                 FROM adhesions WHERE id = ?",
+                libsql::params![id],
             )
             .await?;
-
         let row = rows
             .next()
             .await?
@@ -69,7 +111,8 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
+                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+                 FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
                 libsql::params![personne_id],
             )
             .await?;
@@ -122,17 +165,21 @@ mod tests {
         let r = repo(conn);
 
         let a = r
-            .create(CreateAdhesion {
-                personne_id: 1,
-                annee_scolaire: "2025-2026".into(),
-                reglee: true,
-                note_paiement: None,
-            })
+            .create(
+                CreateAdhesion {
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    reglee: true,
+                    note_paiement: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
         assert_eq!(a.personne_id, 1);
         assert_eq!(a.annee_scolaire, "2025-2026");
         assert!(a.reglee);
+        assert_eq!(a.version, 1);
     }
 
     #[tokio::test]
@@ -141,20 +188,26 @@ mod tests {
         seed_personne(&conn).await;
         let r = repo(conn.clone());
 
-        r.create(CreateAdhesion {
-            personne_id: 1,
-            annee_scolaire: "2024-2025".into(),
-            reglee: false,
-            note_paiement: None,
-        })
+        r.create(
+            CreateAdhesion {
+                personne_id: 1,
+                annee_scolaire: "2024-2025".into(),
+                reglee: false,
+                note_paiement: None,
+            },
+            "alice",
+        )
         .await
         .unwrap();
-        r.create(CreateAdhesion {
-            personne_id: 1,
-            annee_scolaire: "2025-2026".into(),
-            reglee: true,
-            note_paiement: Some("chèque".into()),
-        })
+        r.create(
+            CreateAdhesion {
+                personne_id: 1,
+                annee_scolaire: "2025-2026".into(),
+                reglee: true,
+                note_paiement: Some("chèque".into()),
+            },
+            "alice",
+        )
         .await
         .unwrap();
 
@@ -170,12 +223,15 @@ mod tests {
         let r = repo(conn.clone());
 
         let a = r
-            .create(CreateAdhesion {
-                personne_id: 1,
-                annee_scolaire: "2025-2026".into(),
-                reglee: false,
-                note_paiement: None,
-            })
+            .create(
+                CreateAdhesion {
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    reglee: false,
+                    note_paiement: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
@@ -185,12 +241,84 @@ mod tests {
                 UpdateAdhesion {
                     reglee: true,
                     note_paiement: Some("espèces".into()),
+                    version: a.version,
                 },
+                "bob",
             )
             .await
             .unwrap();
 
         assert!(updated.reglee);
         assert_eq!(updated.note_paiement.as_deref(), Some("espèces"));
+        assert_eq!(updated.version, a.version + 1);
+    }
+
+    #[tokio::test]
+    async fn test_update_adhesion_version_obsolete_conflit() {
+        let conn = setup_db().await;
+        seed_personne(&conn).await;
+        let r = repo(conn.clone());
+
+        let a = r
+            .create(
+                CreateAdhesion {
+                    personne_id: 1,
+                    annee_scolaire: "2025-2026".into(),
+                    reglee: false,
+                    note_paiement: None,
+                },
+                "alice",
+            )
+            .await
+            .unwrap();
+
+        r.update(
+            a.id,
+            UpdateAdhesion {
+                reglee: true,
+                note_paiement: None,
+                version: a.version,
+            },
+            "bob",
+        )
+        .await
+        .unwrap();
+
+        let err = r
+            .update(
+                a.id,
+                UpdateAdhesion {
+                    reglee: true,
+                    note_paiement: Some("carte".into()),
+                    version: a.version,
+                },
+                "carol",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::Conflict(_)));
+    }
+
+    #[tokio::test]
+    async fn test_update_adhesion_inexistante_not_found() {
+        let conn = setup_db().await;
+        seed_personne(&conn).await;
+        let r = repo(conn);
+
+        let err = r
+            .update(
+                999,
+                UpdateAdhesion {
+                    reglee: true,
+                    note_paiement: None,
+                    version: 1,
+                },
+                "alice",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::NotFound(_)));
     }
 }

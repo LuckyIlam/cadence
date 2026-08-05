@@ -12,6 +12,7 @@ pub trait ParametreRepository: Send + Sync {
         tx: &mut libsql::Transaction,
         heure_ouverture: &str,
         heure_fermeture: &str,
+        utilisateur: &str,
     ) -> Result<ParametresPlanning, AppError>;
 }
 
@@ -48,14 +49,16 @@ impl ParametreRepository for LibsqlParametreRepository {
         tx: &mut libsql::Transaction,
         heure_ouverture: &str,
         heure_fermeture: &str,
+        utilisateur: &str,
     ) -> Result<ParametresPlanning, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = tx
             .query(
                 "UPDATE parametres
-                 SET heure_ouverture = ?, heure_fermeture = ?
+                 SET heure_ouverture = ?, heure_fermeture = ?, modifie_par = ?, modifie_le = ?
                  WHERE id = 1
                  RETURNING id, heure_ouverture, heure_fermeture",
-                libsql::params![heure_ouverture, heure_fermeture],
+                libsql::params![heure_ouverture, heure_fermeture, utilisateur, maintenant],
             )
             .await?;
 
@@ -101,7 +104,7 @@ mod tests {
 
         let mut tx = conn.transaction().await.unwrap();
         let params = r
-            .mettre_a_jour_plage_horaire_tx(&mut tx, "09:00", "18:00")
+            .mettre_a_jour_plage_horaire_tx(&mut tx, "09:00", "18:00", "alice")
             .await
             .unwrap();
         tx.commit().await.unwrap();

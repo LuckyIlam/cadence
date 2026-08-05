@@ -10,11 +10,24 @@ use crate::error::AppError;
 #[async_trait]
 pub trait ActiviteRepository: Send + Sync {
     #[allow(dead_code)]
-    async fn create(&self, input: CreateActivite) -> Result<Activite, AppError>;
-    async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError>;
-    async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError>;
+    async fn create(&self, input: CreateActivite, utilisateur: &str) -> Result<Activite, AppError>;
+    async fn creer_avec_tarif(
+        &self,
+        input: CreateActivite,
+        utilisateur: &str,
+    ) -> Result<Activite, AppError>;
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdateActivite,
+        utilisateur: &str,
+    ) -> Result<Activite, AppError>;
     async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError>;
-    async fn upsert_tarif(&self, input: CreateTarifActivite) -> Result<TarifActivite, AppError>;
+    async fn upsert_tarif(
+        &self,
+        input: CreateTarifActivite,
+        utilisateur: &str,
+    ) -> Result<TarifActivite, AppError>;
     async fn get_tarif(
         &self,
         activite_id: i64,
@@ -23,6 +36,7 @@ pub trait ActiviteRepository: Send + Sync {
     async fn ajouter_personne(
         &self,
         input: CreateLiaisonActivitePersonne,
+        utilisateur: &str,
     ) -> Result<LiaisonActivitePersonne, AppError>;
     async fn retirer_personne(
         &self,
@@ -74,14 +88,21 @@ impl LibsqlActiviteRepository {
 
 #[async_trait]
 impl ActiviteRepository for LibsqlActiviteRepository {
-    async fn create(&self, input: CreateActivite) -> Result<Activite, AppError> {
+    async fn create(&self, input: CreateActivite, utilisateur: &str) -> Result<Activite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO activites (nom, description, capacite_max)
-                 VALUES (?, ?, ?)
-                 RETURNING *",
-                libsql::params![input.nom, input.description, input.capacite_max],
+                "INSERT INTO activites (nom, description, capacite_max, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?)
+                 RETURNING id, nom, description, capacite_max, version",
+                libsql::params![
+                    input.nom,
+                    input.description,
+                    input.capacite_max,
+                    utilisateur,
+                    maintenant
+                ],
             )
             .await?;
 
@@ -92,19 +113,24 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         Ok(libsql::de::from_row::<Activite>(&row)?)
     }
 
-    async fn creer_avec_tarif(&self, input: CreateActivite) -> Result<Activite, AppError> {
+    async fn creer_avec_tarif(
+        &self,
+        input: CreateActivite,
+        utilisateur: &str,
+    ) -> Result<Activite, AppError> {
         let annee_scolaire = input.annee_scolaire.clone();
         let tarif = input.tarif;
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
 
         let tx = self.conn.transaction().await?;
 
         let activite = {
             let mut rows = tx
                 .query(
-                    "INSERT INTO activites (nom, description, capacite_max)
-                     VALUES (?, ?, ?)
-                     RETURNING *",
-                    libsql::params![input.nom, input.description, input.capacite_max],
+                    "INSERT INTO activites (nom, description, capacite_max, modifie_par, modifie_le)
+                     VALUES (?, ?, ?, ?, ?)
+                     RETURNING id, nom, description, capacite_max, version",
+                    libsql::params![input.nom, input.description, input.capacite_max, utilisateur, maintenant.clone()],
                 )
                 .await?;
 
@@ -117,10 +143,13 @@ impl ActiviteRepository for LibsqlActiviteRepository {
 
         if let Some(annee) = annee_scolaire {
             tx.execute(
-                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
-                 VALUES (?, ?, ?)
-                 ON CONFLICT(activite_id, annee_scolaire) DO UPDATE SET tarif = excluded.tarif",
-                libsql::params![activite.id, annee, tarif.unwrap_or(0.0)],
+                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?)
+                 ON CONFLICT(activite_id, annee_scolaire) DO UPDATE SET
+                     tarif = excluded.tarif,
+                     modifie_par = excluded.modifie_par,
+                     modifie_le = excluded.modifie_le",
+                libsql::params![activite.id, annee, tarif.unwrap_or(0.0), utilisateur, maintenant],
             )
             .await?;
         }
@@ -129,29 +158,50 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         Ok(activite)
     }
 
-    async fn update(&self, id: i64, input: UpdateActivite) -> Result<Activite, AppError> {
-        let mut rows = self
+    async fn update(
+        &self,
+        id: i64,
+        input: UpdateActivite,
+        utilisateur: &str,
+    ) -> Result<Activite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let affected = self
             .conn
-            .query(
+            .execute(
                 "UPDATE activites
-                 SET nom = ?, description = ?, capacite_max = ?
-                 WHERE id = ?
-                 RETURNING *",
-                libsql::params![input.nom, input.description, input.capacite_max, id],
+                 SET nom = ?, description = ?, capacite_max = ?, modifie_par = ?, modifie_le = ?, version = version + 1
+                 WHERE id = ? AND version = ?",
+                libsql::params![
+                    input.nom,
+                    input.description,
+                    input.capacite_max,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    input.version
+                ],
             )
             .await?;
-
-        let row = rows
-            .next()
+        if affected == 0 {
+            if self.find_by_id(id).await?.is_some() {
+                return Err(AppError::Conflict(
+                    crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
+                ));
+            }
+            return Err(AppError::NotFound("Activité introuvable".into()));
+        }
+        self.find_by_id(id)
             .await?
-            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
-        Ok(libsql::de::from_row::<Activite>(&row)?)
+            .ok_or(AppError::NotFound("Activité introuvable".into()))
     }
 
     async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError> {
         let mut rows = self
             .conn
-            .query("SELECT * FROM activites WHERE id = ?", libsql::params![id])
+            .query(
+                "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
+                libsql::params![id],
+            )
             .await?;
 
         match rows.next().await? {
@@ -160,16 +210,30 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         }
     }
 
-    async fn upsert_tarif(&self, input: CreateTarifActivite) -> Result<TarifActivite, AppError> {
+    async fn upsert_tarif(
+        &self,
+        input: CreateTarifActivite,
+        utilisateur: &str,
+    ) -> Result<TarifActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif)
-                 VALUES (?, ?, ?)
+                "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?)
                  ON CONFLICT(activite_id, annee_scolaire)
-                 DO UPDATE SET tarif = excluded.tarif
-                 RETURNING *",
-                libsql::params![input.activite_id, input.annee_scolaire, input.tarif],
+                 DO UPDATE SET
+                     tarif = excluded.tarif,
+                     modifie_par = excluded.modifie_par,
+                     modifie_le = excluded.modifie_le
+                 RETURNING activite_id, annee_scolaire, tarif",
+                libsql::params![
+                    input.activite_id,
+                    input.annee_scolaire,
+                    input.tarif,
+                    utilisateur,
+                    maintenant
+                ],
             )
             .await?;
 
@@ -188,7 +252,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
+                "SELECT activite_id, annee_scolaire, tarif FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
                 libsql::params![activite_id, annee_scolaire],
             )
             .await?;
@@ -202,18 +266,22 @@ impl ActiviteRepository for LibsqlActiviteRepository {
     async fn ajouter_personne(
         &self,
         input: CreateLiaisonActivitePersonne,
+        utilisateur: &str,
     ) -> Result<LiaisonActivitePersonne, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = self
             .conn
             .query(
-                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
-                 VALUES (?, ?, ?, ?)
-                 RETURNING *",
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?)
+                 RETURNING activite_id, personne_id, annee_scolaire, role",
                 libsql::params![
                     input.activite_id,
                     input.personne_id,
                     input.annee_scolaire,
-                    input.role.to_string()
+                    input.role.to_string(),
+                    utilisateur,
+                    maintenant
                 ],
             )
             .await?;
@@ -276,7 +344,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT * FROM activite_personnes
+                "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
                  WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
                 libsql::params![activite_id, personne_id, annee_scolaire],
             )
@@ -348,13 +416,14 @@ impl ActiviteRepository for LibsqlActiviteRepository {
             nom: String,
             description: Option<String>,
             capacite_max: Option<i64>,
+            version: i64,
             role: Role,
         }
 
         let mut rows = self
             .conn
             .query(
-                "SELECT a.id, a.nom, a.description, a.capacite_max, ap.role
+                "SELECT a.id, a.nom, a.description, a.capacite_max, a.version, ap.role
                  FROM activite_personnes ap
                  JOIN activites a ON a.id = ap.activite_id
                  WHERE ap.personne_id = ?
@@ -372,6 +441,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                     nom: r.nom,
                     description: r.description,
                     capacite_max: r.capacite_max,
+                    version: r.version,
                 },
                 role: r.role,
             });
@@ -412,6 +482,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
             nom: String,
             description: Option<String>,
             capacite_max: Option<i64>,
+            version: i64,
             tarif: Option<f64>,
             nb_participants: i64,
         }
@@ -419,7 +490,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         let mut rows = self
             .conn
             .query(
-                "SELECT a.id, a.nom, a.description, a.capacite_max, ta.tarif,
+                "SELECT a.id, a.nom, a.description, a.capacite_max, a.version, ta.tarif,
                         (SELECT COUNT(*) FROM activite_personnes ap2
                          WHERE ap2.activite_id = a.id AND ap2.annee_scolaire = ? AND ap2.role = 'participant') AS nb_participants
                  FROM activites a
@@ -438,6 +509,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                     nom: r.nom,
                     description: r.description,
                     capacite_max: r.capacite_max,
+                    version: r.version,
                 },
                 r.tarif,
                 r.nb_participants,
@@ -484,7 +556,7 @@ mod tests {
     #[allow(dead_code)]
     async fn seed_activite(conn: &Connection, nom: &str) -> Activite {
         LibsqlActiviteRepository::new(conn.clone())
-            .create(create_activite_input(nom))
+            .create(create_activite_input(nom), "test")
             .await
             .expect("failed to seed activite")
     }
@@ -504,9 +576,13 @@ mod tests {
     async fn test_create_activite() {
         let conn = setup_db().await;
         let r = repo(conn);
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
         assert_eq!(a.nom, "Poterie");
         assert_eq!(a.id, 1);
+        assert_eq!(a.version, 1);
     }
 
     #[tokio::test]
@@ -520,7 +596,7 @@ mod tests {
             annee_scolaire: None,
             tarif: None,
         };
-        let a = r.creer_avec_tarif(input).await.unwrap();
+        let a = r.creer_avec_tarif(input, "alice").await.unwrap();
         assert_eq!(a.nom, "Théâtre");
     }
 
@@ -535,7 +611,7 @@ mod tests {
             annee_scolaire: Some("2025-2026".into()),
             tarif: Some(200.0),
         };
-        let a = r.creer_avec_tarif(input).await.unwrap();
+        let a = r.creer_avec_tarif(input, "alice").await.unwrap();
         assert_eq!(a.nom, "Poterie");
 
         let tarif = r.get_tarif(a.id, "2025-2026").await.unwrap();
@@ -554,7 +630,7 @@ mod tests {
             annee_scolaire: None,
             tarif: Some(150.0),
         };
-        let a = r.creer_avec_tarif(input).await.unwrap();
+        let a = r.creer_avec_tarif(input, "alice").await.unwrap();
         assert_eq!(a.nom, "Danse");
 
         let tarif = r.get_tarif(a.id, "2025-2026").await.unwrap();
@@ -565,13 +641,19 @@ mod tests {
     async fn test_liste_activites_par_annee() {
         let conn = setup_db().await;
         let r = repo(conn);
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
 
-        r.upsert_tarif(CreateTarifActivite {
-            activite_id: a.id,
-            annee_scolaire: "2025-2026".into(),
-            tarif: 200.0,
-        })
+        r.upsert_tarif(
+            CreateTarifActivite {
+                activite_id: a.id,
+                annee_scolaire: "2025-2026".into(),
+                tarif: 200.0,
+            },
+            "alice",
+        )
         .await
         .unwrap();
 
@@ -584,24 +666,33 @@ mod tests {
     async fn test_tarif_upsert() {
         let conn = setup_db().await;
         let r = repo(conn);
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
 
         let t = r
-            .upsert_tarif(CreateTarifActivite {
-                activite_id: a.id,
-                annee_scolaire: "2025-2026".into(),
-                tarif: 200.0,
-            })
+            .upsert_tarif(
+                CreateTarifActivite {
+                    activite_id: a.id,
+                    annee_scolaire: "2025-2026".into(),
+                    tarif: 200.0,
+                },
+                "alice",
+            )
             .await
             .unwrap();
         assert_eq!(t.tarif, 200.0);
 
         let t2 = r
-            .upsert_tarif(CreateTarifActivite {
-                activite_id: a.id,
-                annee_scolaire: "2025-2026".into(),
-                tarif: 220.0,
-            })
+            .upsert_tarif(
+                CreateTarifActivite {
+                    activite_id: a.id,
+                    annee_scolaire: "2025-2026".into(),
+                    tarif: 220.0,
+                },
+                "bob",
+            )
             .await
             .unwrap();
         assert_eq!(t2.tarif, 220.0);
@@ -611,16 +702,22 @@ mod tests {
     async fn test_ajouter_personne() {
         let conn = setup_db().await;
         let r = repo(conn.clone());
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
         let pid = seed_personne(&r.conn).await;
 
         let liaison = r
-            .ajouter_personne(CreateLiaisonActivitePersonne {
-                activite_id: a.id,
-                personne_id: pid,
-                annee_scolaire: "2025-2026".into(),
-                role: Role::Participant,
-            })
+            .ajouter_personne(
+                CreateLiaisonActivitePersonne {
+                    activite_id: a.id,
+                    personne_id: pid,
+                    annee_scolaire: "2025-2026".into(),
+                    role: Role::Participant,
+                },
+                "alice",
+            )
             .await
             .unwrap();
         assert_eq!(liaison.role, Role::Participant);
@@ -633,15 +730,21 @@ mod tests {
     async fn test_lister_activites_personne() {
         let conn = setup_db().await;
         let r = repo(conn.clone());
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
         let pid = seed_personne(&r.conn).await;
 
-        r.ajouter_personne(CreateLiaisonActivitePersonne {
-            activite_id: a.id,
-            personne_id: pid,
-            annee_scolaire: "2025-2026".into(),
-            role: Role::Participant,
-        })
+        r.ajouter_personne(
+            CreateLiaisonActivitePersonne {
+                activite_id: a.id,
+                personne_id: pid,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            },
+            "alice",
+        )
         .await
         .unwrap();
 
@@ -655,15 +758,21 @@ mod tests {
     async fn test_retirer_personne() {
         let conn = setup_db().await;
         let r = repo(conn.clone());
-        let a = r.create(create_activite_input("Poterie")).await.unwrap();
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
         let pid = seed_personne(&r.conn).await;
 
-        r.ajouter_personne(CreateLiaisonActivitePersonne {
-            activite_id: a.id,
-            personne_id: pid,
-            annee_scolaire: "2025-2026".into(),
-            role: Role::Participant,
-        })
+        r.ajouter_personne(
+            CreateLiaisonActivitePersonne {
+                activite_id: a.id,
+                personne_id: pid,
+                annee_scolaire: "2025-2026".into(),
+                role: Role::Participant,
+            },
+            "alice",
+        )
         .await
         .unwrap();
 
@@ -671,5 +780,66 @@ mod tests {
 
         let participants = r.lister_participants(a.id, "2025-2026").await.unwrap();
         assert_eq!(participants.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn test_update_activite_version_obsolete_conflit() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+        let a = r
+            .create(create_activite_input("Poterie"), "alice")
+            .await
+            .unwrap();
+
+        r.update(
+            a.id,
+            UpdateActivite {
+                nom: "Poterie avancée".into(),
+                description: None,
+                capacite_max: None,
+                version: a.version,
+            },
+            "bob",
+        )
+        .await
+        .unwrap();
+
+        let err = r
+            .update(
+                a.id,
+                UpdateActivite {
+                    nom: "Encore un nom".into(),
+                    description: None,
+                    capacite_max: None,
+                    version: a.version,
+                },
+                "carol",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::Conflict(_)));
+    }
+
+    #[tokio::test]
+    async fn test_update_activite_inexistante_not_found() {
+        let conn = setup_db().await;
+        let r = repo(conn);
+
+        let err = r
+            .update(
+                999,
+                UpdateActivite {
+                    nom: "X".into(),
+                    description: None,
+                    capacite_max: None,
+                    version: 1,
+                },
+                "alice",
+            )
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, AppError::NotFound(_)));
     }
 }

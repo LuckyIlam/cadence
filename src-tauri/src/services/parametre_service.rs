@@ -247,6 +247,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
     /// inscrits ne peut pas être déplacé.
     pub async fn appliquer_plage(
         &self,
+        utilisateur: &str,
         heure_ouverture: &str,
         heure_fermeture: &str,
         confirmer_suppression: bool,
@@ -308,7 +309,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
                 ImpactAction::Deplace => {
                     if let (Some(d), Some(f)) = (&imp.nouveau_debut, &imp.nouveau_fin) {
                         self.planning_repo
-                            .deplacer_creneau_tx(&mut tx, imp.creneau_id, d, f)
+                            .deplacer_creneau_tx(&mut tx, imp.creneau_id, d, f, utilisateur)
                             .await?;
                     }
                 }
@@ -323,7 +324,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
 
         let params = self
             .param_repo
-            .mettre_a_jour_plage_horaire_tx(&mut tx, heure_ouverture, heure_fermeture)
+            .mettre_a_jour_plage_horaire_tx(&mut tx, heure_ouverture, heure_fermeture, utilisateur)
             .await?;
 
         tx.commit().await?;
@@ -369,6 +370,7 @@ mod tests {
             _tx: &mut libsql::Transaction,
             heure_ouverture: &str,
             heure_fermeture: &str,
+            _utilisateur: &str,
         ) -> Result<ParametresPlanning, AppError> {
             let mut params = self.params.lock().unwrap();
             params.heure_ouverture = heure_ouverture.to_string();
@@ -430,7 +432,11 @@ mod tests {
 
     #[async_trait]
     impl PlanningRepository for MockPlanningRepository {
-        async fn creer_creneau(&self, _input: CreateCreneau) -> Result<CreneauActivite, AppError> {
+        async fn creer_creneau(
+            &self,
+            _input: CreateCreneau,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
             unimplemented!()
         }
 
@@ -442,6 +448,8 @@ mod tests {
             &self,
             _id: i64,
             _input: CreateCreneau,
+            _version: i64,
+            _utilisateur: &str,
         ) -> Result<CreneauActivite, AppError> {
             unimplemented!()
         }
@@ -467,6 +475,7 @@ mod tests {
                     heure_debut: h.heure_debut.clone(),
                     heure_fin: h.heure_fin.clone(),
                     annee_scolaire: h.annee_scolaire.clone(),
+                    version: 1,
                 })
                 .collect())
         }
@@ -511,6 +520,7 @@ mod tests {
             id: i64,
             heure_debut: &str,
             heure_fin: &str,
+            _utilisateur: &str,
         ) -> Result<CreneauActivite, AppError> {
             self.deplacements.lock().unwrap().push((
                 id,
@@ -531,12 +541,14 @@ mod tests {
                 heure_debut: c.heure_debut.clone(),
                 heure_fin: c.heure_fin.clone(),
                 annee_scolaire: c.annee_scolaire.clone(),
+                version: 1,
             })
         }
 
         async fn ajouter_semaine_banalisee(
             &self,
             _input: CreateSemaineBanalisee,
+            _utilisateur: &str,
         ) -> Result<SemaineBanalisee, AppError> {
             unimplemented!()
         }
@@ -695,7 +707,7 @@ mod tests {
         let service = make_service(&param, &planning, conn);
 
         let params = service
-            .appliquer_plage("08:00", "20:00", false)
+            .appliquer_plage("alice", "08:00", "20:00", false)
             .await
             .expect("plage sans impact appliquée sans confirmation");
         assert_eq!(params.heure_ouverture, "08:00");
@@ -714,7 +726,7 @@ mod tests {
         let service = make_service(&param, &planning, conn);
 
         let err = service
-            .appliquer_plage("08:00", "20:00", false)
+            .appliquer_plage("alice", "08:00", "20:00", false)
             .await
             .expect_err("refusé sans confirmation");
         assert!(err.to_string().contains("Confirmez"));
@@ -733,7 +745,7 @@ mod tests {
         let service = make_service(&param, &planning, conn);
 
         let params = service
-            .appliquer_plage("08:00", "20:00", true)
+            .appliquer_plage("alice", "08:00", "20:00", true)
             .await
             .expect("application OK");
 
@@ -755,7 +767,7 @@ mod tests {
         let service = make_service(&param, &planning, conn);
 
         let err = service
-            .appliquer_plage("09:00", "18:00", true)
+            .appliquer_plage("alice", "09:00", "18:00", true)
             .await
             .expect_err("bloqué si aucun déplacement possible");
         assert!(err.to_string().contains("aucune place libre"));

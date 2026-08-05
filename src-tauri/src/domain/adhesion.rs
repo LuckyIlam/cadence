@@ -7,6 +7,7 @@ pub struct Adhesion {
     pub annee_scolaire: String,
     pub reglee: bool,
     pub note_paiement: Option<String>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -21,4 +22,5 @@ pub struct CreateAdhesion {
 pub struct UpdateAdhesion {
     pub reglee: bool,
     pub note_paiement: Option<String>,
+    pub version: i64,
 }

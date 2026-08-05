@@ -19,6 +19,12 @@ pub struct AppState {
     pub param_repo: LibsqlParametreRepository,
 }
 
+#[derive(Debug, Clone, serde::Deserialize)]
+#[allow(dead_code)]
+pub struct IdRow {
+    pub id: i64,
+}
+
 pub async fn init_connection(
     config: &ConnexionConfig,
     app_dir: &Path,

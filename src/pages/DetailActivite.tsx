@@ -12,7 +12,9 @@ import {
   type ParametresPlanning,
   type PersonneActivite,
   type SemaineBanalisee,
+  type UpdateActivite,
 } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 export default function DetailActivite() {
   const { id } = useParams<{ id: string }>();
@@ -101,6 +103,7 @@ export default function DetailActivite() {
     if (!id) return;
     try {
       await invoke("definir_tarif_activite", {
+        utilisateur: await utilisateurCourant(),
         input: {
           activite_id: Number(id),
           annee_scolaire: anneeScolaire,
@@ -126,7 +129,11 @@ export default function DetailActivite() {
       if (field === "description") input.description = value || null;
       if (field === "capacite_max") input.capacite_max = value ? Number(value) : null;
 
-      const updated = await invoke<Activite>("modifier_activite", { id: Number(id), input });
+      const updated = await invoke<Activite>("modifier_activite", {
+        id: Number(id),
+        utilisateur: await utilisateurCourant(),
+        input: { ...input, version: activite.version } as UpdateActivite,
+      });
       setActivite(updated);
       setEditNom(false);
       setEditDescription(false);
@@ -161,6 +168,7 @@ export default function DetailActivite() {
     if (!id) return;
     try {
       await invoke("ajouter_personne_activite", {
+        utilisateur: await utilisateurCourant(),
         input: {
           activite_id: Number(id),
           personne_id: personneId,
@@ -187,7 +195,7 @@ export default function DetailActivite() {
         heure_fin: newCreneauFin,
         annee_scolaire: anneeScolaire,
       };
-      await invoke("ajouter_creneau", { input });
+      await invoke("ajouter_creneau", { utilisateur: await utilisateurCourant(), input });
       setShowCreneauForm(false);
       setNewCreneauJour(1);
       setNewCreneauDebut("08:00");
@@ -229,7 +237,7 @@ export default function DetailActivite() {
         motif: newSemaineMotif || null,
         annee_scolaire: anneeScolaire,
       };
-      await invoke("ajouter_semaine_banalisee", { input });
+      await invoke("ajouter_semaine_banalisee", { utilisateur: await utilisateurCourant(), input });
       setShowSemaineForm(false);
       setNewSemaineDate("");
       setNewSemaineMotif("");

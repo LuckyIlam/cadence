@@ -25,15 +25,15 @@
 
 ## 3. Audit des modifications et conflits
 
-- [ ] 3.1 Migration : `ALTER TABLE … ADD COLUMN modifie_par TEXT, modifie_le TEXT, version INTEGER NOT NULL DEFAULT 0` sur les 8 tables
-- [ ] 3.2 Ajouter le paramètre `utilisateur: String` aux commandes d'écriture (création et modification)
-- [ ] 3.3 Écrire `modifie_par` / `modifie_le` (ISO-8601 UTC via chrono) dans les INSERT/UPDATE des repositories
-- [ ] 3.4 Refuser une écriture sans nom d'utilisateur (`AppError::Validation`)
-- [ ] 3.5 Ne pas exposer les colonnes d'audit dans les lectures renvoyées au front
-- [ ] 3.6 Tests unitaires d'audit : création, modification, refus sans utilisateur, non-exposition
-- [ ] 3.7 Optimistic locking : `UPDATE … SET …, version = version + 1 WHERE id = ? AND version = ?` via `conn.execute` ; `rows_affected == 0` → `AppError::Conflict` avec message « fiche modifiée entre-temps, rechargez-la »
-- [ ] 3.8 Exposer la version dans les commandes de lecture (champ caché, jamais affiché) et la faire renvoyer par le front sur les mises à jour
-- [ ] 3.9 Tests unitaires de conflit : mise à jour OK, mise à jour concurrente refusée, version non affichée
+- [x] 3.1 Migration : `ALTER TABLE … ADD COLUMN modifie_par TEXT, modifie_le TEXT, version INTEGER NOT NULL DEFAULT 0` sur les 8 tables
+- [x] 3.2 Ajouter le paramètre `utilisateur: String` aux commandes d'écriture (création et modification)
+- [x] 3.3 Écrire `modifie_par` / `modifie_le` (ISO-8601 UTC via chrono) dans les INSERT/UPDATE des repositories
+- [x] 3.4 Refuser une écriture sans nom d'utilisateur (`AppError::Validation`)
+- [x] 3.5 Ne pas exposer les colonnes d'audit dans les lectures renvoyées au front
+- [x] 3.6 Tests unitaires d'audit : création, modification, refus sans utilisateur, non-exposition
+- [x] 3.7 Optimistic locking : `UPDATE … SET …, version = version + 1 WHERE id = ? AND version = ?` via `conn.execute` ; `rows_affected == 0` → `AppError::Conflict` avec message « fiche modifiée entre-temps, rechargez-la »
+- [x] 3.8 Exposer la version dans les commandes de lecture (champ caché, jamais affiché) et la faire renvoyer par le front sur les mises à jour
+- [x] 3.9 Tests unitaires de conflit : mise à jour OK, mise à jour concurrente refusée, version non affichée
 
 ## 4. Configuration de la connexion et choix du mode
 

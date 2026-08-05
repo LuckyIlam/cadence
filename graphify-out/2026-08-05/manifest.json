@@ -75,13 +75,13 @@
     "semantic_hash": "d1704ee85e20e3aa77f2a6049ad730cf"
   },
   "src-tauri/src/commands/activite_commands.rs": {
-    "mtime": 1785876869.06127,
-    "ast_hash": "9b8b839c1d2ea76e16e9ee3d40a11f8a",
+    "mtime": 1785678992.6452465,
+    "ast_hash": "fcb872c61d548ca9dc523835a5374937",
     "semantic_hash": ""
   },
   "src-tauri/src/commands/adhesion_commands.rs": {
-    "mtime": 1785876848.5210626,
-    "ast_hash": "58fd4975fdf970170792639acd12d72f",
+    "mtime": 1785678992.646753,
+    "ast_hash": "5900946e579ac67919a8f1fe7575a6a1",
     "semantic_hash": ""
   },
   "src-tauri/src/commands/mod.rs": {
@@ -90,18 +90,18 @@
     "semantic_hash": ""
   },
   "src-tauri/src/commands/personne_commands.rs": {
-    "mtime": 1785876842.0670397,
-    "ast_hash": "c9761b0fc970e0997948e86e58a5c268",
+    "mtime": 1785678992.6477592,
+    "ast_hash": "ac822a4819eb67f01a8d830a4cb8127c",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/activite.rs": {
-    "mtime": 1785878149.1189597,
-    "ast_hash": "1955fd924f8505c8889078465b5a27ba",
+    "mtime": 1785870806.0004704,
+    "ast_hash": "967c877dba096765f58e4a07c0b8d791",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/adhesion.rs": {
-    "mtime": 1785878142.9428294,
-    "ast_hash": "ab920ed4152bcd51bc18e89e1c3f15c8",
+    "mtime": 1785870802.3282661,
+    "ast_hash": "45d09ec305f6c6cf4171f91bbbbf1e7b",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/mod.rs": {
@@ -110,18 +110,18 @@
     "semantic_hash": ""
   },
   "src-tauri/src/domain/personne.rs": {
-    "mtime": 1785878138.302356,
-    "ast_hash": "4ec673eb4aaf51e9874d30cc79b6db24",
+    "mtime": 1785870801.8383164,
+    "ast_hash": "651a582d27640fcf71e05be57c74e80d",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db.rs": {
-    "mtime": 1785877831.3005064,
-    "ast_hash": "c2b9576df69cfefd0b648eeea6f7353e",
+    "mtime": 1785873991.6323934,
+    "ast_hash": "4094f13dc81e5ee51b7b91e18f27a0ee",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/mod.rs": {
-    "mtime": 1785876184.2964966,
-    "ast_hash": "4e2102e26092e5ef7e5b41b910ce6940",
+    "mtime": 1785870869.5900915,
+    "ast_hash": "e580e014fe0c8e3ca50dc2aaf0476492",
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
@@ -135,13 +135,13 @@
     "semantic_hash": "8805642715ab2bf7eaa1a842bafef526"
   },
   "src-tauri/src/repositories/activite_repo.rs": {
-    "mtime": 1785877849.4326348,
-    "ast_hash": "7ce626f7e3c2e734b82cb941b0be43b8",
+    "mtime": 1785872876.1347532,
+    "ast_hash": "3e78868956be87c9410d9c12468cebef",
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/adhesion_repo.rs": {
-    "mtime": 1785877849.434634,
-    "ast_hash": "cd476d25c2466641dcf068fc237299e0",
+    "mtime": 1785870930.8419259,
+    "ast_hash": "ab792095c2533e1c34c1b2f785f5dc8d",
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/mod.rs": {
@@ -150,8 +150,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/personne_repo.rs": {
-    "mtime": 1785878164.2515862,
-    "ast_hash": "54051988faaa75f32d91fb8ee6779909",
+    "mtime": 1785873991.6477537,
+    "ast_hash": "2765e40035bd50764db2950eea17762f",
     "semantic_hash": ""
   },
   "src-tauri/tauri.conf.json": {
@@ -160,23 +160,23 @@
     "semantic_hash": "41648e5a2cfac4ed74abeb6ca1896bc3"
   },
   "src/App.tsx": {
-    "mtime": 1785935876.3932176,
-    "ast_hash": "4f6f77f5090f2d06477d62450f6c728b",
+    "mtime": 1785788520.5233123,
+    "ast_hash": "207c9f39042ef4476f38acba5e0b5f8e",
     "semantic_hash": ""
   },
   "src/components/AdhesionForm.tsx": {
-    "mtime": 1785935876.3977292,
-    "ast_hash": "f1f17d934a90f83568956fd73814974d",
+    "mtime": 1785788520.5243123,
+    "ast_hash": "84273d2d074197bad9b93a1764c11775",
     "semantic_hash": ""
   },
   "src/components/Nav.tsx": {
-    "mtime": 1785935876.3932176,
-    "ast_hash": "865e3884efcb2244e668a317d0dd309f",
+    "mtime": 1785788520.5243123,
+    "ast_hash": "34f49ccc0e2cf54a3f30e8b6d94b5208",
     "semantic_hash": ""
   },
   "src/components/PersonneForm.tsx": {
-    "mtime": 1785935876.4062486,
-    "ast_hash": "c7bbbec57e00f817349a9823ec44e4b1",
+    "mtime": 1785788520.5258167,
+    "ast_hash": "d2cef3413768b9a1ae3da2094f6fcbbf",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -185,18 +185,18 @@
     "semantic_hash": "e329479a8e8e890ac567e3652e1ed723"
   },
   "src/pages/Activites.tsx": {
-    "mtime": 1785935876.4032497,
-    "ast_hash": "27c84be14ee06632dfada681433a00ba",
+    "mtime": 1783715486.1281972,
+    "ast_hash": "8ed72001ef0dc94c21cb74966614fabc",
     "semantic_hash": ""
   },
   "src/pages/DetailActivite.tsx": {
-    "mtime": 1785935876.4298575,
-    "ast_hash": "71456f7bfcdbb055bd62283b25163522",
+    "mtime": 1785788520.5283382,
+    "ast_hash": "ec4d2deaa99cf004cf1f69d7179d3855",
     "semantic_hash": ""
   },
   "src/pages/DetailPersonne.tsx": {
-    "mtime": 1785935876.4082496,
-    "ast_hash": "f152a29698f8d0926a7e37bb7aca6d23",
+    "mtime": 1785788520.529338,
+    "ast_hash": "9507d8a4e4e7ef190a382fde3deb9aba",
     "semantic_hash": ""
   },
   "src/pages/ListePersonnes.tsx": {
@@ -205,8 +205,8 @@
     "semantic_hash": "ad40990e7cb6da8e565f037dc4909a8a"
   },
   "src/types.ts": {
-    "mtime": 1785935876.4012423,
-    "ast_hash": "6da836563833c6f4ee883bcd00ad8c58",
+    "mtime": 1785788520.530842,
+    "ast_hash": "3565fb04bae9c8937bf423cac0ce9700",
     "semantic_hash": ""
   },
   "src/vite-env.d.ts": {
@@ -645,13 +645,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/commands/planning_commands.rs": {
-    "mtime": 1785877849.4145894,
-    "ast_hash": "bc55236bc40b51ebccbf68318fd534a3",
+    "mtime": 1785873991.6228776,
+    "ast_hash": "a6e5f9e51ce2bacc9d9f5db8a0ed9f1e",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/planning.rs": {
-    "mtime": 1785878155.5979395,
-    "ast_hash": "fea2cb0d12a5c914aea8e7d60d5a2b2f",
+    "mtime": 1785870812.1977746,
+    "ast_hash": "b85c4b03be59d8f33433b50092b7b44d",
     "semantic_hash": ""
   },
   "src-tauri/src/error.rs": {
@@ -660,13 +660,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/planning_repo.rs": {
-    "mtime": 1785877849.4587207,
-    "ast_hash": "4514c2cb4ad86bec6a12b387780c2b11",
+    "mtime": 1785873991.6597776,
+    "ast_hash": "04ac6e9b7bfcf0c4372394d4d867a5d6",
     "semantic_hash": ""
   },
   "src-tauri/src/services/activite_service.rs": {
-    "mtime": 1785877849.463721,
-    "ast_hash": "035217ee77ff076e92acb0a14cb368d1",
+    "mtime": 1785872479.0214124,
+    "ast_hash": "6daf98bd0a0d0c605d3b819322ff579a",
     "semantic_hash": ""
   },
   "src-tauri/src/services/mod.rs": {
@@ -675,18 +675,18 @@
     "semantic_hash": ""
   },
   "src-tauri/src/services/personne_service.rs": {
-    "mtime": 1785877849.4762504,
-    "ast_hash": "8c92c8ff93cf4d1eab6810ea61ee6629",
+    "mtime": 1785678992.6582718,
+    "ast_hash": "b514502de714eb43121a00953a386181",
     "semantic_hash": ""
   },
   "src/components/PlanningHebdo.tsx": {
-    "mtime": 1785935876.399729,
-    "ast_hash": "c27b254dcce4005d0c271c8ed16c7541",
+    "mtime": 1785788520.526826,
+    "ast_hash": "1ce962068278142f199f2d8e0d7279aa",
     "semantic_hash": ""
   },
   "src/pages/PlanningPage.tsx": {
-    "mtime": 1785935876.4012423,
-    "ast_hash": "876dc6e36cac525981c69a340e24951b",
+    "mtime": 1785788520.530338,
+    "ast_hash": "6daa9ef9f2349a752f08a91a1307f303",
     "semantic_hash": ""
   },
   ".opencode/skills/architecte/SKILL.md": {
@@ -795,8 +795,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/commands/parametre_commands.rs": {
-    "mtime": 1785877849.4035335,
-    "ast_hash": "4c405c4c8be56d423b4187578858bf75",
+    "mtime": 1785872511.3104787,
+    "ast_hash": "4a1c5a83ec185d09bb904518a6c1b836",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/parametre.rs": {
@@ -805,13 +805,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/parametre_repo.rs": {
-    "mtime": 1785876666.3342173,
-    "ast_hash": "19ce725d138a0d174d8f978fac8fd016",
+    "mtime": 1785872343.6183681,
+    "ast_hash": "054244495bebccb5de4a7823ed79d758",
     "semantic_hash": ""
   },
   "src/pages/ParametresPage.tsx": {
-    "mtime": 1785935876.4032497,
-    "ast_hash": "a9250561dc851cefff5443aba8d8e9c1",
+    "mtime": 1785788520.529338,
+    "ast_hash": "a23e61dc3aa046ab779a91e343133c17",
     "semantic_hash": ""
   },
   "openspec/changes/plage-horaire-activite/design.md": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/services/parametre_service.rs": {
-    "mtime": 1785876830.6100273,
-    "ast_hash": "23f4a6603f79b9ea2f3059eb060e5e5e",
+    "mtime": 1785872472.7626777,
+    "ast_hash": "7e9f1892b9ac703a461a76534b244f8f",
     "semantic_hash": ""
   },
   "docs/fonctionnel/parametres.md": {
@@ -865,13 +865,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/migrations.rs": {
-    "mtime": 1785876192.8972347,
-    "ast_hash": "26385b6fde985da517213e7e8dfb28b9",
+    "mtime": 1785873991.6333988,
+    "ast_hash": "90dcaa9353f2b499f4bee5c6b8425b8d",
     "semantic_hash": ""
   },
   "src/errors.ts": {
-    "mtime": 1785935876.3932176,
-    "ast_hash": "ca0c85b9e8627910afe8162a50d6d8b1",
+    "mtime": 1785788520.5273328,
+    "ast_hash": "b2324f43c8ae5f0173ddedecf2edd5e6",
     "semantic_hash": ""
   },
   "openspec/changes/multi-utilisateurs-turso/.openspec.yaml": {
@@ -900,23 +900,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/multi-utilisateurs-turso/tasks.md": {
-    "mtime": 1785935955.3466423,
-    "ast_hash": "46d8bf97ecf5216017767a062140e43e",
-    "semantic_hash": ""
-  },
-  "src-tauri/migrations/20260803000001_add_audit.sql": {
-    "mtime": 1785877744.6803298,
-    "ast_hash": "5da38c4710dd1c9b0ae32d5dcfadf24a",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/infrastructure/audit.rs": {
-    "mtime": 1785876143.4270127,
-    "ast_hash": "6f666dad9599384bda4e669db145a141",
-    "semantic_hash": ""
-  },
-  "src/utilisateur.ts": {
-    "mtime": 1785935876.3947208,
-    "ast_hash": "3cd6fab3709eb7bc8f36aff93a4a3ac2",
+    "mtime": 1785874016.368762,
+    "ast_hash": "7e1ff40fdda441150ebd750ab02dbbb9",
     "semantic_hash": ""
   }
 }

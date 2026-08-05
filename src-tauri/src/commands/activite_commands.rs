@@ -11,20 +11,24 @@ use crate::services::ActiviteService;
 #[tauri::command]
 pub async fn creer_activite(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateActivite,
 ) -> Result<Activite, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
-    service.creer(input).await
+    service.creer(&utilisateur, input).await
 }
 
 #[tauri::command]
 pub async fn modifier_activite(
     state: State<'_, AppState>,
     id: i64,
+    utilisateur: String,
     input: UpdateActivite,
 ) -> Result<Activite, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
-    service.modifier(id, input).await
+    service.modifier(&utilisateur, id, input).await
 }
 
 #[tauri::command]
@@ -58,19 +62,23 @@ pub async fn lister_activites(
 #[tauri::command]
 pub async fn definir_tarif_activite(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateTarifActivite,
 ) -> Result<(), AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
-    service.definir_tarif(input).await
+    service.definir_tarif(&utilisateur, input).await
 }
 
 #[tauri::command]
 pub async fn ajouter_personne_activite(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateLiaisonActivitePersonne,
 ) -> Result<(), AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
-    service.ajouter_personne(input).await
+    service.ajouter_personne(&utilisateur, input).await
 }
 
 #[tauri::command]

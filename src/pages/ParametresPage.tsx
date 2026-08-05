@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { erreurMessage } from "../errors";
 import type { ImpactCreneau, ParametresPlanning } from "../types";
 import { jourSemaineTexte } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 export default function ParametresPage() {
   const [parametres, setParametres] = useState<ParametresPlanning | null>(null);
@@ -26,6 +27,7 @@ export default function ParametresPage() {
 
   const sauvegarderPlage = async (confirmerSuppression: boolean) => {
     const p = await invoke<ParametresPlanning>("modifier_plage_horaire", {
+      utilisateur: await utilisateurCourant(),
       heureOuverture: ouverture,
       heureFermeture: fermeture,
       confirmerSuppression,

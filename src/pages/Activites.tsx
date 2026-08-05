@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Activite } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 type ActiviteAvecTarif = [Activite, number | null, number];
 
@@ -54,6 +55,7 @@ export default function Activites() {
     if (!newNom.trim()) return;
     try {
       await invoke("creer_activite", {
+        utilisateur: await utilisateurCourant(),
         input: {
           nom: newNom.trim(),
           description: newDescription.trim() || null,
