@@ -34,6 +34,7 @@ pub trait ActiviteRepository: Send + Sync {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<TarifActivite>, AppError>;
+    #[allow(dead_code)]
     async fn ajouter_personne(
         &self,
         input: CreateLiaisonActivitePersonne,
@@ -45,17 +46,43 @@ pub trait ActiviteRepository: Send + Sync {
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<(), AppError>;
+    #[allow(dead_code)]
     async fn compter_participants(
         &self,
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError>;
+    #[allow(dead_code)]
     async fn trouver_liaison(
         &self,
         activite_id: i64,
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<LiaisonActivitePersonne>, AppError>;
+    async fn trouver_liaison_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        personne_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Option<LiaisonActivitePersonne>, AppError>;
+    async fn find_by_id_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        id: i64,
+    ) -> Result<Option<Activite>, AppError>;
+    async fn compter_participants_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<i64, AppError>;
+    async fn ajouter_personne_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        input: CreateLiaisonActivitePersonne,
+        utilisateur: &str,
+    ) -> Result<LiaisonActivitePersonne, AppError>;
     async fn lister_encadrants(
         &self,
         activite_id: i64,
@@ -216,6 +243,28 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         }
     }
 
+    async fn find_by_id_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        id: i64,
+    ) -> Result<Option<Activite>, AppError> {
+        let mut rows = tx
+            .query(
+                "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
+                libsql::params![id],
+            )
+            .await?;
+
+        match rows.next().await? {
+            Some(row) => {
+                let valeur = libsql::de::from_row::<Activite>(&row)?;
+                hrana_guard::vider_cursor(&mut rows).await?;
+                Ok(Some(valeur))
+            }
+            None => Ok(None),
+        }
+    }
+
     async fn upsert_tarif(
         &self,
         input: CreateTarifActivite,
@@ -304,6 +353,38 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         Ok(valeur)
     }
 
+    async fn ajouter_personne_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        input: CreateLiaisonActivitePersonne,
+        utilisateur: &str,
+    ) -> Result<LiaisonActivitePersonne, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let mut rows = tx
+            .query(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?)
+                 RETURNING activite_id, personne_id, annee_scolaire, role",
+                libsql::params![
+                    input.activite_id,
+                    input.personne_id,
+                    input.annee_scolaire,
+                    input.role.to_string(),
+                    utilisateur,
+                    maintenant
+                ],
+            )
+            .await?;
+
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Inscription introuvable".into()))?;
+        let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
+    }
+
     async fn retirer_personne(
         &self,
         activite_id: i64,
@@ -347,6 +428,34 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         Ok(count)
     }
 
+    async fn compter_participants_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<i64, AppError> {
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct CompteurRow {
+            count: i64,
+        }
+
+        let mut rows = tx
+            .query(
+                "SELECT COUNT(*) AS count FROM activite_personnes
+                 WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
+
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
+        let count = libsql::de::from_row::<CompteurRow>(&row)?.count;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(count)
+    }
+
     async fn trouver_liaison(
         &self,
         activite_id: i64,
@@ -360,6 +469,31 @@ impl ActiviteRepository for LibsqlActiviteRepository {
             libsql::params![activite_id, personne_id, annee_scolaire],
         )
         .await?;
+
+        match rows.next().await? {
+            Some(row) => {
+                let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
+                hrana_guard::vider_cursor(&mut rows).await?;
+                Ok(Some(valeur))
+            }
+            None => Ok(None),
+        }
+    }
+
+    async fn trouver_liaison_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        personne_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Option<LiaisonActivitePersonne>, AppError> {
+        let mut rows = tx
+            .query(
+                "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
+                 WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, personne_id, annee_scolaire],
+            )
+            .await?;
 
         match rows.next().await? {
             Some(row) => {

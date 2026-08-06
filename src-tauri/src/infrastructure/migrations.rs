@@ -1,6 +1,7 @@
 use libsql::Connection;
 
 use crate::error::AppError;
+use crate::infrastructure::audit::maintenant_utc;
 use crate::infrastructure::hrana_guard;
 
 const MIGRATIONS: &[(&str, &str)] = &[
@@ -41,10 +42,6 @@ const MIGRATIONS: &[(&str, &str)] = &[
         include_str!("../../migrations/20260803000001_add_audit.sql"),
     ),
 ];
-
-fn maintenant_utc() -> String {
-    chrono::Utc::now().to_rfc3339()
-}
 
 async fn migration_appliquee(conn: &Connection, nom: &str) -> Result<bool, AppError> {
     let mut rows = hrana_guard::query_avec_retry(

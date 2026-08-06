@@ -15,7 +15,11 @@ pub async fn creer_activite(
     input: CreateActivite,
 ) -> Result<Activite, AppError> {
     let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.creer(&utilisateur, input).await
 }
 
@@ -27,7 +31,11 @@ pub async fn modifier_activite(
     input: UpdateActivite,
 ) -> Result<Activite, AppError> {
     let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.modifier(&utilisateur, id, input).await
 }
 
@@ -36,7 +44,11 @@ pub async fn obtenir_activite(
     state: State<'_, AppState>,
     id: i64,
 ) -> Result<Option<Activite>, AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.obtenir(id).await
 }
 
@@ -46,7 +58,11 @@ pub async fn obtenir_detail_activite(
     id: i64,
     annee_scolaire: String,
 ) -> Result<DetailActivite, AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.obtenir_detail(id, &annee_scolaire).await
 }
 
@@ -55,7 +71,11 @@ pub async fn lister_activites(
     state: State<'_, AppState>,
     annee_scolaire: String,
 ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.lister_activites(&annee_scolaire).await
 }
 
@@ -66,7 +86,11 @@ pub async fn definir_tarif_activite(
     input: CreateTarifActivite,
 ) -> Result<(), AppError> {
     let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.definir_tarif(&utilisateur, input).await
 }
 
@@ -77,7 +101,11 @@ pub async fn ajouter_personne_activite(
     input: CreateLiaisonActivitePersonne,
 ) -> Result<(), AppError> {
     let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.ajouter_personne(&utilisateur, input).await
 }
 
@@ -88,7 +116,11 @@ pub async fn retirer_personne_activite(
     personne_id: i64,
     annee_scolaire: String,
 ) -> Result<(), AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service
         .retirer_personne(activite_id, personne_id, &annee_scolaire)
         .await
@@ -96,7 +128,11 @@ pub async fn retirer_personne_activite(
 
 #[tauri::command]
 pub async fn lister_annees_activites(state: State<'_, AppState>) -> Result<Vec<String>, AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.lister_annees().await
 }
 
@@ -105,6 +141,10 @@ pub async fn lister_activites_personne(
     state: State<'_, AppState>,
     personne_id: i64,
 ) -> Result<Vec<ActivitePersonne>, AppError> {
-    let service = ActiviteService::new(&state.activite_repo, &state.planning_repo);
+    let service = ActiviteService::new(
+        &state.activite_repo,
+        &state.planning_repo,
+        state.conn.clone(),
+    );
     service.lister_activites_personne(personne_id).await
 }

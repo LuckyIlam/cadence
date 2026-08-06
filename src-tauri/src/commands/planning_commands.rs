@@ -2,8 +2,8 @@ use tauri::State;
 
 use crate::domain::parametre::valider_creneau_dans_plage;
 use crate::domain::planning::{
-    est_lundi, valider_creneau, CreateCreneau, CreateSemaineBanalisee, CreneauActivite,
-    PlanningCreneau, SemaineBanalisee,
+    est_lundi, format_conflit_plage, valider_creneau, CreateCreneau, CreateSemaineBanalisee,
+    CreneauActivite, PlanningCreneau, SemaineBanalisee,
 };
 use crate::error::AppError;
 use crate::infrastructure::db::AppState;
@@ -19,15 +19,24 @@ pub async fn ajouter_creneau(
     valider_creneau(&input)?;
     valider_creneau_dans_plage_global(&state, &input).await?;
 
+    // BEGIN IMMEDIATE : les contrôles (existence activité, conflit) et l'insertion
+    // sont atomiques, pour éviter un conflit non détecté entre deux utilisateurs
+    // en mode multi.
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let _activite = state
         .activite_repo
-        .find_by_id(input.activite_id)
+        .find_by_id_tx(&mut tx, input.activite_id)
         .await?
         .ok_or(AppError::NotFound("Activité introuvable".into()))?;
 
     let conflits = state
         .planning_repo
-        .verifier_conflit_creneaux(
+        .verifier_conflit_creneaux_tx(
+            &mut tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -40,15 +49,18 @@ pub async fn ajouter_creneau(
     if !conflits.is_empty() {
         let c = &conflits[0];
         return Err(AppError::Conflict(format!(
-            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
-            c.jour_semaine,
-            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
-            c.heure_debut,
-            c.heure_fin,
+            "Conflit d'horaire avec un créneau existant : {}.",
+            format_conflit_plage(c.jour_semaine, &c.heure_debut, &c.heure_fin),
         )));
     }
 
-    state.planning_repo.creer_creneau(input, &utilisateur).await
+    let creneau = state
+        .planning_repo
+        .creer_creneau_tx(&mut tx, input, &utilisateur)
+        .await?;
+
+    tx.commit().await?;
+    Ok(creneau)
 }
 
 /// Vérifie qu'un créneau est entièrement compris dans la plage horaire d'ouverture globale
@@ -69,9 +81,14 @@ pub async fn supprimer_creneau(
     activite_id: i64,
     annee_scolaire: String,
 ) -> Result<(), AppError> {
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let nb = state
         .planning_repo
-        .compter_inscrits_activite(activite_id, &annee_scolaire)
+        .compter_inscrits_activite_tx(&mut tx, activite_id, &annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -80,7 +97,13 @@ pub async fn supprimer_creneau(
         ));
     }
 
-    state.planning_repo.supprimer_creneau(id).await
+    state
+        .planning_repo
+        .supprimer_creneau_tx(&mut tx, id)
+        .await?;
+
+    tx.commit().await?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -95,9 +118,14 @@ pub async fn modifier_creneau(
     valider_creneau(&input)?;
     valider_creneau_dans_plage_global(&state, &input).await?;
 
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let nb = state
         .planning_repo
-        .compter_inscrits_activite(input.activite_id, &input.annee_scolaire)
+        .compter_inscrits_activite_tx(&mut tx, input.activite_id, &input.annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -108,7 +136,8 @@ pub async fn modifier_creneau(
 
     let conflits = state
         .planning_repo
-        .verifier_conflit_creneaux(
+        .verifier_conflit_creneaux_tx(
+            &mut tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -121,18 +150,18 @@ pub async fn modifier_creneau(
     if !conflits.is_empty() {
         let c = &conflits[0];
         return Err(AppError::Conflict(format!(
-            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
-            c.jour_semaine,
-            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
-            c.heure_debut,
-            c.heure_fin,
+            "Conflit d'horaire avec un créneau existant : {}.",
+            format_conflit_plage(c.jour_semaine, &c.heure_debut, &c.heure_fin),
         )));
     }
 
-    state
+    let creneau = state
         .planning_repo
-        .modifier_creneau(id, input, version, &utilisateur)
-        .await
+        .modifier_creneau_tx(&mut tx, id, input, version, &utilisateur)
+        .await?;
+
+    tx.commit().await?;
+    Ok(creneau)
 }
 
 #[tauri::command]

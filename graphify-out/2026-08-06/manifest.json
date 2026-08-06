@@ -75,8 +75,8 @@
     "semantic_hash": "d1704ee85e20e3aa77f2a6049ad730cf"
   },
   "src-tauri/src/commands/activite_commands.rs": {
-    "mtime": 1786015944.1767159,
-    "ast_hash": "777c1a1f1933140b284784d36969baf2",
+    "mtime": 1785937113.429084,
+    "ast_hash": "9b8b839c1d2ea76e16e9ee3d40a11f8a",
     "semantic_hash": ""
   },
   "src-tauri/src/commands/adhesion_commands.rs": {
@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db.rs": {
-    "mtime": 1786016034.760232,
-    "ast_hash": "fc38dc0c221846aaa27123f6bbc3696c",
+    "mtime": 1785937113.4370837,
+    "ast_hash": "73910c10c35bb9aa53dc57cfe14ac159",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/mod.rs": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/lib.rs": {
-    "mtime": 1786015722.7976828,
-    "ast_hash": "d69a97e6b4cd0842f9a5663ad8cb2910",
+    "mtime": 1785946294.0929072,
+    "ast_hash": "f9c4900c5b761ea3c0e324df422e25d5",
     "semantic_hash": ""
   },
   "src-tauri/src/main.rs": {
@@ -135,8 +135,8 @@
     "semantic_hash": "8805642715ab2bf7eaa1a842bafef526"
   },
   "src-tauri/src/repositories/activite_repo.rs": {
-    "mtime": 1786015851.363747,
-    "ast_hash": "eb155051365cc18bbfb78da48d37beb7",
+    "mtime": 1785946811.9251711,
+    "ast_hash": "b8a464d0c98aa77eb6091c0584a90a4d",
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/adhesion_repo.rs": {
@@ -645,13 +645,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/commands/planning_commands.rs": {
-    "mtime": 1786015696.0810308,
-    "ast_hash": "600cfe6c9439f1c087014532c9eca48d",
+    "mtime": 1785937113.4320872,
+    "ast_hash": "8c2f0c63c8bab6c12774a8b01f46f572",
     "semantic_hash": ""
   },
   "src-tauri/src/domain/planning.rs": {
-    "mtime": 1786015131.694676,
-    "ast_hash": "ac4675b2143865be387bbd138db0a6fa",
+    "mtime": 1785937113.4360833,
+    "ast_hash": "fea2cb0d12a5c914aea8e7d60d5a2b2f",
     "semantic_hash": ""
   },
   "src-tauri/src/error.rs": {
@@ -660,13 +660,13 @@
     "semantic_hash": ""
   },
   "src-tauri/src/repositories/planning_repo.rs": {
-    "mtime": 1786015944.2490487,
-    "ast_hash": "29117c8a65850a38b549265ea7343a1c",
+    "mtime": 1785946811.9493558,
+    "ast_hash": "7ebf6bcb367c12315075039b26f92abd",
     "semantic_hash": ""
   },
   "src-tauri/src/services/activite_service.rs": {
-    "mtime": 1786015944.2545524,
-    "ast_hash": "4c6dc367f846420f4d0420e71772a90f",
+    "mtime": 1785937113.4456906,
+    "ast_hash": "5ec773826f84410e2669ed3ce7da104b",
     "semantic_hash": ""
   },
   "src-tauri/src/services/mod.rs": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/services/parametre_service.rs": {
-    "mtime": 1786015712.2030826,
-    "ast_hash": "7c7c26fe51454f77552027b2f668b5f1",
+    "mtime": 1785937113.4466932,
+    "ast_hash": "23f4a6603f79b9ea2f3059eb060e5e5e",
     "semantic_hash": ""
   },
   "docs/fonctionnel/parametres.md": {
@@ -865,8 +865,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/migrations.rs": {
-    "mtime": 1786015172.1978314,
-    "ast_hash": "b61c5aa57c642cc60cbac0aa2a2954e1",
+    "mtime": 1785946294.0919063,
+    "ast_hash": "cecc0f78c7bdd27c721a51040e592ebb",
     "semantic_hash": ""
   },
   "src/errors.ts": {
@@ -947,21 +947,6 @@
   "src-tauri/src/infrastructure/hrana_guard.rs": {
     "mtime": 1785946525.9193456,
     "ast_hash": "015f77f59e9dd5a3dd801293d6e90a87",
-    "semantic_hash": ""
-  },
-  "multi-utilisateur-review.md": {
-    "mtime": 1785949884.3844886,
-    "ast_hash": "ea304cf98457f68ddd6dfe1f60dc8db5",
-    "semantic_hash": ""
-  },
-  "openspec/changes/db-driver-abstraction/.openspec.yaml": {
-    "mtime": 1785951139.8611567,
-    "ast_hash": "ecd01e767268ca4ee3e87513c0610959",
-    "semantic_hash": ""
-  },
-  "openspec/changes/db-driver-abstraction/design.md": {
-    "mtime": 1785951182.8601103,
-    "ast_hash": "aa37058dd986f2236fdb6b035f914413",
     "semantic_hash": ""
   }
 }

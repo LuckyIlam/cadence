@@ -545,6 +545,26 @@ mod tests {
             })
         }
 
+        async fn creer_creneau_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _input: CreateCreneau,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
+        async fn modifier_creneau_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _id: i64,
+            _input: CreateCreneau,
+            _version: i64,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
         async fn ajouter_semaine_banalisee(
             &self,
             _input: CreateSemaineBanalisee,
@@ -576,8 +596,30 @@ mod tests {
             unimplemented!()
         }
 
+        async fn verifier_conflit_creneaux_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+            _jour_semaine: i64,
+            _heure_debut: &str,
+            _heure_fin: &str,
+            _exclure_id: Option<i64>,
+        ) -> Result<Vec<CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
         async fn compter_inscrits_activite(
             &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<i64, AppError> {
+            unimplemented!()
+        }
+
+        async fn compter_inscrits_activite_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<i64, AppError> {
@@ -590,6 +632,25 @@ mod tests {
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<Option<crate::domain::planning::Collision>, AppError> {
+            unimplemented!()
+        }
+
+        async fn verifier_collision_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _personne_id: i64,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Option<crate::domain::planning::Collision>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_creneaux_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<CreneauActivite>, AppError> {
             unimplemented!()
         }
 

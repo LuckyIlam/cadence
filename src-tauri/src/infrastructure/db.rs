@@ -47,6 +47,14 @@ pub async fn init_connection(
     };
 
     let conn = database.connect()?;
+
+    // SQLite (et libsql) désactive l'application des clés étrangères par défaut
+    // par connexion : sans ce pragma, les FOREIGN KEY des migrations ne sont que
+    // documentaires. À activer explicitement hors transaction.
+    conn.execute_batch("PRAGMA foreign_keys = ON;")
+        .await
+        .map_err(AppError::from)?;
+
     cadence_migrations(&conn).await?;
 
     Ok(conn)
@@ -60,5 +68,84 @@ pub fn init_app_state(conn: Connection) -> AppState {
         planning_repo: LibsqlPlanningRepository::new(conn.clone()),
         param_repo: LibsqlParametreRepository::new(conn.clone()),
         conn,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    async fn local_conn() -> Connection {
+        let database = libsql::Builder::new_local(":memory:")
+            .build()
+            .await
+            .expect("base en mémoire");
+        let conn = database.connect().expect("connexion");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .await
+            .expect("pragma");
+        cadence_migrations(&conn).await.expect("migrations");
+        conn
+    }
+
+    fn est_erreur_foreign_key(err: &libsql::Error) -> bool {
+        let m = err.to_string().to_lowercase();
+        m.contains("foreign key") || m.contains("constraint failed")
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_adhesion_personne_inexistante() {
+        let conn = local_conn().await;
+        let err = conn
+            .execute(
+                "INSERT INTO adhesions (personne_id, annee_scolaire) VALUES (?, ?)",
+                libsql::params![99999, "2025-2026"],
+            )
+            .await
+            .expect_err("la clé étrangère doit bloquer l'insertion");
+        assert!(est_erreur_foreign_key(&err));
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_liaison_personne_inexistante() {
+        let conn = local_conn().await;
+        conn.execute(
+            "INSERT INTO activites (nom) VALUES (?)",
+            libsql::params!["Poterie"],
+        )
+        .await
+        .expect("activité insérée");
+        let err = conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![1, 99999, "2025-2026", "participant"],
+            )
+            .await
+            .expect_err("la clé étrangère personne doit bloquer l'insertion");
+        assert!(est_erreur_foreign_key(&err));
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_suppression_activite_referencee() {
+        let conn = local_conn().await;
+        conn.execute(
+            "INSERT INTO activites (nom) VALUES (?)",
+            libsql::params!["Poterie"],
+        )
+        .await
+        .expect("activité insérée");
+        conn.execute(
+            "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
+             VALUES (1, 1, '14:00', '16:00', '2025-2026')",
+            libsql::params![],
+        )
+        .await
+        .expect("créneau inséré");
+        let err = conn
+            .execute("DELETE FROM activites WHERE id = 1", libsql::params![])
+            .await
+            .expect_err("la clé étrangère doit bloquer la suppression");
+        assert!(est_erreur_foreign_key(&err));
     }
 }

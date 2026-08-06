@@ -125,6 +125,18 @@ pub fn valider_creneau(input: &CreateCreneau) -> Result<(), String> {
     Ok(())
 }
 
+/// Formate la plage horaire d'un créneau : « jour 2 (Mardi), 14:00–16:00 ».
+/// Partie commune des messages de conflit d'horaire (activités et créneaux).
+pub fn format_conflit_plage(jour_semaine: i64, heure_debut: &str, heure_fin: &str) -> String {
+    format!(
+        "jour {} ({}), {}–{}",
+        jour_semaine,
+        jour_semaine_texte(jour_semaine),
+        heure_debut,
+        heure_fin
+    )
+}
+
 pub fn jour_semaine_texte(jour: i64) -> &'static str {
     match jour {
         1 => "Lundi",
@@ -263,6 +275,18 @@ mod tests {
         assert_eq!(jour_semaine_texte(0), "Inconnu");
         assert_eq!(jour_semaine_texte(8), "Inconnu");
         assert_eq!(jour_semaine_texte(-1), "Inconnu");
+    }
+
+    #[test]
+    fn test_format_conflit_plage() {
+        assert_eq!(
+            format_conflit_plage(2, "14:00", "16:00"),
+            "jour 2 (Mardi), 14:00–16:00"
+        );
+        assert_eq!(
+            format_conflit_plage(7, "08:00", "20:00"),
+            "jour 7 (Dimanche), 08:00–20:00"
+        );
     }
 
     #[test]

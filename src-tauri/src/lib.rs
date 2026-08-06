@@ -1,7 +1,10 @@
 mod commands;
 mod domain;
+#[cfg(test)]
 mod e2e_mono;
+#[cfg(test)]
 mod e2e_multi;
+#[cfg(test)]
 mod e2e_stream;
 mod error;
 mod infrastructure;

@@ -11,12 +11,15 @@ use crate::infrastructure::hrana_guard;
 
 #[async_trait]
 pub trait PlanningRepository: Send + Sync {
+    #[allow(dead_code)]
     async fn creer_creneau(
         &self,
         input: CreateCreneau,
         utilisateur: &str,
     ) -> Result<CreneauActivite, AppError>;
+    #[allow(dead_code)]
     async fn supprimer_creneau(&self, id: i64) -> Result<(), AppError>;
+    #[allow(dead_code)]
     async fn modifier_creneau(
         &self,
         id: i64,
@@ -49,6 +52,20 @@ pub trait PlanningRepository: Send + Sync {
         heure_fin: &str,
         utilisateur: &str,
     ) -> Result<CreneauActivite, AppError>;
+    async fn creer_creneau_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        input: CreateCreneau,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError>;
+    async fn modifier_creneau_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        id: i64,
+        input: CreateCreneau,
+        version: i64,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError>;
     async fn ajouter_semaine_banalisee(
         &self,
         input: CreateSemaineBanalisee,
@@ -59,6 +76,7 @@ pub trait PlanningRepository: Send + Sync {
         &self,
         activite_id: i64,
     ) -> Result<Vec<SemaineBanalisee>, AppError>;
+    #[allow(dead_code)]
     async fn verifier_conflit_creneaux(
         &self,
         activite_id: i64,
@@ -68,8 +86,26 @@ pub trait PlanningRepository: Send + Sync {
         heure_fin: &str,
         exclure_id: Option<i64>,
     ) -> Result<Vec<CreneauActivite>, AppError>;
+    #[allow(clippy::too_many_arguments)]
+    async fn verifier_conflit_creneaux_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+        jour_semaine: i64,
+        heure_debut: &str,
+        heure_fin: &str,
+        exclure_id: Option<i64>,
+    ) -> Result<Vec<CreneauActivite>, AppError>;
+    #[allow(dead_code)]
     async fn compter_inscrits_activite(
         &self,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<i64, AppError>;
+    async fn compter_inscrits_activite_tx(
+        &self,
+        tx: &mut libsql::Transaction,
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError>;
@@ -79,6 +115,19 @@ pub trait PlanningRepository: Send + Sync {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<Collision>, AppError>;
+    async fn verifier_collision_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        personne_id: i64,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Option<Collision>, AppError>;
+    async fn lister_creneaux_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Vec<CreneauActivite>, AppError>;
     async fn planning_personne_semaine(
         &self,
         personne_id: i64,
@@ -112,6 +161,39 @@ impl PlanningRepository for LibsqlPlanningRepository {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
         let mut rows = hrana_guard::query_avec_retry(
             &self.conn,
+                "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, modifie_par, modifie_le)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)
+                 RETURNING id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version",
+                libsql::params![
+                    input.activite_id,
+                    input.jour_semaine,
+                    input.heure_debut,
+                    input.heure_fin,
+                    input.annee_scolaire,
+                    utilisateur,
+                    maintenant
+                ],
+            )
+            .await?;
+
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
+        let valeur = libsql::de::from_row::<CreneauActivite>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
+    }
+
+    async fn creer_creneau_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        input: CreateCreneau,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let mut rows = tx
+            .query(
                 "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?, ?)
                  RETURNING id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version",
@@ -204,6 +286,64 @@ impl PlanningRepository for LibsqlPlanningRepository {
         Ok(valeur)
     }
 
+    async fn modifier_creneau_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        id: i64,
+        input: CreateCreneau,
+        version: i64,
+        utilisateur: &str,
+    ) -> Result<CreneauActivite, AppError> {
+        let maintenant = crate::infrastructure::audit::maintenant_utc();
+        let affected = tx
+            .execute(
+                "UPDATE creneaux_activite
+                 SET jour_semaine = ?, heure_debut = ?, heure_fin = ?,
+                     modifie_par = ?, modifie_le = ?, version = version + 1
+                 WHERE id = ? AND version = ?",
+                libsql::params![
+                    input.jour_semaine,
+                    input.heure_debut,
+                    input.heure_fin,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    version
+                ],
+            )
+            .await?;
+        if affected == 0 {
+            let mut existe_rows = tx
+                .query(
+                    "SELECT id FROM creneaux_activite WHERE id = ?",
+                    libsql::params![id],
+                )
+                .await?;
+            let existe = existe_rows.next().await?.is_some();
+            hrana_guard::vider_cursor(&mut existe_rows).await?;
+            if existe {
+                return Err(AppError::Conflict(
+                    crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
+                ));
+            }
+            return Err(AppError::NotFound("Créneau introuvable".into()));
+        }
+        let mut rows = tx
+            .query(
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite WHERE id = ?",
+                libsql::params![id],
+            )
+            .await?;
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::NotFound("Créneau introuvable".into()))?;
+        let valeur = libsql::de::from_row::<CreneauActivite>(&row)?;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(valeur)
+    }
+
     async fn lister_creneaux(
         &self,
         activite_id: i64,
@@ -218,6 +358,30 @@ impl PlanningRepository for LibsqlPlanningRepository {
             libsql::params![activite_id, annee_scolaire],
         )
         .await?;
+
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauActivite>(&row)?);
+        }
+
+        Ok(donnees)
+    }
+
+    async fn lister_creneaux_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Vec<CreneauActivite>, AppError> {
+        let mut rows = tx
+            .query(
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite
+                 WHERE activite_id = ? AND annee_scolaire = ?
+                 ORDER BY jour_semaine, heure_debut",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
         let mut donnees = Vec::new();
         while let Some(row) = rows.next().await? {
@@ -444,6 +608,47 @@ impl PlanningRepository for LibsqlPlanningRepository {
         Ok(donnees)
     }
 
+    #[allow(clippy::too_many_arguments)]
+    async fn verifier_conflit_creneaux_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+        jour_semaine: i64,
+        heure_debut: &str,
+        heure_fin: &str,
+        exclure_id: Option<i64>,
+    ) -> Result<Vec<CreneauActivite>, AppError> {
+        let mut rows = tx
+            .query(
+                "SELECT id, activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire, version
+                 FROM creneaux_activite
+                 WHERE activite_id = ?
+                   AND annee_scolaire = ?
+                   AND jour_semaine = ?
+                   AND heure_debut < ?
+                   AND heure_fin > ?
+                   AND (? IS NULL OR id != ?)",
+                libsql::params![
+                    activite_id,
+                    annee_scolaire,
+                    jour_semaine,
+                    heure_fin,
+                    heure_debut,
+                    exclure_id,
+                    exclure_id
+                ],
+            )
+            .await?;
+
+        let mut donnees = Vec::new();
+        while let Some(row) = rows.next().await? {
+            donnees.push(libsql::de::from_row::<CreneauActivite>(&row)?);
+        }
+
+        Ok(donnees)
+    }
+
     async fn compter_inscrits_activite(
         &self,
         activite_id: i64,
@@ -456,6 +661,29 @@ impl PlanningRepository for LibsqlPlanningRepository {
             libsql::params![activite_id, annee_scolaire],
         )
         .await?;
+
+        let row = rows
+            .next()
+            .await?
+            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
+        let count = libsql::de::from_row::<CompteurRow>(&row)?.count;
+        hrana_guard::vider_cursor(&mut rows).await?;
+        Ok(count)
+    }
+
+    async fn compter_inscrits_activite_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<i64, AppError> {
+        let mut rows = tx
+            .query(
+                "SELECT COUNT(*) AS count FROM activite_personnes
+                 WHERE activite_id = ? AND annee_scolaire = ?",
+                libsql::params![activite_id, annee_scolaire],
+            )
+            .await?;
 
         let row = rows
             .next()
@@ -510,6 +738,80 @@ impl PlanningRepository for LibsqlPlanningRepository {
                     {
                         let mut nom_rows = self
                             .conn
+                            .query(
+                                "SELECT nom FROM activites WHERE id = ?",
+                                libsql::params![autre_id],
+                            )
+                            .await?;
+                        let nom_row = nom_rows
+                            .next()
+                            .await?
+                            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
+                        let nom = libsql::de::from_row::<NomActiviteRow>(&nom_row)?.nom;
+                        hrana_guard::vider_cursor(&mut nom_rows).await?;
+
+                        return Ok(Some(Collision {
+                            activite_conflit: nom,
+                            jour_semaine: cible.jour_semaine,
+                            heure_debut: cible.heure_debut.clone(),
+                            heure_fin: cible.heure_fin.clone(),
+                        }));
+                    }
+                }
+            }
+        }
+
+        Ok(None)
+    }
+
+    async fn verifier_collision_tx(
+        &self,
+        tx: &mut libsql::Transaction,
+        personne_id: i64,
+        activite_id: i64,
+        annee_scolaire: &str,
+    ) -> Result<Option<Collision>, AppError> {
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct AutreActiviteRow {
+            activite_id: i64,
+        }
+
+        #[derive(Debug, Clone, serde::Deserialize)]
+        struct NomActiviteRow {
+            nom: String,
+        }
+
+        let creneaux_cibles = self
+            .lister_creneaux_tx(tx, activite_id, annee_scolaire)
+            .await?;
+        if creneaux_cibles.is_empty() {
+            return Ok(None);
+        }
+
+        let mut rows = tx
+            .query(
+                "SELECT activite_id FROM activite_personnes
+                 WHERE personne_id = ? AND annee_scolaire = ? AND activite_id != ?",
+                libsql::params![personne_id, annee_scolaire, activite_id],
+            )
+            .await?;
+
+        let mut autres_activites = Vec::new();
+        while let Some(row) = rows.next().await? {
+            autres_activites.push(libsql::de::from_row::<AutreActiviteRow>(&row)?.activite_id);
+        }
+
+        for autre_id in autres_activites {
+            let creneaux_autre = self
+                .lister_creneaux_tx(tx, autre_id, annee_scolaire)
+                .await?;
+            for cible in &creneaux_cibles {
+                for autre in &creneaux_autre {
+                    if cible.jour_semaine == autre.jour_semaine
+                        && cible.heure_debut < autre.heure_fin
+                        && cible.heure_fin > autre.heure_debut
+                    {
+                        let mut nom_rows = tx
                             .query(
                                 "SELECT nom FROM activites WHERE id = ?",
                                 libsql::params![autre_id],
