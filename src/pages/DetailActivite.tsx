@@ -39,7 +39,7 @@ export default function DetailActivite() {
 
   const [creneaux, setCreneaux] = useState<CreneauActivite[]>([]);
   const [semainesBanalisees, setSemainesBanalisees] = useState<SemaineBanalisee[]>([]);
-  const [nbInscrits, setNbInscrits] = useState(0);
+  const nbInscrits = encadrants.length + participants.length;
   const [showCreneauForm, setShowCreneauForm] = useState(false);
   const [newCreneauJour, setNewCreneauJour] = useState(1);
   const [newCreneauDebut, setNewCreneauDebut] = useState("08:00");
@@ -96,10 +96,6 @@ export default function DetailActivite() {
       .then(setSemainesBanalisees)
       .catch(console.error);
   }, [id, anneeScolaire]);
-
-  useEffect(() => {
-    setNbInscrits(encadrants.length + participants.length);
-  }, [encadrants, participants]);
 
   const handleSaveTarif = async () => {
     if (!id) return;

@@ -1,7 +1,7 @@
 # Graph Report - cadence  (2026-08-06)
 
 ## Corpus Check
-- 131 files · ~93,695 words
+- 131 files · ~93,737 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `85a3bec7`
+- Built from commit: `7655a3b4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

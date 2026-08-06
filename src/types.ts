@@ -73,6 +73,7 @@ export interface ResultatRecherchePersonnes {
   pages: number;
 }
 
+// Dupliqué de age_from_date_naissance (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function ageFromDateNaissance(dateNaissance: string): number {
   const today = new Date();
   const birth = new Date(dateNaissance);
@@ -84,6 +85,7 @@ export function ageFromDateNaissance(dateNaissance: string): number {
   return age;
 }
 
+// Dupliqué de est_mineur (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function estMineur(dateNaissance: string): boolean {
   return ageFromDateNaissance(dateNaissance) < 18;
 }
@@ -99,6 +101,7 @@ export function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
+// Dupliqué de current_annee_scolaire (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function getCurrentAnneeScolaire(): string {
   const y = getCurrentYear();
   const m = new Date().getMonth();
@@ -115,6 +118,7 @@ export function dateEstValide(dateIso: string): boolean {
   return !Number.isNaN(d.getTime());
 }
 
+// Dupliqué de valider_date_naissance (src-tauri/src/domain/personne.rs) : la logique Rust fait foi (borne 1920, pas de date future).
 export function dateNaissanceEstValide(dateIso: string): { valide: boolean; erreur?: string } {
   if (!dateIso) return { valide: false, erreur: "Date requise" };
   const d = new Date(dateIso);

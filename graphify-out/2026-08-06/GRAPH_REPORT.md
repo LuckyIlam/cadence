@@ -1,16 +1,16 @@
 # Graph Report - cadence  (2026-08-06)
 
 ## Corpus Check
-- 131 files · ~93,643 words
+- 131 files · ~93,695 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1905 nodes · 3700 edges · 120 communities (89 shown, 31 thin omitted)
+- 1905 nodes · 3706 edges · 119 communities (88 shown, 31 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b1068269`
+- Built from commit: `85a3bec7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -82,7 +82,6 @@
 - Documentation fonctionnelle — Cadence
 - Paramètres
 - MockPlanningRepository
-- adhesion_repo.rs
 - ADDED Requirements
 - Decisions
 - opencode.json
@@ -146,10 +145,10 @@
 ## Import Cycles
 - None detected.
 
-## Communities (120 total, 31 thin omitted)
+## Communities (119 total, 31 thin omitted)
 
 ### Community 0 - "Membres & Adhésions"
-Cohesion: 0.20
+Cohesion: 0.22
 Nodes (9): Application entry point (index.html), Cadence, Documentation fonctionnelle, Développement, Développement assisté par IA (skills), Fonctionnalités, Prérequis, Stack (+1 more)
 
 ### Community 1 - "OpenSpec Workflow"
@@ -253,8 +252,8 @@ Cohesion: 0.11
 Nodes (17): app, security, windows, build, beforeBuildCommand, beforeDevCommand, devUrl, frontendDist (+9 more)
 
 ### Community 28 - "Type CurrentAnnée"
-Cohesion: 0.11
-Nodes (21): Rows, CompteurRow, est_stream_perdu(), execute_avec_retry(), query_avec_retry(), Connection, P, Result (+13 more)
+Cohesion: 0.08
+Nodes (40): Rows, CompteurRow, est_stream_perdu(), execute_avec_retry(), query_avec_retry(), Connection, P, Result (+32 more)
 
 ### Community 29 - "Type CurrentYear"
 Cohesion: 0.12
@@ -293,7 +292,7 @@ Cohesion: 0.07
 Nodes (47): apercu_creneaux_hors_plage(), modifier_plage_horaire(), obtenir_parametres_planning(), App, Connection, ImpactCreneau, MockRuntime, ParametresPlanning (+39 more)
 
 ### Community 38 - "Règles de développement"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (13): Architecture, Couverture de code, Documentations, Gestion des erreurs, Graphe de connaissances (graphify), Organisation de l'équipe, Principe, Règles de développement (+5 more)
 
 ### Community 39 - "SKILL.md"
@@ -408,10 +407,6 @@ Nodes (41): 1. Vue d'ensemble, 2.1 `df80398` — Migration backend : SQLx → li
 Cohesion: 0.20
 Nodes (10): Choisir son mode dans les Paramètres, Connexion et mode de fonctionnement, Description, Données indépendantes, Mode mono-utilisateur, Mode multi-utilisateurs, Nom d'utilisateur et traçabilité, Premier lancement (+2 more)
 
-### Community 67 - "adhesion_repo.rs"
-Cohesion: 0.22
-Nodes (19): AdhesionRepository, LibsqlAdhesionRepository, repo(), Adhesion, Connection, CreateAdhesion, Result, Self (+11 more)
-
 ### Community 68 - "ADDED Requirements"
 Cohesion: 0.12
 Nodes (16): ADDED Requirements, Requirement: Détecter les modifications concurrentes lors d'une mise à jour, Requirement: Enregistrer l'auteur et l'horodatage de chaque création ou modification, Requirement: Fournir le nom d'utilisateur aux écritures, Requirement: Ne jamais afficher l'audit, Scenario: Conflit détecté dans les deux modes, Scenario: Création d'une personne, Scenario: Lecture d'une personne (+8 more)
@@ -444,16 +439,16 @@ Nodes (28): e2e_mono_fichier_crud_persiste(), e2e_multi_crud(), est_erreur_forei
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppError` connect `Formulaire Adhésion` to `adhesion_repo.rs`, `parametre.rs`, `Navigation`, `Pages Activités`, `Détail Personne`, `Liste Personnes`, `db.rs`, `Type Activité`, `Type CreateLiaison`, `Type AnnéeScolaire`, `Type CurrentAnnée`, `AppError`?**
+- **Why does `AppError` connect `Formulaire Adhésion` to `parametre.rs`, `Navigation`, `Pages Activités`, `Détail Personne`, `Liste Personnes`, `db.rs`, `Type Activité`, `Type CreateLiaison`, `Type AnnéeScolaire`, `Type CurrentAnnée`, `AppError`?**
   _High betweenness centrality (0.158) - this node is a cross-community bridge._
-- **Why does `AppState` connect `Détail Personne` to `adhesion_repo.rs`, `parametre.rs`, `Pages Activités`, `Liste Personnes`, `Type Activité`, `db.rs`, `Type CreateLiaison`, `Type CurrentAnnée`?**
+- **Why does `AppState` connect `Détail Personne` to `parametre.rs`, `Pages Activités`, `Liste Personnes`, `Type Activité`, `db.rs`, `Type CreateLiaison`, `Type CurrentAnnée`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Why does `ajouter_creneau()` connect `Liste Personnes` to `Type CreateAdhesion`, `Détail Personne`, `Formulaire Adhésion`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `$schema`, `plugin`, `@opencode-ai/plugin` to the rest of the system?**
   _749 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Shell` be split into smaller, more focused modules?**
-  _Cohesion score 0.057967313585291114 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.059499489274770175 - nodes in this community are weakly interconnected._
 - **Should `Formulaire Adhésion` be split into smaller, more focused modules?**
   _Cohesion score 0.06436254628813261 - nodes in this community are weakly interconnected._
 - **Should `Navigation` be split into smaller, more focused modules?**
