@@ -10,8 +10,8 @@
     "semantic_hash": "e4e68efca0f049182e3c5ab43370e148"
   },
   "package.json": {
-    "mtime": 1786031994.1256552,
-    "ast_hash": "62274c85fb7136523483d8646a47ea73",
+    "mtime": 1786034808.0051053,
+    "ast_hash": "bd856deb1e546fba528af13a64b1ab1d",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -155,9 +155,9 @@
     "semantic_hash": ""
   },
   "src-tauri/tauri.conf.json": {
-    "mtime": 1785936927.7455318,
-    "ast_hash": "41648e5a2cfac4ed74abeb6ca1896bc3",
-    "semantic_hash": "41648e5a2cfac4ed74abeb6ca1896bc3"
+    "mtime": 1786034822.1541286,
+    "ast_hash": "42d27b2e340fe72161eac95049604a66",
+    "semantic_hash": ""
   },
   "src/App.tsx": {
     "mtime": 1785937802.2535222,
