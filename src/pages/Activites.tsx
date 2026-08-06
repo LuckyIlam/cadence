@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { erreurMessage } from "../errors";
 import type { Activite } from "../types";
 import { utilisateurCourant } from "../utilisateur";
 
@@ -28,6 +29,7 @@ export default function Activites() {
   const creationAnnees = getCreationAnnees();
   const [newAnnee, setNewAnnee] = useState(creationAnnees[0] ?? "");
   const [newTarif, setNewTarif] = useState("");
+  const [erreur, setErreur] = useState<string | null>(null);
 
   useEffect(() => {
     invoke<string[]>("lister_annees_activites")
@@ -39,11 +41,12 @@ export default function Activites() {
   }, []);
 
   const chargerActivites = useCallback(async (annee: string) => {
+    setErreur(null);
     try {
       const r = await invoke<ActiviteAvecTarif[]>("lister_activites", { anneeScolaire: annee });
       setActivites(r);
     } catch (e) {
-      console.error(e);
+      setErreur(erreurMessage(e));
     }
   }, []);
 
@@ -53,6 +56,7 @@ export default function Activites() {
 
   const handleCreer = async () => {
     if (!newNom.trim()) return;
+    setErreur(null);
     try {
       await invoke("creer_activite", {
         utilisateur: await utilisateurCourant(),
@@ -75,7 +79,7 @@ export default function Activites() {
         chargerActivites(anneeScolaire);
       }
     } catch (e) {
-      console.error(e);
+      setErreur(erreurMessage(e));
     }
   };
 
@@ -91,6 +95,10 @@ export default function Activites() {
           Nouvelle activité
         </button>
       </div>
+
+      {erreur && (
+        <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6">{erreur}</div>
+      )}
 
       {anneesDisponibles.length > 0 && (
         <div className="mb-4">

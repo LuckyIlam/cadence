@@ -17,16 +17,18 @@ export default function ListePersonnes() {
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requeteIdRef = useRef(0);
 
   const chargerPersonnes = useCallback(async (criteres: CriteresRecherchePersonnes, pagination: Pagination) => {
+    const requeteId = ++requeteIdRef.current;
     try {
       const r = await invoke<ResultatRecherchePersonnes>("rechercher_personnes", {
         criteres,
         pagination,
       });
-      setResultat(r);
+      if (requeteId === requeteIdRef.current) setResultat(r);
     } catch (e) {
-      console.error(e);
+      if (requeteId === requeteIdRef.current) console.error(e);
     }
   }, []);
 
@@ -37,36 +39,27 @@ export default function ListePersonnes() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      setPage(1);
       chargerPersonnes(
         {
           texte_libre: texteLibre.trim() || null,
           adherent_uniquement: adherentUniquement,
         },
-        { page: 1, par_page: 20 },
+        { page, par_page: 20 },
       );
     }, 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [texteLibre, adherentUniquement, chargerPersonnes]);
-
-  useEffect(() => {
-    chargerPersonnes(
-      {
-        texte_libre: texteLibre.trim() || null,
-        adherent_uniquement: adherentUniquement,
-      },
-      { page, par_page: 20 },
-    );
-  }, [page, texteLibre.trim, chargerPersonnes, adherentUniquement]);
+  }, [texteLibre, adherentUniquement, page, chargerPersonnes]);
 
   const handleTexteLibreChange = (value: string) => {
     setTexteLibre(value);
+    setPage(1);
   };
 
   const handleAdherentChange = () => {
     setAdherentUniquement((prev) => !prev);
+    setPage(1);
   };
 
   const personnes = resultat?.donnees ?? [];
