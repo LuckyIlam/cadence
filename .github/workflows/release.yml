@@ -56,6 +56,7 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --no-bundle
+          uploadPlainBinary: true
 
       - name: Resolve binary path
         id: binpath
