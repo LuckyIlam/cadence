@@ -67,3 +67,7 @@ Les données du mode mono-utilisateur et du mode multi-utilisateurs sont **indé
 ## Nom d'utilisateur et traçabilité
 
 Le nom d'utilisateur saisi est enregistré avec chaque création ou modification d'une fiche (personne, adhésion, activité, créneau), dans les deux modes. Cette information est stockée pour la **traçabilité** des modifications et n'est **jamais affichée** dans l'application. Votre nom apparaît en haut de l'écran pour vous rappeler le compte utilisé.
+
+## Modifications concurrentes
+
+En **multi-utilisateurs**, il peut arriver que deux bénévoles modifient la même fiche en même temps. Si une fiche que vous avez ouverte a été **modifiée par un autre utilisateur** avant que vous n'enregistriez la vôtre, l'enregistrement est **refusé** avec le message **« Fiche modifiée entre-temps, rechargez-la »** : rechargez la fiche pour repartir de la version la plus récente. Ce comportement s'applique dans les deux modes de fonctionnement.

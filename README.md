@@ -6,7 +6,7 @@ Application de bureau pour gérer les adhérents et les activités d'une associa
 
 - **Frontend** : React 19 + TypeScript + Tailwind CSS + Vite
 - **Backend** : Rust + Tauri 2
-- **Base de données** : SQLite (via SQLx, interchangeable avec Postgres)
+- **Base de données** : SQLite locale (mode mono-utilisateur) ou libSQL/Turso distant (mode multi-utilisateurs), via la crate `libsql`
 - **IA** : Développement assisté par [OpenCode](https://opencode.ai), [OpenSpec](https://openspec.dev) et [Graphify](https://graphify.net)
 
 ## Fonctionnalités
@@ -17,6 +17,10 @@ Application de bureau pour gérer les adhérents et les activités d'une associa
 - Gestion des activités (création, modification, tarifs par année scolaire)
 - Inscription des personnes aux activités avec rôles (encadrant / participant)
 - Contrôle de capacité maximale par activité
+- Planning hebdomadaire par personne et gestion des créneaux horaires
+- Plage horaire d'ouverture configurable des activités (avec gestion des créneaux impactés)
+- Mode **mono-utilisateur** (base locale) ou **multi-utilisateurs** (base partagée Turso, hébergée dans l'UE)
+- Traçabilité des modifications (nom d'utilisateur + horodatage) et détection des conflits de modification
 - Recherche textuelle insensible à la casse (nom/prénom)
 - Interface responsive
 
@@ -45,23 +49,28 @@ cadence/
 │   ├── main.tsx
 │   ├── App.tsx
 │   ├── types.ts
-│   ├── index.css
+│   ├── utilisateur.ts
 │   ├── pages/
 │   │   ├── ListePersonnes.tsx
 │   │   ├── DetailPersonne.tsx
 │   │   ├── Activites.tsx
-│   │   └── DetailActivite.tsx
+│   │   ├── DetailActivite.tsx
+│   │   ├── PlanningPage.tsx
+│   │   └── ParametresPage.tsx
 │   └── components/
 │       ├── Nav.tsx
 │       ├── PersonneForm.tsx
-│       └── AdhesionForm.tsx
+│       ├── AdhesionForm.tsx
+│       ├── ConnexionConfigForm.tsx
+│       └── PlanningHebdo.tsx
 ├── src-tauri/                    # Backend Rust
 │   ├── src/
 │   │   ├── main.rs / lib.rs
-│   │   ├── domain/              # Types métier (personne, adhesion, activite)
-│   │   ├── repositories/        # Accès BDD (SQLx)
-│   │   ├── commands/            # IPC Tauri
-│   │   └── infrastructure/      # Pool, migrations
+│   │   ├── domain/              # Types métier (personne, adhesion, activite, planning)
+│   │   ├── repositories/        # Accès BDD (libsql)
+│   │   ├── services/            # Logique métier
+│   │   ├── commands/            # IPC Tauri (dont connexion)
+│   │   └── infrastructure/      # Connexion, migrations, config, audit
 │   ├── migrations/              # SQL versionné
 │   ├── tauri.conf.json
 │   └── capabilities/
