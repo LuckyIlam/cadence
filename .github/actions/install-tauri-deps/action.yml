@@ -1,0 +1,14 @@
+name: Install system deps (Tauri)
+description: Installs the Linux system packages required to build Tauri
+
+runs:
+  using: composite
+  steps:
+    - name: Install system deps (Tauri) - Linux
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwebkit2gtk-4.1-dev \
+          librsvg2-dev patchelf libgtk-3-dev libsoup-3.0-dev \
+          libjavascriptcoregtk-4.1-dev
