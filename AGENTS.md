@@ -14,7 +14,7 @@
 ## Stack
 
 - Rust + Tauri 2 + React 19 + TypeScript + Tailwind CSS
-- SQLite via SQLx
+- SQLite locale (mono) ou libSQL/Turso distant (multi) via la crate `libsql`
 - Vite pour le build frontend
 
 ## Vérifications

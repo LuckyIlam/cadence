@@ -1,7 +1,7 @@
 # Graph Report - cadence  (2026-08-07)
 
 ## Corpus Check
-- 132 files · ~90,534 words
+- 132 files · ~90,452 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

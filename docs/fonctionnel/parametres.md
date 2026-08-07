@@ -2,7 +2,10 @@
 
 ## Description
 
-La page **Paramètres** (`/parametres`) permet de configurer la **plage horaire d'ouverture** des activités : l'heure d'ouverture et l'heure de fermeture. Par défaut, elle est fixée à **8h – 20h**.
+La page **Paramètres** (`/parametres`) permet de configurer :
+
+- la **plage horaire d'ouverture** des activités : l'heure d'ouverture et l'heure de fermeture (par défaut **8h – 20h**) ;
+- la **connexion à la base** : choix du mode de fonctionnement (voir [Connexion et mode de fonctionnement](connexion.md)).
 
 ## Modifier la plage horaire
 
@@ -33,3 +36,16 @@ La plage configurée est utilisée à deux endroits :
 - **À la consultation d'un planning** : la grille hebdomadaire s'affiche entre l'heure d'ouverture et l'heure de fermeture configurées.
 
 Voir [Plage horaire d'ouverture](planning.md#plage-horaire-douverture) pour le détail.
+
+## Connexion à la base
+
+La carte **« Connexion à la base »** de la page Paramètres permet de consulter et de modifier le mode de fonctionnement de l'application :
+
+- **Mono-utilisateur** : les données restent sur cet ordinateur (base locale).
+- **Multi-utilisateurs** : les données sont hébergées sur une base partagée (Turso), accessible par plusieurs bénévoles à distance.
+
+Un changement de **mode**, d'**URL** ou de **clé d'accès** nécessite un **redémarrage** de l'application ; une simple modification du **nom d'utilisateur** est appliquée immédiatement.
+
+> ℹ️ Ce mode est également choisi au **premier lancement** de l'application (écran « Bienvenue dans Cadence »).
+
+Voir [Connexion et mode de fonctionnement](connexion.md) pour le détail.
