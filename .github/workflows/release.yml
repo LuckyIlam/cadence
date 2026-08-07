@@ -4,9 +4,17 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -20,8 +28,23 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
 
       - run: npm ci
+
+      - name: Check version matches tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart('v')
+          $conf = Get-Content src-tauri\tauri.conf.json -Raw | ConvertFrom-Json
+          if ($conf.version -ne $tag) {
+            throw "Version mismatch: tauri.conf.json=$($conf.version) tag=$tag"
+          }
+          $m = Select-String -Path src-tauri\Cargo.toml -Pattern '^version\s*=\s*"(.*)"' | Select-Object -First 1
+          $cargoVersion = $m.Matches[0].Groups[1].Value
+          if ($cargoVersion -ne $tag) {
+            throw "Version mismatch: Cargo.toml=$cargoVersion tag=$tag"
+          }
 
       - name: Build app
         uses: tauri-apps/tauri-action@v1
@@ -33,12 +56,21 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --no-bundle
-          uploadPlainBinary: true
+
+      - name: Resolve binary path
+        id: binpath
+        shell: pwsh
+        run: |
+          $m = Select-String -Path src-tauri\Cargo.toml -Pattern '^name\s*=\s*"(.*)"' | Select-Object -First 1
+          $bin = $m.Matches[0].Groups[1].Value
+          $path = "src-tauri\target\release\$bin.exe"
+          if (-not (Test-Path $path)) { throw "Binary not found: $path" }
+          "path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Package portable
         shell: pwsh
         run: |
-          Compress-Archive -Path src-tauri\target\release\cadence.exe -DestinationPath "Cadence_${{ github.ref_name }}_x64_portable.zip"
+          Compress-Archive -Path "${{ steps.binpath.outputs.path }}" -DestinationPath "Cadence_${{ github.ref_name }}_x64_portable.zip"
 
       - name: Upload portable to release
         env:
