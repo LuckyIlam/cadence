@@ -6,6 +6,7 @@ export interface Personne {
   email: string | null;
   telephone: string | null;
   responsable_id: number | null;
+  version: number;
 }
 
 export interface CreatePersonne {
@@ -24,6 +25,7 @@ export interface UpdatePersonne {
   email: string | null;
   telephone: string | null;
   responsable_id: number | null;
+  version: number;
 }
 
 export interface Adhesion {
@@ -32,6 +34,7 @@ export interface Adhesion {
   annee_scolaire: string;
   reglee: boolean;
   note_paiement: string | null;
+  version: number;
 }
 
 export interface CreateAdhesion {
@@ -44,6 +47,7 @@ export interface CreateAdhesion {
 export interface UpdateAdhesion {
   reglee: boolean;
   note_paiement: string | null;
+  version: number;
 }
 
 export interface PersonneDetail {
@@ -69,6 +73,7 @@ export interface ResultatRecherchePersonnes {
   pages: number;
 }
 
+// Dupliqué de age_from_date_naissance (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function ageFromDateNaissance(dateNaissance: string): number {
   const today = new Date();
   const birth = new Date(dateNaissance);
@@ -80,6 +85,7 @@ export function ageFromDateNaissance(dateNaissance: string): number {
   return age;
 }
 
+// Dupliqué de est_mineur (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function estMineur(dateNaissance: string): boolean {
   return ageFromDateNaissance(dateNaissance) < 18;
 }
@@ -95,6 +101,7 @@ export function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
+// Dupliqué de current_annee_scolaire (src-tauri/src/domain/personne.rs) : la logique Rust fait foi.
 export function getCurrentAnneeScolaire(): string {
   const y = getCurrentYear();
   const m = new Date().getMonth();
@@ -111,6 +118,7 @@ export function dateEstValide(dateIso: string): boolean {
   return !Number.isNaN(d.getTime());
 }
 
+// Dupliqué de valider_date_naissance (src-tauri/src/domain/personne.rs) : la logique Rust fait foi (borne 1920, pas de date future).
 export function dateNaissanceEstValide(dateIso: string): { valide: boolean; erreur?: string } {
   if (!dateIso) return { valide: false, erreur: "Date requise" };
   const d = new Date(dateIso);
@@ -126,6 +134,7 @@ export interface Activite {
   nom: string;
   description: string | null;
   capacite_max: number | null;
+  version: number;
 }
 
 export interface CreateActivite {
@@ -140,6 +149,7 @@ export interface UpdateActivite {
   nom: string;
   description: string | null;
   capacite_max: number | null;
+  version: number;
 }
 
 export interface CreateTarifActivite {
@@ -180,6 +190,7 @@ export interface CreneauActivite {
   heure_debut: string;
   heure_fin: string;
   annee_scolaire: string;
+  version: number;
 }
 
 export interface CreateCreneau {
@@ -231,6 +242,21 @@ export interface ImpactCreneau {
   nouveau_debut: string | null;
   nouveau_fin: string | null;
   raison: string | null;
+}
+
+export type ModeConnexion = "mono" | "multi";
+
+export interface ConfigAffichee {
+  configuree: boolean;
+  mode: ModeConnexion | null;
+  url: string | null;
+  utilisateur: string | null;
+  a_une_cle: boolean;
+}
+
+export interface ResultatSauvegarde {
+  config: ConfigAffichee;
+  redemarrage_requis: boolean;
 }
 
 const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;

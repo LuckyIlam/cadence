@@ -1,12 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Adhesion {
     pub id: i64,
     pub personne_id: i64,
     pub annee_scolaire: String,
     pub reglee: bool,
     pub note_paiement: Option<String>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -21,4 +22,5 @@ pub struct CreateAdhesion {
 pub struct UpdateAdhesion {
     pub reglee: bool,
     pub note_paiement: Option<String>,
+    pub version: i64,
 }

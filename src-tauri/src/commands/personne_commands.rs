@@ -11,20 +11,24 @@ use crate::services::PersonneService;
 #[tauri::command]
 pub async fn creer_personne(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreatePersonne,
 ) -> Result<Personne, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = PersonneService::new(&state.personne_repo, &state.adhesion_repo);
-    service.creer(input).await
+    service.creer(&utilisateur, input).await
 }
 
 #[tauri::command]
 pub async fn modifier_personne(
     state: State<'_, AppState>,
     id: i64,
+    utilisateur: String,
     input: UpdatePersonne,
 ) -> Result<Personne, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     let service = PersonneService::new(&state.personne_repo, &state.adhesion_repo);
-    service.modifier(id, input).await
+    service.modifier(&utilisateur, id, input).await
 }
 
 #[tauri::command]

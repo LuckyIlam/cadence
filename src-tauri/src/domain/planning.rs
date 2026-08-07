@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::activite::Role;
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreneauActivite {
     pub id: i64,
     pub activite_id: i64,
@@ -11,6 +11,7 @@ pub struct CreneauActivite {
     pub heure_debut: String,
     pub heure_fin: String,
     pub annee_scolaire: String,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,7 +23,7 @@ pub struct CreateCreneau {
     pub annee_scolaire: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemaineBanalisee {
     pub id: i64,
     pub activite_id: i64,
@@ -56,7 +57,7 @@ pub struct Collision {
 
 /// Créneau d'activité sortant (totalement ou partiellement) de la plage horaire d'ouverture,
 /// avec le nom de l'activité et le nombre d'inscrits pour décider du traitement.
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreneauHorsPlage {
     pub creneau_id: i64,
     pub activite_id: i64,
@@ -70,7 +71,7 @@ pub struct CreneauHorsPlage {
 
 /// Inscription d'une personne à une activité pour une année scolaire donnée,
 /// avec le nom de l'activité (jointure `activites`) pour le contrôle adhérent.
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Inscription {
     pub activite_id: i64,
     pub personne_id: i64,
@@ -122,6 +123,18 @@ pub fn valider_creneau(input: &CreateCreneau) -> Result<(), String> {
         ));
     }
     Ok(())
+}
+
+/// Formate la plage horaire d'un créneau : « jour 2 (Mardi), 14:00–16:00 ».
+/// Partie commune des messages de conflit d'horaire (activités et créneaux).
+pub fn format_conflit_plage(jour_semaine: i64, heure_debut: &str, heure_fin: &str) -> String {
+    format!(
+        "jour {} ({}), {}–{}",
+        jour_semaine,
+        jour_semaine_texte(jour_semaine),
+        heure_debut,
+        heure_fin
+    )
 }
 
 pub fn jour_semaine_texte(jour: i64) -> &'static str {
@@ -262,6 +275,18 @@ mod tests {
         assert_eq!(jour_semaine_texte(0), "Inconnu");
         assert_eq!(jour_semaine_texte(8), "Inconnu");
         assert_eq!(jour_semaine_texte(-1), "Inconnu");
+    }
+
+    #[test]
+    fn test_format_conflit_plage() {
+        assert_eq!(
+            format_conflit_plage(2, "14:00", "16:00"),
+            "jour 2 (Mardi), 14:00–16:00"
+        );
+        assert_eq!(
+            format_conflit_plage(7, "08:00", "20:00"),
+            "jour 7 (Dimanche), 08:00–20:00"
+        );
     }
 
     #[test]

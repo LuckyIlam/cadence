@@ -1,0 +1,967 @@
+{
+  ".opencode/package.json": {
+    "mtime": 1782803607.8526723,
+    "ast_hash": "8fa62426495140189acc97c5ff0bc457",
+    "semantic_hash": "8fa62426495140189acc97c5ff0bc457"
+  },
+  "biome.json": {
+    "mtime": 1785936920.6949747,
+    "ast_hash": "e4e68efca0f049182e3c5ab43370e148",
+    "semantic_hash": "e4e68efca0f049182e3c5ab43370e148"
+  },
+  "package.json": {
+    "mtime": 1786031994.1256552,
+    "ast_hash": "62274c85fb7136523483d8646a47ea73",
+    "semantic_hash": ""
+  },
+  "postcss.config.js": {
+    "mtime": 1785936921.349366,
+    "ast_hash": "f76ebbe853096bd5c029b754dad8eab8",
+    "semantic_hash": "f76ebbe853096bd5c029b754dad8eab8"
+  },
+  "src-tauri/build.rs": {
+    "mtime": 1785936921.3543842,
+    "ast_hash": "1be34a5c61c2c35365de3dab14298f0b",
+    "semantic_hash": "1be34a5c61c2c35365de3dab14298f0b"
+  },
+  "src-tauri/capabilities/default.json": {
+    "mtime": 1785937639.541176,
+    "ast_hash": "f6b90be0bb18a9cb35da84c273eba178",
+    "semantic_hash": ""
+  },
+  "src-tauri/gen/schemas/acl-manifests.json": {
+    "mtime": 1783714381.2692652,
+    "ast_hash": "69c4a0c70be2f0653b35d8c1afe233dc",
+    "semantic_hash": "69c4a0c70be2f0653b35d8c1afe233dc"
+  },
+  "src-tauri/gen/schemas/capabilities.json": {
+    "mtime": 1783282772.2863657,
+    "ast_hash": "dddc0dcff02d46bfb13fc177e84ee33f",
+    "semantic_hash": "dddc0dcff02d46bfb13fc177e84ee33f"
+  },
+  "src-tauri/gen/schemas/desktop-schema.json": {
+    "mtime": 1783714381.2787821,
+    "ast_hash": "12a9bd4087a0e4ab28a9aaa4bb880f57",
+    "semantic_hash": "12a9bd4087a0e4ab28a9aaa4bb880f57"
+  },
+  "src-tauri/gen/schemas/windows-schema.json": {
+    "mtime": 1783714381.2787821,
+    "ast_hash": "12a9bd4087a0e4ab28a9aaa4bb880f57",
+    "semantic_hash": "12a9bd4087a0e4ab28a9aaa4bb880f57"
+  },
+  "src-tauri/migrations/20260630000001_create_personnes_physiques.sql": {
+    "mtime": 1785936921.4048297,
+    "ast_hash": "d6decdfddc7a838a2a614f404ea5491d",
+    "semantic_hash": "d6decdfddc7a838a2a614f404ea5491d"
+  },
+  "src-tauri/migrations/20260630000002_create_adhesions.sql": {
+    "mtime": 1785936921.4058292,
+    "ast_hash": "03ed1c562e73e548fdbe95ad72e4f5a4",
+    "semantic_hash": "03ed1c562e73e548fdbe95ad72e4f5a4"
+  },
+  "src-tauri/migrations/20260703000001_create_activites.sql": {
+    "mtime": 1785936921.4068305,
+    "ast_hash": "de492917eb7b9bbc4cd50a7691ea102f",
+    "semantic_hash": "de492917eb7b9bbc4cd50a7691ea102f"
+  },
+  "src-tauri/migrations/20260703000002_create_tarifs_activite.sql": {
+    "mtime": 1785936921.4068305,
+    "ast_hash": "eb59305012b9619446ed98baf7ea69f1",
+    "semantic_hash": "eb59305012b9619446ed98baf7ea69f1"
+  },
+  "src-tauri/migrations/20260703000003_create_activite_personnes.sql": {
+    "mtime": 1785936921.4080453,
+    "ast_hash": "d1704ee85e20e3aa77f2a6049ad730cf",
+    "semantic_hash": "d1704ee85e20e3aa77f2a6049ad730cf"
+  },
+  "src-tauri/src/commands/activite_commands.rs": {
+    "mtime": 1786015944.1767159,
+    "ast_hash": "777c1a1f1933140b284784d36969baf2",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/adhesion_commands.rs": {
+    "mtime": 1785937113.4300833,
+    "ast_hash": "58fd4975fdf970170792639acd12d72f",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/mod.rs": {
+    "mtime": 1785936921.4131167,
+    "ast_hash": "c7347a857cd1b178d8f7f88eab06132d",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/personne_commands.rs": {
+    "mtime": 1785937113.4310832,
+    "ast_hash": "c9761b0fc970e0997948e86e58a5c268",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/activite.rs": {
+    "mtime": 1785937113.433084,
+    "ast_hash": "1955fd924f8505c8889078465b5a27ba",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/adhesion.rs": {
+    "mtime": 1785937113.434084,
+    "ast_hash": "20eed2c49c5f91dfe985e60b27e0e662",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/mod.rs": {
+    "mtime": 1785936921.4171221,
+    "ast_hash": "9e355c6cd38ad219a1e75a272d99f243",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/personne.rs": {
+    "mtime": 1785937113.4350834,
+    "ast_hash": "4ec673eb4aaf51e9874d30cc79b6db24",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/db.rs": {
+    "mtime": 1786016034.760232,
+    "ast_hash": "fc38dc0c221846aaa27123f6bbc3696c",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/mod.rs": {
+    "mtime": 1785946294.0919063,
+    "ast_hash": "5c3c520465a7bd6232b03b6702a8d848",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/lib.rs": {
+    "mtime": 1786015722.7976828,
+    "ast_hash": "d69a97e6b4cd0842f9a5663ad8cb2910",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/main.rs": {
+    "mtime": 1785936921.4241216,
+    "ast_hash": "8805642715ab2bf7eaa1a842bafef526",
+    "semantic_hash": "8805642715ab2bf7eaa1a842bafef526"
+  },
+  "src-tauri/src/repositories/activite_repo.rs": {
+    "mtime": 1786015851.363747,
+    "ast_hash": "eb155051365cc18bbfb78da48d37beb7",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/repositories/adhesion_repo.rs": {
+    "mtime": 1785946600.2529612,
+    "ast_hash": "568d5bac2ff3d25743d57b7f8a30e8cf",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/repositories/mod.rs": {
+    "mtime": 1785936921.4271247,
+    "ast_hash": "e490b02a4b30fcada93832d991c00016",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/repositories/personne_repo.rs": {
+    "mtime": 1785946483.5547738,
+    "ast_hash": "81e6a7d9ae84e6acec208da298ba2cb2",
+    "semantic_hash": ""
+  },
+  "src-tauri/tauri.conf.json": {
+    "mtime": 1785936927.7455318,
+    "ast_hash": "41648e5a2cfac4ed74abeb6ca1896bc3",
+    "semantic_hash": "41648e5a2cfac4ed74abeb6ca1896bc3"
+  },
+  "src/App.tsx": {
+    "mtime": 1785937802.2535222,
+    "ast_hash": "903e2cc9db0ece21bdb1a3f0e4d4cffa",
+    "semantic_hash": ""
+  },
+  "src/components/AdhesionForm.tsx": {
+    "mtime": 1785937912.6543891,
+    "ast_hash": "f1f17d934a90f83568956fd73814974d",
+    "semantic_hash": ""
+  },
+  "src/components/Nav.tsx": {
+    "mtime": 1785946885.273921,
+    "ast_hash": "00cb6e92f9a00c7895a71c675691eb11",
+    "semantic_hash": ""
+  },
+  "src/components/PersonneForm.tsx": {
+    "mtime": 1785937912.661908,
+    "ast_hash": "c7bbbec57e00f817349a9823ec44e4b1",
+    "semantic_hash": ""
+  },
+  "src/main.tsx": {
+    "mtime": 1785936927.7527373,
+    "ast_hash": "e329479a8e8e890ac567e3652e1ed723",
+    "semantic_hash": "e329479a8e8e890ac567e3652e1ed723"
+  },
+  "src/pages/Activites.tsx": {
+    "mtime": 1786033861.6221392,
+    "ast_hash": "9baf3285c290f837e97c9f29b834780c",
+    "semantic_hash": ""
+  },
+  "src/pages/DetailActivite.tsx": {
+    "mtime": 1786033832.9604428,
+    "ast_hash": "d4163d82c81e08be2ee6ae8e28fb1030",
+    "semantic_hash": ""
+  },
+  "src/pages/DetailPersonne.tsx": {
+    "mtime": 1785936927.755738,
+    "ast_hash": "f152a29698f8d0926a7e37bb7aca6d23",
+    "semantic_hash": ""
+  },
+  "src/pages/ListePersonnes.tsx": {
+    "mtime": 1786033921.9519684,
+    "ast_hash": "cc0b1b75d3c478612da7f0c1bd6c8fe8",
+    "semantic_hash": ""
+  },
+  "src/types.ts": {
+    "mtime": 1785937749.0316,
+    "ast_hash": "fe5ef44931fafd6a74d95bc354f223c2",
+    "semantic_hash": ""
+  },
+  "src/vite-env.d.ts": {
+    "mtime": 1785936927.7618544,
+    "ast_hash": "0352474ba2918efe13895edbc3780d94",
+    "semantic_hash": "0352474ba2918efe13895edbc3780d94"
+  },
+  "tsconfig.json": {
+    "mtime": 1785936927.7628543,
+    "ast_hash": "fa70703e256662875962ea2c5f55bf94",
+    "semantic_hash": "fa70703e256662875962ea2c5f55bf94"
+  },
+  "tsconfig.node.json": {
+    "mtime": 1785936927.763855,
+    "ast_hash": "a65e6336b99c4e921b35c12ed7b1c1ca",
+    "semantic_hash": "a65e6336b99c4e921b35c12ed7b1c1ca"
+  },
+  "vite.config.ts": {
+    "mtime": 1785936927.764854,
+    "ast_hash": "2ac2f31ac5a7dc4c872225c2cae8372f",
+    "semantic_hash": "2ac2f31ac5a7dc4c872225c2cae8372f"
+  },
+  ".github/dependabot.yml": {
+    "mtime": 1785936920.674029,
+    "ast_hash": "02df9a902f5739a66865f044a582f692",
+    "semantic_hash": "02df9a902f5739a66865f044a582f692"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1785936920.675036,
+    "ast_hash": "a8b0a9e1829b6cd004aef8564f2b6e15",
+    "semantic_hash": ""
+  },
+  ".github/workflows/release.yml": {
+    "mtime": 1785936920.676035,
+    "ast_hash": "2d509d1b9cd77c6a69ed973c87a4780e",
+    "semantic_hash": ""
+  },
+  ".opencode/commands/opsx-apply.md": {
+    "mtime": 1785936920.6780431,
+    "ast_hash": "493200fa13ace24ec1fa879742d9ef8d",
+    "semantic_hash": "493200fa13ace24ec1fa879742d9ef8d"
+  },
+  ".opencode/commands/opsx-archive.md": {
+    "mtime": 1785936920.67904,
+    "ast_hash": "7535fccc1ac0783c470df9d8e50aa6f7",
+    "semantic_hash": "7535fccc1ac0783c470df9d8e50aa6f7"
+  },
+  ".opencode/commands/opsx-explore.md": {
+    "mtime": 1785936920.6800401,
+    "ast_hash": "b4cb9e0226fa2b7f3c07f831f7b0b5fc",
+    "semantic_hash": "b4cb9e0226fa2b7f3c07f831f7b0b5fc"
+  },
+  ".opencode/commands/opsx-propose.md": {
+    "mtime": 1785936920.68104,
+    "ast_hash": "2316882bdc5014e15badc7f8faffa653",
+    "semantic_hash": "2316882bdc5014e15badc7f8faffa653"
+  },
+  ".opencode/commands/opsx-sync.md": {
+    "mtime": 1785936920.6820405,
+    "ast_hash": "b39db5de676f4bf2d0b8f5dd1d07721d",
+    "semantic_hash": "b39db5de676f4bf2d0b8f5dd1d07721d"
+  },
+  ".opencode/skills/openspec-apply-change/SKILL.md": {
+    "mtime": 1785936920.6870403,
+    "ast_hash": "e26c878bdf3d4705a0e6b0fe3b53ba76",
+    "semantic_hash": "e26c878bdf3d4705a0e6b0fe3b53ba76"
+  },
+  ".opencode/skills/openspec-archive-change/SKILL.md": {
+    "mtime": 1785936920.6884649,
+    "ast_hash": "2a1969d2325505cc4e2b4949e788f530",
+    "semantic_hash": "2a1969d2325505cc4e2b4949e788f530"
+  },
+  ".opencode/skills/openspec-explore/SKILL.md": {
+    "mtime": 1785936920.6894653,
+    "ast_hash": "97b2e1bc68e647d3788cd169feb51ff5",
+    "semantic_hash": "97b2e1bc68e647d3788cd169feb51ff5"
+  },
+  ".opencode/skills/openspec-propose/SKILL.md": {
+    "mtime": 1785936920.6904647,
+    "ast_hash": "80fbdb774c2e1efc0c10ad299046aee9",
+    "semantic_hash": "80fbdb774c2e1efc0c10ad299046aee9"
+  },
+  ".opencode/skills/openspec-sync-specs/SKILL.md": {
+    "mtime": 1785936920.6904647,
+    "ast_hash": "ca0a72a09ab4270d6868acc01dc9e6c9",
+    "semantic_hash": "ca0a72a09ab4270d6868acc01dc9e6c9"
+  },
+  "AGENTS.md": {
+    "mtime": 1785936920.6939757,
+    "ast_hash": "bb5d6a33db518127e6ae6d2c05753a0c",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1785936920.6939757,
+    "ast_hash": "b3b03064a0b0f16a2eb8e655363ea181",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/README.md": {
+    "mtime": 1785938715.2298188,
+    "ast_hash": "a7ed5f1223c995ffc7e15c362f64c328",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/activites.md": {
+    "mtime": 1785936920.6969757,
+    "ast_hash": "383559e3727a8c442b40fc8a02b9e3ad",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/adhesions.md": {
+    "mtime": 1785936920.6979752,
+    "ast_hash": "f3b9fdda573ce3dfadfacec3dc693cf0",
+    "semantic_hash": "f3b9fdda573ce3dfadfacec3dc693cf0"
+  },
+  "docs/fonctionnel/personnes.md": {
+    "mtime": 1785936920.6989746,
+    "ast_hash": "babe4acd0076fd6ca61390e43a1f1bfd",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1785936920.887397,
+    "ast_hash": "9b9119cf0341dc2c9cf9b94a434ed0ff",
+    "semantic_hash": "9b9119cf0341dc2c9cf9b94a434ed0ff"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/.openspec.yaml": {
+    "mtime": 1785936921.3243463,
+    "ast_hash": "3a2e665cfb0f43d1733f16a967480b31",
+    "semantic_hash": "3a2e665cfb0f43d1733f16a967480b31"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/design.md": {
+    "mtime": 1785936921.3253458,
+    "ast_hash": "8f2371c0591b77c5f981cbca43fb4b0c",
+    "semantic_hash": "8f2371c0591b77c5f981cbca43fb4b0c"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/proposal.md": {
+    "mtime": 1785936921.3263454,
+    "ast_hash": "07ccf8f382ee038a1910f8a2de21344a",
+    "semantic_hash": "07ccf8f382ee038a1910f8a2de21344a"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/specs/adhesions/spec.md": {
+    "mtime": 1785936921.3268504,
+    "ast_hash": "2dc826d0b8b6a75c509e331537e283a5",
+    "semantic_hash": "2dc826d0b8b6a75c509e331537e283a5"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/specs/personnes/spec.md": {
+    "mtime": 1785936921.3278563,
+    "ast_hash": "c469aa26b290b56d219211b439722145",
+    "semantic_hash": "c469aa26b290b56d219211b439722145"
+  },
+  "openspec/changes/archive/2026-06-30-v1-personnes-adhesions/tasks.md": {
+    "mtime": 1785936921.3288555,
+    "ast_hash": "4bca71bad6056962783026f7d98b3cb5",
+    "semantic_hash": "4bca71bad6056962783026f7d98b3cb5"
+  },
+  "openspec/config.yaml": {
+    "mtime": 1785936921.3443656,
+    "ast_hash": "9e3e7672b387a282583011181ab35f9a",
+    "semantic_hash": "9e3e7672b387a282583011181ab35f9a"
+  },
+  "openspec/specs/activites/spec.md": {
+    "mtime": 1785936921.3443656,
+    "ast_hash": "4e7f212d16e306fd041cd7ffc533dedf",
+    "semantic_hash": ""
+  },
+  "openspec/specs/adhesions/spec.md": {
+    "mtime": 1785936921.3453667,
+    "ast_hash": "f85e86e97570f88d0786cd4afbe75ed3",
+    "semantic_hash": "f85e86e97570f88d0786cd4afbe75ed3"
+  },
+  "openspec/specs/personnes/spec.md": {
+    "mtime": 1785936921.346366,
+    "ast_hash": "4475e0c037617e902a0e8c5724885bef",
+    "semantic_hash": ""
+  },
+  "src-tauri/icons/128x128.png": {
+    "mtime": 1785936921.3606038,
+    "ast_hash": "9816d5178828f11a964a1acb1b9f3a99",
+    "semantic_hash": "9816d5178828f11a964a1acb1b9f3a99"
+  },
+  "src-tauri/icons/128x128@2x.png": {
+    "mtime": 1785936921.3606038,
+    "ast_hash": "3c6baf7c7bbea2081afa04470a25f58a",
+    "semantic_hash": "3c6baf7c7bbea2081afa04470a25f58a"
+  },
+  "src-tauri/icons/32x32.png": {
+    "mtime": 1785936921.3616102,
+    "ast_hash": "001919394a7d3d8d5177309977541df9",
+    "semantic_hash": "001919394a7d3d8d5177309977541df9"
+  },
+  "src-tauri/icons/64x64.png": {
+    "mtime": 1785936921.3626118,
+    "ast_hash": "f0fc534673fff6540e747e9d4e11cdd4",
+    "semantic_hash": "f0fc534673fff6540e747e9d4e11cdd4"
+  },
+  "src-tauri/icons/Square107x107Logo.png": {
+    "mtime": 1785936921.3636098,
+    "ast_hash": "ddcfbf1fe2036279bb3c413dffe9dd6f",
+    "semantic_hash": "ddcfbf1fe2036279bb3c413dffe9dd6f"
+  },
+  "src-tauri/icons/Square142x142Logo.png": {
+    "mtime": 1785936921.3636098,
+    "ast_hash": "46306cc56268f83db4574715fc17b3e3",
+    "semantic_hash": "46306cc56268f83db4574715fc17b3e3"
+  },
+  "src-tauri/icons/Square150x150Logo.png": {
+    "mtime": 1785936921.3646111,
+    "ast_hash": "4b5524b6aeccacdfd5225b75c80946ed",
+    "semantic_hash": "4b5524b6aeccacdfd5225b75c80946ed"
+  },
+  "src-tauri/icons/Square284x284Logo.png": {
+    "mtime": 1785936921.36561,
+    "ast_hash": "5a6da17945fa44609ca6bd119645be7b",
+    "semantic_hash": "5a6da17945fa44609ca6bd119645be7b"
+  },
+  "src-tauri/icons/Square30x30Logo.png": {
+    "mtime": 1785936921.36561,
+    "ast_hash": "6e403d1052d02c046fc21c857b2293ef",
+    "semantic_hash": "6e403d1052d02c046fc21c857b2293ef"
+  },
+  "src-tauri/icons/Square310x310Logo.png": {
+    "mtime": 1785936921.366611,
+    "ast_hash": "c081b0e3bf72e98934602b8a52be16e8",
+    "semantic_hash": "c081b0e3bf72e98934602b8a52be16e8"
+  },
+  "src-tauri/icons/Square44x44Logo.png": {
+    "mtime": 1785936921.3676107,
+    "ast_hash": "a92ea5f536c16a150a699d6a25b4f1f7",
+    "semantic_hash": "a92ea5f536c16a150a699d6a25b4f1f7"
+  },
+  "src-tauri/icons/Square71x71Logo.png": {
+    "mtime": 1785936921.3686106,
+    "ast_hash": "4b912da57ef62315cd87a936d67a4646",
+    "semantic_hash": "4b912da57ef62315cd87a936d67a4646"
+  },
+  "src-tauri/icons/Square89x89Logo.png": {
+    "mtime": 1785936921.3686106,
+    "ast_hash": "6b80478f367d7d7cfdef2314a03d525f",
+    "semantic_hash": "6b80478f367d7d7cfdef2314a03d525f"
+  },
+  "src-tauri/icons/StoreLogo.png": {
+    "mtime": 1785936921.36961,
+    "ast_hash": "35f7c578c2aa7a26b9917379c551cbf1",
+    "semantic_hash": "35f7c578c2aa7a26b9917379c551cbf1"
+  },
+  "src-tauri/icons/android/mipmap-hdpi/ic_launcher.png": {
+    "mtime": 1785936921.3716102,
+    "ast_hash": "a18ffbcb542a4ae7d01ddee5ccdad95c",
+    "semantic_hash": "a18ffbcb542a4ae7d01ddee5ccdad95c"
+  },
+  "src-tauri/icons/android/mipmap-hdpi/ic_launcher_foreground.png": {
+    "mtime": 1785936921.3726099,
+    "ast_hash": "892d8256629ef79a3d05ad5e61bd7624",
+    "semantic_hash": "892d8256629ef79a3d05ad5e61bd7624"
+  },
+  "src-tauri/icons/android/mipmap-hdpi/ic_launcher_round.png": {
+    "mtime": 1785936921.37361,
+    "ast_hash": "b8d4f0d4dbdfcd4d3ed32cae3f11a3fe",
+    "semantic_hash": "b8d4f0d4dbdfcd4d3ed32cae3f11a3fe"
+  },
+  "src-tauri/icons/android/mipmap-mdpi/ic_launcher.png": {
+    "mtime": 1785936921.37361,
+    "ast_hash": "76baefed2ee1fa73fe506d923624906c",
+    "semantic_hash": "76baefed2ee1fa73fe506d923624906c"
+  },
+  "src-tauri/icons/android/mipmap-mdpi/ic_launcher_foreground.png": {
+    "mtime": 1785936921.3746097,
+    "ast_hash": "1ddf4b0db1b68b129583fadc18a772d1",
+    "semantic_hash": "1ddf4b0db1b68b129583fadc18a772d1"
+  },
+  "src-tauri/icons/android/mipmap-mdpi/ic_launcher_round.png": {
+    "mtime": 1785936921.3756123,
+    "ast_hash": "f76541aa34c317bc3ec11e0b95aaa2a4",
+    "semantic_hash": "f76541aa34c317bc3ec11e0b95aaa2a4"
+  },
+  "src-tauri/icons/android/mipmap-xhdpi/ic_launcher.png": {
+    "mtime": 1785936921.3756123,
+    "ast_hash": "e1f95895682b3bc636158b2191d4de0f",
+    "semantic_hash": "e1f95895682b3bc636158b2191d4de0f"
+  },
+  "src-tauri/icons/android/mipmap-xhdpi/ic_launcher_foreground.png": {
+    "mtime": 1785936921.3771658,
+    "ast_hash": "d65ed2d4ea87d2e3582a09241142ac1c",
+    "semantic_hash": "d65ed2d4ea87d2e3582a09241142ac1c"
+  },
+  "src-tauri/icons/android/mipmap-xhdpi/ic_launcher_round.png": {
+    "mtime": 1785936921.378173,
+    "ast_hash": "8f5734f66bd414f7510f3f7d6e24f93e",
+    "semantic_hash": "8f5734f66bd414f7510f3f7d6e24f93e"
+  },
+  "src-tauri/icons/android/mipmap-xxhdpi/ic_launcher.png": {
+    "mtime": 1785936921.3791785,
+    "ast_hash": "72b473c3b6757d20fe5bccad630d4462",
+    "semantic_hash": "72b473c3b6757d20fe5bccad630d4462"
+  },
+  "src-tauri/icons/android/mipmap-xxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1785936921.3801816,
+    "ast_hash": "26a361133825cb04ba42e50cc07a07ac",
+    "semantic_hash": "26a361133825cb04ba42e50cc07a07ac"
+  },
+  "src-tauri/icons/android/mipmap-xxhdpi/ic_launcher_round.png": {
+    "mtime": 1785936921.3801816,
+    "ast_hash": "1b91240c7fadc3c57fa74f4a612ec31e",
+    "semantic_hash": "1b91240c7fadc3c57fa74f4a612ec31e"
+  },
+  "src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher.png": {
+    "mtime": 1785936921.3811777,
+    "ast_hash": "f2f528ad4cf365a10e3d4229bfb59965",
+    "semantic_hash": "f2f528ad4cf365a10e3d4229bfb59965"
+  },
+  "src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1785936921.3821788,
+    "ast_hash": "9e43ac4939dd5ccc93b738da55767335",
+    "semantic_hash": "9e43ac4939dd5ccc93b738da55767335"
+  },
+  "src-tauri/icons/android/mipmap-xxxhdpi/ic_launcher_round.png": {
+    "mtime": 1785936921.3831797,
+    "ast_hash": "46b31b25c682bf01bc7442874131638f",
+    "semantic_hash": "46b31b25c682bf01bc7442874131638f"
+  },
+  "src-tauri/icons/conductor.svg": {
+    "mtime": 1785936921.3851793,
+    "ast_hash": "a3579c079a82d0ecdd7976128dfadda4",
+    "semantic_hash": "a3579c079a82d0ecdd7976128dfadda4"
+  },
+  "src-tauri/icons/icon.png": {
+    "mtime": 1785936921.3891783,
+    "ast_hash": "fc13d9ecdccf815da2838e08a29d36f2",
+    "semantic_hash": "fc13d9ecdccf815da2838e08a29d36f2"
+  },
+  "src-tauri/icons/ios/AppIcon-20x20@1x.png": {
+    "mtime": 1785936921.3901784,
+    "ast_hash": "20a24e66b0ae66baa94ca4470b1e4124",
+    "semantic_hash": "20a24e66b0ae66baa94ca4470b1e4124"
+  },
+  "src-tauri/icons/ios/AppIcon-20x20@2x-1.png": {
+    "mtime": 1785936921.3911803,
+    "ast_hash": "d865298e3e0651aa257d822cd4d8e038",
+    "semantic_hash": "d865298e3e0651aa257d822cd4d8e038"
+  },
+  "src-tauri/icons/ios/AppIcon-20x20@2x.png": {
+    "mtime": 1785936921.3921797,
+    "ast_hash": "d865298e3e0651aa257d822cd4d8e038",
+    "semantic_hash": "d865298e3e0651aa257d822cd4d8e038"
+  },
+  "src-tauri/icons/ios/AppIcon-20x20@3x.png": {
+    "mtime": 1785936921.3921797,
+    "ast_hash": "d2ae88e0385b792264dbbd2763fb3736",
+    "semantic_hash": "d2ae88e0385b792264dbbd2763fb3736"
+  },
+  "src-tauri/icons/ios/AppIcon-29x29@1x.png": {
+    "mtime": 1785936921.3921797,
+    "ast_hash": "62978a4264486914d895cde859ee9f45",
+    "semantic_hash": "62978a4264486914d895cde859ee9f45"
+  },
+  "src-tauri/icons/ios/AppIcon-29x29@2x-1.png": {
+    "mtime": 1785936921.393685,
+    "ast_hash": "681eeda7816b1c4b0eba0ec9db4a70b5",
+    "semantic_hash": "681eeda7816b1c4b0eba0ec9db4a70b5"
+  },
+  "src-tauri/icons/ios/AppIcon-29x29@2x.png": {
+    "mtime": 1785936921.393685,
+    "ast_hash": "681eeda7816b1c4b0eba0ec9db4a70b5",
+    "semantic_hash": "681eeda7816b1c4b0eba0ec9db4a70b5"
+  },
+  "src-tauri/icons/ios/AppIcon-29x29@3x.png": {
+    "mtime": 1785936921.3953109,
+    "ast_hash": "7ab9824ab6991892f545d2493c32c82f",
+    "semantic_hash": "7ab9824ab6991892f545d2493c32c82f"
+  },
+  "src-tauri/icons/ios/AppIcon-40x40@1x.png": {
+    "mtime": 1785936921.396317,
+    "ast_hash": "d865298e3e0651aa257d822cd4d8e038",
+    "semantic_hash": "d865298e3e0651aa257d822cd4d8e038"
+  },
+  "src-tauri/icons/ios/AppIcon-40x40@2x-1.png": {
+    "mtime": 1785936921.3973174,
+    "ast_hash": "590c629629ec3954737a54f9ef929c49",
+    "semantic_hash": "590c629629ec3954737a54f9ef929c49"
+  },
+  "src-tauri/icons/ios/AppIcon-40x40@2x.png": {
+    "mtime": 1785936921.3973174,
+    "ast_hash": "590c629629ec3954737a54f9ef929c49",
+    "semantic_hash": "590c629629ec3954737a54f9ef929c49"
+  },
+  "src-tauri/icons/ios/AppIcon-40x40@3x.png": {
+    "mtime": 1785936921.3983176,
+    "ast_hash": "f08109821ff25d7dba6c9c9dc9727eed",
+    "semantic_hash": "f08109821ff25d7dba6c9c9dc9727eed"
+  },
+  "src-tauri/icons/ios/AppIcon-512@2x.png": {
+    "mtime": 1785936921.400317,
+    "ast_hash": "45fde548fd31c5f064e4cf5f62018d70",
+    "semantic_hash": "45fde548fd31c5f064e4cf5f62018d70"
+  },
+  "src-tauri/icons/ios/AppIcon-60x60@2x.png": {
+    "mtime": 1785936921.400317,
+    "ast_hash": "f08109821ff25d7dba6c9c9dc9727eed",
+    "semantic_hash": "f08109821ff25d7dba6c9c9dc9727eed"
+  },
+  "src-tauri/icons/ios/AppIcon-60x60@3x.png": {
+    "mtime": 1785936921.4013171,
+    "ast_hash": "8790f178185b5c16074a02ca30104485",
+    "semantic_hash": "8790f178185b5c16074a02ca30104485"
+  },
+  "src-tauri/icons/ios/AppIcon-76x76@1x.png": {
+    "mtime": 1785936921.4013171,
+    "ast_hash": "691a0ae8e19ed88c018a413ccf563972",
+    "semantic_hash": "691a0ae8e19ed88c018a413ccf563972"
+  },
+  "src-tauri/icons/ios/AppIcon-76x76@2x.png": {
+    "mtime": 1785936921.4028242,
+    "ast_hash": "15d9502179b72370b54e1c92df5bed63",
+    "semantic_hash": "15d9502179b72370b54e1c92df5bed63"
+  },
+  "src-tauri/icons/ios/AppIcon-83.5x83.5@2x.png": {
+    "mtime": 1785936921.40383,
+    "ast_hash": "1764b99fef57ccdc06a578200533a3cb",
+    "semantic_hash": "1764b99fef57ccdc06a578200533a3cb"
+  },
+  ".opencode/opencode.json": {
+    "mtime": 1785936920.6820405,
+    "ast_hash": "19a51febeea85351e9fcc679b3df35f4",
+    "semantic_hash": ""
+  },
+  ".opencode/plugins/graphify.js": {
+    "mtime": 1785936920.6830394,
+    "ast_hash": "b33d000860642c6f4907a877e0387a21",
+    "semantic_hash": ""
+  },
+  "src-tauri/migrations/20260710000001_create_creneaux_activite.sql": {
+    "mtime": 1785936921.4080453,
+    "ast_hash": "951b93a33c1705df5e9e02596c425036",
+    "semantic_hash": ""
+  },
+  "src-tauri/migrations/20260710000002_create_semaines_banalisees.sql": {
+    "mtime": 1785936921.4090466,
+    "ast_hash": "b03058a23776533d2245d8007f3ad611",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/planning_commands.rs": {
+    "mtime": 1786015696.0810308,
+    "ast_hash": "600cfe6c9439f1c087014532c9eca48d",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/planning.rs": {
+    "mtime": 1786015131.694676,
+    "ast_hash": "ac4675b2143865be387bbd138db0a6fa",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/error.rs": {
+    "mtime": 1785936921.4201229,
+    "ast_hash": "b8918b2f7d5502fc66bf8386eba11363",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/repositories/planning_repo.rs": {
+    "mtime": 1786015944.2490487,
+    "ast_hash": "29117c8a65850a38b549265ea7343a1c",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/services/activite_service.rs": {
+    "mtime": 1786015944.2545524,
+    "ast_hash": "4c6dc367f846420f4d0420e71772a90f",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/services/mod.rs": {
+    "mtime": 1785936921.430644,
+    "ast_hash": "2a854ed5b5c55fabd6737d37ececf755",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/services/personne_service.rs": {
+    "mtime": 1785937113.4466932,
+    "ast_hash": "c869ea3a606d167c7a9c4b53e2695bc9",
+    "semantic_hash": ""
+  },
+  "src/components/PlanningHebdo.tsx": {
+    "mtime": 1785936927.7497375,
+    "ast_hash": "c27b254dcce4005d0c271c8ed16c7541",
+    "semantic_hash": ""
+  },
+  "src/pages/PlanningPage.tsx": {
+    "mtime": 1786033768.227063,
+    "ast_hash": "f3a965dae71cf4e2402bbde48bc8c563",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/architecte/SKILL.md": {
+    "mtime": 1785936920.6840415,
+    "ast_hash": "75192c77231152d17966ff5e060af743",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/concepteur-technique/SKILL.md": {
+    "mtime": 1785936920.6840415,
+    "ast_hash": "5ebedde74c394f97a975a42be306bbf6",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/developpeur/SKILL.md": {
+    "mtime": 1785936920.68504,
+    "ast_hash": "eaa745a27509d6defe13359502c509ad",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/documentaliste/SKILL.md": {
+    "mtime": 1785936920.68604,
+    "ast_hash": "5129847e35ea881e08fe6d4e144680ee",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/product-manager/SKILL.md": {
+    "mtime": 1785936920.6919696,
+    "ast_hash": "428e3b4cba575975e91ef34e11cfac9c",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/reviseur/SKILL.md": {
+    "mtime": 1785936920.6919696,
+    "ast_hash": "fb8e8005e624ae06473cbbffd6d259aa",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/testeur/SKILL.md": {
+    "mtime": 1785936920.6929772,
+    "ast_hash": "63d574e04440eba7a083c76d1e8ec52e",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/planning.md": {
+    "mtime": 1785936920.6999755,
+    "ast_hash": "2d209c84695023ffaf3b382b2c3b0223",
+    "semantic_hash": ""
+  },
+  "lefthook.yml": {
+    "mtime": 1785936920.887397,
+    "ast_hash": "d84fb52d201c4a49965f3bf594191ae8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-10-v2-activites/design.md": {
+    "mtime": 1785936921.3288555,
+    "ast_hash": "fc594ec87496077a2f1e751eebdb334b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-10-v2-activites/proposal.md": {
+    "mtime": 1785936921.3298564,
+    "ast_hash": "305d41d69978b29fb2d85c6abcb30c2d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-10-v2-activites/specs/activites.md": {
+    "mtime": 1785936921.330858,
+    "ast_hash": "42c23ecb3dce99f2574d7aed91a33fa6",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-10-v2-activites/specs/personnes.md": {
+    "mtime": 1785936921.330858,
+    "ast_hash": "aad9e2b9a8ba20ec4908ae3bcdc5154c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-07-10-v2-activites/tasks.md": {
+    "mtime": 1785936921.3318586,
+    "ast_hash": "bc584c78e200bfca49d94434884863fa",
+    "semantic_hash": ""
+  },
+  "openspec/changes/planning-activites/design.md": {
+    "mtime": 1785936921.3408556,
+    "ast_hash": "f61309ba11b71937c13a3aced8a7d870",
+    "semantic_hash": ""
+  },
+  "openspec/changes/planning-activites/proposal.md": {
+    "mtime": 1785936921.3418572,
+    "ast_hash": "4aad6c0acad0e0a5ef9d4525bae461dc",
+    "semantic_hash": ""
+  },
+  "openspec/changes/planning-activites/specs/planning/spec.md": {
+    "mtime": 1785936921.3428557,
+    "ast_hash": "fb6355a64830b184de2a6d38feabd8b4",
+    "semantic_hash": ""
+  },
+  "openspec/changes/planning-activites/tasks.md": {
+    "mtime": 1785936921.3433604,
+    "ast_hash": "cbfdd9d664a7364b0398bb8540d9fa97",
+    "semantic_hash": ""
+  },
+  "openspec/specs/planning/spec.md": {
+    "mtime": 1785936921.3473673,
+    "ast_hash": "c026f0479591fedd966a455802293384",
+    "semantic_hash": ""
+  },
+  ".opencode/skills/graphify/SKILL.md": {
+    "mtime": 1785936920.68604,
+    "ast_hash": "4f685ce973c0b41b0d0721647779e0f9",
+    "semantic_hash": ""
+  },
+  "src-tauri/migrations/20260802000001_create_parametres.sql": {
+    "mtime": 1785936921.4100468,
+    "ast_hash": "2142eb4ecc69c7a7808f508906441498",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/parametre_commands.rs": {
+    "mtime": 1785937113.4300833,
+    "ast_hash": "6ac22fbba8a526733e9feba03fd4559e",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/domain/parametre.rs": {
+    "mtime": 1785936921.4181223,
+    "ast_hash": "f87b546f5684f39a4e77fc699dda9bc9",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/repositories/parametre_repo.rs": {
+    "mtime": 1785946605.8883977,
+    "ast_hash": "aa4ec3d39e0cb3da98214c979351cfd7",
+    "semantic_hash": ""
+  },
+  "src/pages/ParametresPage.tsx": {
+    "mtime": 1785937749.0306005,
+    "ast_hash": "0973a9f0aa95a31103c24226c351cb34",
+    "semantic_hash": ""
+  },
+  "openspec/changes/plage-horaire-activite/design.md": {
+    "mtime": 1785936921.3378563,
+    "ast_hash": "25d8826f5d6ab6cc81c47c36aa2b36ea",
+    "semantic_hash": ""
+  },
+  "openspec/changes/plage-horaire-activite/proposal.md": {
+    "mtime": 1785936921.3388553,
+    "ast_hash": "30745bf800b86e32d961bf3a26a134a9",
+    "semantic_hash": ""
+  },
+  "openspec/changes/plage-horaire-activite/specs/parametres/spec.md": {
+    "mtime": 1785936921.3388553,
+    "ast_hash": "63fa322294164045a12d0c90ba3dcb2a",
+    "semantic_hash": ""
+  },
+  "openspec/changes/plage-horaire-activite/specs/planning/spec.md": {
+    "mtime": 1785936921.3398561,
+    "ast_hash": "3a908d9ed9a1fb0914b6b3ffa226c3e6",
+    "semantic_hash": ""
+  },
+  "openspec/changes/plage-horaire-activite/tasks.md": {
+    "mtime": 1785936921.3408556,
+    "ast_hash": "a4ee6c43bd9df69a193841231695a41c",
+    "semantic_hash": ""
+  },
+  "openspec/specs/parametres/spec.md": {
+    "mtime": 1785936921.346366,
+    "ast_hash": "997c88335d2406bdaffd51a78bb8b279",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/services/parametre_service.rs": {
+    "mtime": 1786015712.2030826,
+    "ast_hash": "7c7c26fe51454f77552027b2f668b5f1",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/parametres.md": {
+    "mtime": 1785936920.6989746,
+    "ast_hash": "ea5c1ba503387dbb3775a18e1922ba21",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/commands/connexion_commands.rs": {
+    "mtime": 1785938999.4375284,
+    "ast_hash": "85e8e6e3340691512d08372c218f532f",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/config.rs": {
+    "mtime": 1785936921.4211216,
+    "ast_hash": "8a7411c5bd29ad395232800f11316898",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/migrations.rs": {
+    "mtime": 1786015172.1978314,
+    "ast_hash": "b61c5aa57c642cc60cbac0aa2a2954e1",
+    "semantic_hash": ""
+  },
+  "src/errors.ts": {
+    "mtime": 1785936927.750738,
+    "ast_hash": "ca0c85b9e8627910afe8162a50d6d8b1",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/.openspec.yaml": {
+    "mtime": 1785936921.3328557,
+    "ast_hash": "460edf9d0c8a4e62727730dfef55f9c8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/design.md": {
+    "mtime": 1785940923.5191946,
+    "ast_hash": "0c2cf7908eba6feeb5ff21b6b21efa15",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/proposal.md": {
+    "mtime": 1785936921.3348558,
+    "ast_hash": "48d89b51ae8fe74b28f5c9c0d712af84",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/specs/audit-modifications/spec.md": {
+    "mtime": 1785936921.3348558,
+    "ast_hash": "acb8c4b4e8e5b8b65aaeb4097246e4f8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/specs/connexion-distance/spec.md": {
+    "mtime": 1785936921.335856,
+    "ast_hash": "a793f52a0189348b36517517927f4f65",
+    "semantic_hash": ""
+  },
+  "openspec/changes/multi-utilisateurs-turso/tasks.md": {
+    "mtime": 1785940937.1055539,
+    "ast_hash": "c02c7789d8c73a4ade87e0a55866e017",
+    "semantic_hash": ""
+  },
+  "src-tauri/migrations/20260803000001_add_audit.sql": {
+    "mtime": 1785937113.4280841,
+    "ast_hash": "5fbbc494912b48be064ac251bbb06853",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/audit.rs": {
+    "mtime": 1785937113.4360833,
+    "ast_hash": "ef3bdc8191ba976f2dcd35cb6c6b44a3",
+    "semantic_hash": ""
+  },
+  "src/utilisateur.ts": {
+    "mtime": 1785937806.8307295,
+    "ast_hash": "1d45a031ce7a3fe1e82b21836058a40c",
+    "semantic_hash": ""
+  },
+  "src/components/ConnexionConfigForm.tsx": {
+    "mtime": 1785937749.0295956,
+    "ast_hash": "063e657d846d03b090f786451fc78f74",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/e2e_mono.rs": {
+    "mtime": 1785941017.1492705,
+    "ast_hash": "b707509ff55e14b0c3b02eadd3a6b0d7",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/e2e_multi.rs": {
+    "mtime": 1785941017.1532688,
+    "ast_hash": "e7c3871ae72110c2f8fdab820ca2962f",
+    "semantic_hash": ""
+  },
+  "docs/fonctionnel/connexion.md": {
+    "mtime": 1785940124.1897626,
+    "ast_hash": "d1246053bcaa1f1fdc49b303e24d2174",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/e2e_stream.rs": {
+    "mtime": 1785946294.1413655,
+    "ast_hash": "747fd1538b1c56a9f831f04e093b37af",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/infrastructure/hrana_guard.rs": {
+    "mtime": 1785946525.9193456,
+    "ast_hash": "015f77f59e9dd5a3dd801293d6e90a87",
+    "semantic_hash": ""
+  },
+  "multi-utilisateur-review.md": {
+    "mtime": 1785949884.3844886,
+    "ast_hash": "ea304cf98457f68ddd6dfe1f60dc8db5",
+    "semantic_hash": ""
+  },
+  "openspec/changes/db-driver-abstraction/.openspec.yaml": {
+    "mtime": 1785951139.8611567,
+    "ast_hash": "ecd01e767268ca4ee3e87513c0610959",
+    "semantic_hash": ""
+  },
+  "openspec/changes/db-driver-abstraction/design.md": {
+    "mtime": 1785951182.8601103,
+    "ast_hash": "aa37058dd986f2236fdb6b035f914413",
+    "semantic_hash": ""
+  }
+}

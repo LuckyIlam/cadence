@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlanningHebdo from "../components/PlanningHebdo";
+import { erreurMessage } from "../errors";
 import {
   formatDateISO,
   getCurrentAnneeScolaire,
@@ -58,7 +59,7 @@ export default function PlanningPage() {
       });
       setCreneaux(r);
     } catch (e) {
-      setError(e as string);
+      setError(erreurMessage(e));
     } finally {
       setLoading(false);
     }

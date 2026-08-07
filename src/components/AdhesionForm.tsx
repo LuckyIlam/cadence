@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { erreurMessage } from "../errors";
 import { type Adhesion, type CreateAdhesion, getCurrentAnneeScolaire, type UpdateAdhesion } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 interface Props {
   personneId: number;
@@ -38,10 +39,12 @@ export default function AdhesionForm({ personneId, adhesion, onClose, onSaved }:
       if (adhesion) {
         await invoke<Adhesion>("modifier_adhesion", {
           id: adhesion.id,
-          input: { reglee, note_paiement: notePaiement || null } as UpdateAdhesion,
+          utilisateur: await utilisateurCourant(),
+          input: { reglee, note_paiement: notePaiement || null, version: adhesion.version } as UpdateAdhesion,
         });
       } else {
         await invoke<Adhesion>("creer_adhesion", {
+          utilisateur: await utilisateurCourant(),
           input: {
             personne_id: personneId,
             annee_scolaire: anneeScolaire.trim(),

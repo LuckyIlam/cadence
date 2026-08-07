@@ -1,11 +1,18 @@
 mod commands;
 mod domain;
+#[cfg(test)]
+mod e2e_mono;
+#[cfg(test)]
+mod e2e_multi;
+#[cfg(test)]
+mod e2e_stream;
 mod error;
 mod infrastructure;
 mod repositories;
 mod services;
 
-use infrastructure::db::{init_app_state, init_pool};
+use infrastructure::config::ConnexionConfig;
+use infrastructure::db::{init_app_state, init_connection};
 use tauri::Manager;
 
 fn write_crash_log(msg: &str) {
@@ -22,7 +29,10 @@ fn write_crash_log(msg: &str) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    std::env::set_var("RUST_MIN_STACK", "536870912");
+
     let result = tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             let app_dir = app
@@ -32,13 +42,25 @@ pub fn run() {
             std::fs::create_dir_all(&app_dir)
                 .map_err(|e| format!("échec création dossier {} : {e}", app_dir.display()))?;
 
-            let db_path = app_dir.join("cadence.db");
-            let database_url = format!("sqlite:{}?mode=rwc", db_path.to_string_lossy());
+            let config = infrastructure::config::load_config(&app_dir)?.unwrap_or_default();
+            let mut config: ConnexionConfig = config;
+            if config.utilisateur.trim().is_empty() {
+                config.utilisateur = "local".to_string();
+            }
 
-            let pool = tauri::async_runtime::block_on(init_pool(&database_url))
-                .map_err(|e| format!("échec base de données {} : {e}", db_path.display()))?;
+            // Le chemin distant (TLS/hyper) en build debug consomme ~256 MiB de pile
+            // (design.md, décision 5). Le setup s'exécute sur le thread main (pile
+            // par défaut ~1 Mo) : on passe par un thread dédié à grande pile.
+            let conn = std::thread::Builder::new()
+                .name("cadence-db".into())
+                .stack_size(512 * 1024 * 1024)
+                .spawn(move || tauri::async_runtime::block_on(init_connection(&config, &app_dir)))
+                .map_err(|e| format!("échec création du thread base de données : {e}"))?
+                .join()
+                .map_err(|_| "le thread base de données a paniqué".to_string())?
+                .map_err(|e| format!("échec base de données : {e}"))?;
 
-            app.manage(init_app_state(pool));
+            app.manage(init_app_state(conn));
 
             Ok(())
         })
@@ -73,6 +95,9 @@ pub fn run() {
             commands::parametre_commands::obtenir_parametres_planning,
             commands::parametre_commands::apercu_creneaux_hors_plage,
             commands::parametre_commands::modifier_plage_horaire,
+            commands::connexion_commands::obtenir_config,
+            commands::connexion_commands::sauvegarder_config,
+            commands::connexion_commands::tester_connexion,
         ])
         .run(tauri::generate_context!());
 

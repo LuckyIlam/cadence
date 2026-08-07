@@ -12,7 +12,9 @@ import {
   type ParametresPlanning,
   type PersonneActivite,
   type SemaineBanalisee,
+  type UpdateActivite,
 } from "../types";
+import { utilisateurCourant } from "../utilisateur";
 
 export default function DetailActivite() {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +39,7 @@ export default function DetailActivite() {
 
   const [creneaux, setCreneaux] = useState<CreneauActivite[]>([]);
   const [semainesBanalisees, setSemainesBanalisees] = useState<SemaineBanalisee[]>([]);
-  const [nbInscrits, setNbInscrits] = useState(0);
+  const nbInscrits = encadrants.length + participants.length;
   const [showCreneauForm, setShowCreneauForm] = useState(false);
   const [newCreneauJour, setNewCreneauJour] = useState(1);
   const [newCreneauDebut, setNewCreneauDebut] = useState("08:00");
@@ -51,6 +53,8 @@ export default function DetailActivite() {
   const [searchTexte, setSearchTexte] = useState("");
   const [searchResults, setSearchResults] = useState<Array<{ id: number; nom: string; prenom: string }>>([]);
   const [addTarget, setAddTarget] = useState<"encadrant" | "participant">("participant");
+
+  const [erreur, setErreur] = useState<string | null>(null);
 
   const chargerDetail = useCallback(async () => {
     if (!id) return;
@@ -93,14 +97,12 @@ export default function DetailActivite() {
       .catch(console.error);
   }, [id, anneeScolaire]);
 
-  useEffect(() => {
-    setNbInscrits(encadrants.length + participants.length);
-  }, [encadrants, participants]);
-
   const handleSaveTarif = async () => {
     if (!id) return;
+    setErreur(null);
     try {
       await invoke("definir_tarif_activite", {
+        utilisateur: await utilisateurCourant(),
         input: {
           activite_id: Number(id),
           annee_scolaire: anneeScolaire,
@@ -110,12 +112,13 @@ export default function DetailActivite() {
       setEditTarif(false);
       chargerDetail();
     } catch (e) {
-      console.error(e);
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleEditActivite = async (field: string, value: string) => {
     if (!id || !activite) return;
+    setErreur(null);
     try {
       const input: { nom: string; description: string | null; capacite_max: number | null } = {
         nom: activite.nom,
@@ -126,13 +129,17 @@ export default function DetailActivite() {
       if (field === "description") input.description = value || null;
       if (field === "capacite_max") input.capacite_max = value ? Number(value) : null;
 
-      const updated = await invoke<Activite>("modifier_activite", { id: Number(id), input });
+      const updated = await invoke<Activite>("modifier_activite", {
+        id: Number(id),
+        utilisateur: await utilisateurCourant(),
+        input: { ...input, version: activite.version } as UpdateActivite,
+      });
       setActivite(updated);
       setEditNom(false);
       setEditDescription(false);
       setEditCapacite(false);
     } catch (e) {
-      console.error(e);
+      setErreur(erreurMessage(e));
     }
   };
 
@@ -159,8 +166,10 @@ export default function DetailActivite() {
 
   const handleAjouterPersonne = async (personneId: number) => {
     if (!id) return;
+    setErreur(null);
     try {
       await invoke("ajouter_personne_activite", {
+        utilisateur: await utilisateurCourant(),
         input: {
           activite_id: Number(id),
           personne_id: personneId,
@@ -173,12 +182,13 @@ export default function DetailActivite() {
       setSearchResults([]);
       chargerDetail();
     } catch (e) {
-      alert(erreurMessage(e));
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleAjouterCreneau = async () => {
     if (!id) return;
+    setErreur(null);
     try {
       const input: CreateCreneau = {
         activite_id: Number(id),
@@ -187,7 +197,7 @@ export default function DetailActivite() {
         heure_fin: newCreneauFin,
         annee_scolaire: anneeScolaire,
       };
-      await invoke("ajouter_creneau", { input });
+      await invoke("ajouter_creneau", { utilisateur: await utilisateurCourant(), input });
       setShowCreneauForm(false);
       setNewCreneauJour(1);
       setNewCreneauDebut("08:00");
@@ -198,12 +208,13 @@ export default function DetailActivite() {
       });
       setCreneaux(c);
     } catch (e) {
-      alert(e as string);
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleSupprimerCreneau = async (creneauId: number) => {
     if (!id) return;
+    setErreur(null);
     try {
       await invoke("supprimer_creneau", {
         id: creneauId,
@@ -216,12 +227,13 @@ export default function DetailActivite() {
       });
       setCreneaux(c);
     } catch (e) {
-      alert(erreurMessage(e));
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleAjouterSemaine = async () => {
     if (!id) return;
+    setErreur(null);
     try {
       const input: CreateSemaineBanalisee = {
         activite_id: Number(id),
@@ -229,7 +241,7 @@ export default function DetailActivite() {
         motif: newSemaineMotif || null,
         annee_scolaire: anneeScolaire,
       };
-      await invoke("ajouter_semaine_banalisee", { input });
+      await invoke("ajouter_semaine_banalisee", { utilisateur: await utilisateurCourant(), input });
       setShowSemaineForm(false);
       setNewSemaineDate("");
       setNewSemaineMotif("");
@@ -238,12 +250,13 @@ export default function DetailActivite() {
       });
       setSemainesBanalisees(sb);
     } catch (e) {
-      alert(erreurMessage(e));
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleSupprimerSemaine = async (semaineId: number) => {
     if (!id) return;
+    setErreur(null);
     try {
       await invoke("supprimer_semaine_banalisee", { id: semaineId });
       const sb = await invoke<SemaineBanalisee[]>("lister_semaines_banalisees", {
@@ -251,12 +264,13 @@ export default function DetailActivite() {
       });
       setSemainesBanalisees(sb);
     } catch (e) {
-      alert(erreurMessage(e));
+      setErreur(erreurMessage(e));
     }
   };
 
   const handleRetirerPersonne = async (personneId: number) => {
     if (!id) return;
+    setErreur(null);
     try {
       await invoke("retirer_personne_activite", {
         activiteId: Number(id),
@@ -265,7 +279,7 @@ export default function DetailActivite() {
       });
       chargerDetail();
     } catch (e) {
-      console.error(e);
+      setErreur(erreurMessage(e));
     }
   };
 
@@ -278,6 +292,10 @@ export default function DetailActivite() {
       <Link to="/activites" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
         &larr; Retour aux activités
       </Link>
+
+      {erreur && (
+        <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6">{erreur}</div>
+      )}
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between mb-4">

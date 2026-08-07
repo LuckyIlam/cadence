@@ -12,9 +12,15 @@ pub enum AppError {
     Database(String),
 }
 
-impl From<sqlx::Error> for AppError {
-    fn from(e: sqlx::Error) -> Self {
+impl From<libsql::Error> for AppError {
+    fn from(e: libsql::Error) -> Self {
         AppError::Database(e.to_string())
+    }
+}
+
+impl From<serde::de::value::Error> for AppError {
+    fn from(e: serde::de::value::Error) -> Self {
+        AppError::Database(format!("Décodage de ligne SQL : {e}"))
     }
 }
 

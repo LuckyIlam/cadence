@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::adhesion::Adhesion;
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Personne {
     pub id: i64,
     pub nom: String,
@@ -12,6 +12,7 @@ pub struct Personne {
     pub email: Option<String>,
     pub telephone: Option<String>,
     pub responsable_id: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -32,6 +33,7 @@ pub struct UpdatePersonne {
     pub email: Option<String>,
     pub telephone: Option<String>,
     pub responsable_id: Option<i64>,
+    pub version: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

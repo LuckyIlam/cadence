@@ -1,0 +1,11 @@
+[advisories]
+ignore = [
+    # rustls-webpki 0.102: imposé par rustls 0.22 de libsql 0.9.x (hyper-rustls 0.25).
+    # Correctifs publiés sur la ligne >=0.103 (rustls 0.23) : à lever quand libsql
+    # publie une version stable sur rustls 0.23. Voir deny.toml.
+    "RUSTSEC-2026-0049",
+    "RUSTSEC-2026-0098",
+    "RUSTSEC-2026-0099",
+    "RUSTSEC-2026-0104",
+    "RUSTSEC-2025-0134",
+]

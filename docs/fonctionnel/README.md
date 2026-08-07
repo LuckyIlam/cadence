@@ -15,6 +15,7 @@ Cette documentation s'adresse aux **utilisateurs de l'application** (bénévoles
 | [Activités](activites.md) | Gestion des activités de l'association (participants, encadrants, tarifs, créneaux horaires) |
 | [Planning](planning.md) | Gestion des créneaux horaires, semaines banalisées, planning hebdomadaire par personne |
 | [Paramètres](parametres.md) | Configuration globale de la plage horaire d'ouverture des activités |
+| [Connexion et mode de fonctionnement](connexion.md) | Choix entre base locale (mono-utilisateur) et base partagée (multi-utilisateurs), configuration de la connexion |
 
 ## Concepts généraux
 
@@ -22,6 +23,13 @@ Cette documentation s'adresse aux **utilisateurs de l'application** (bénévoles
 - **Responsable légal** : personne majeure liée à un mineur.
 - **Adhésion** : inscription annuelle à l'association, valable une année scolaire (ex. 2025-2026).
 - **Année scolaire** : période de septembre à août, notée sous la forme "YYYY-YYYY".
+
+## Données et vie privée (RGPD)
+
+- En **mode mono-utilisateur**, les données (dont celles des mineurs) restent **sur cet ordinateur**, dans le dossier de données de l'application.
+- En **mode multi-utilisateurs**, les données sont hébergées par **Turso**, qui agit comme **sous-traitant** au sens du RGPD (hébergement dans l'**Union européenne**, région `eu-west-1`). Voir la [Connexion et mode de fonctionnement](connexion.md).
+- Seules les données nécessaires au fonctionnement sont enregistrées (identité, adhésions, inscriptions aux activités). Chaque modification est **traçable** (nom d'utilisateur + date) mais cette trace n'est jamais affichée.
+- La clé d'accès à la base partagée est stockée localement sur votre poste et **jamais transmise à l'écran** après sa saisie.
 
 ## Flux principaux
 

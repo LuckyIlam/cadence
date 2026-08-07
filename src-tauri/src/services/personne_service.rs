@@ -45,18 +45,27 @@ impl<'a, R: PersonneRepository, A: AdhesionRepository> PersonneService<'a, R, A>
         Ok(())
     }
 
-    pub async fn creer(&self, input: CreatePersonne) -> Result<Personne, AppError> {
+    pub async fn creer(
+        &self,
+        utilisateur: &str,
+        input: CreatePersonne,
+    ) -> Result<Personne, AppError> {
         valider_date_naissance(input.date_naissance)?;
         self.valider_responsable_legal(input.date_naissance, input.responsable_id)
             .await?;
-        self.personne_repo.create(input).await
+        self.personne_repo.create(input, utilisateur).await
     }
 
-    pub async fn modifier(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
+    pub async fn modifier(
+        &self,
+        utilisateur: &str,
+        id: i64,
+        input: UpdatePersonne,
+    ) -> Result<Personne, AppError> {
         valider_date_naissance(input.date_naissance)?;
         self.valider_responsable_legal(input.date_naissance, input.responsable_id)
             .await?;
-        self.personne_repo.update(id, input).await
+        self.personne_repo.update(id, input, utilisateur).await
     }
 
     pub async fn obtenir(&self, id: i64) -> Result<Option<Personne>, AppError> {
@@ -125,7 +134,11 @@ mod tests {
 
     #[async_trait]
     impl PersonneRepository for MockPersonneRepository {
-        async fn create(&self, input: CreatePersonne) -> Result<Personne, AppError> {
+        async fn create(
+            &self,
+            input: CreatePersonne,
+            _utilisateur: &str,
+        ) -> Result<Personne, AppError> {
             let p = Personne {
                 id: next_id(),
                 nom: input.nom,
@@ -134,6 +147,7 @@ mod tests {
                 email: input.email,
                 telephone: input.telephone,
                 responsable_id: input.responsable_id,
+                version: 1,
             };
             let id = p.id;
             self.personnes.lock().unwrap().push(p);
@@ -147,7 +161,12 @@ mod tests {
                 .clone())
         }
 
-        async fn update(&self, id: i64, input: UpdatePersonne) -> Result<Personne, AppError> {
+        async fn update(
+            &self,
+            id: i64,
+            input: UpdatePersonne,
+            _utilisateur: &str,
+        ) -> Result<Personne, AppError> {
             let mut personnes = self.personnes.lock().unwrap();
             let p = personnes
                 .iter_mut()
@@ -194,6 +213,7 @@ mod tests {
         async fn create(
             &self,
             _input: crate::domain::adhesion::CreateAdhesion,
+            _utilisateur: &str,
         ) -> Result<crate::domain::adhesion::Adhesion, AppError> {
             unreachable!("not used in personne service tests")
         }
@@ -202,6 +222,7 @@ mod tests {
             &self,
             _id: i64,
             _input: crate::domain::adhesion::UpdateAdhesion,
+            _utilisateur: &str,
         ) -> Result<crate::domain::adhesion::Adhesion, AppError> {
             unreachable!("not used in personne service tests")
         }
@@ -224,14 +245,17 @@ mod tests {
     async fn test_creer_majeur_sans_responsable_cree() {
         let service = make_service();
         let result = service
-            .creer(CreatePersonne {
-                nom: "Dupont".into(),
-                prenom: "Jean".into(),
-                date_naissance: date("1990-01-15"),
-                email: None,
-                telephone: None,
-                responsable_id: None,
-            })
+            .creer(
+                "alice",
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Jean".into(),
+                    date_naissance: date("1990-01-15"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+            )
             .await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap().nom, "Dupont");
@@ -241,14 +265,17 @@ mod tests {
     async fn test_creer_mineur_sans_responsable_retourne_erreur() {
         let service = make_service();
         let result = service
-            .creer(CreatePersonne {
-                nom: "Martin".into(),
-                prenom: "Lucas".into(),
-                date_naissance: date("2010-06-01"),
-                email: None,
-                telephone: None,
-                responsable_id: None,
-            })
+            .creer(
+                "alice",
+                CreatePersonne {
+                    nom: "Martin".into(),
+                    prenom: "Lucas".into(),
+                    date_naissance: date("2010-06-01"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+            )
             .await;
         assert!(result.is_err());
         match result.unwrap_err() {
@@ -262,26 +289,32 @@ mod tests {
         let service = make_service();
         let responsable = service
             .personne_repo
-            .create(CreatePersonne {
-                nom: "Petit".into(),
-                prenom: "Enfant".into(),
-                date_naissance: date("2012-03-10"),
-                email: None,
-                telephone: None,
-                responsable_id: None,
-            })
+            .create(
+                CreatePersonne {
+                    nom: "Petit".into(),
+                    prenom: "Enfant".into(),
+                    date_naissance: date("2012-03-10"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
         let result = service
-            .creer(CreatePersonne {
-                nom: "Martin".into(),
-                prenom: "Lucas".into(),
-                date_naissance: date("2010-06-01"),
-                email: None,
-                telephone: None,
-                responsable_id: Some(responsable.id),
-            })
+            .creer(
+                "alice",
+                CreatePersonne {
+                    nom: "Martin".into(),
+                    prenom: "Lucas".into(),
+                    date_naissance: date("2010-06-01"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: Some(responsable.id),
+                },
+            )
             .await;
         assert!(result.is_err());
         match result.unwrap_err() {
@@ -297,26 +330,32 @@ mod tests {
         let service = make_service();
         let responsable = service
             .personne_repo
-            .create(CreatePersonne {
-                nom: "Dupont".into(),
-                prenom: "Adulte".into(),
-                date_naissance: date("1985-07-20"),
-                email: None,
-                telephone: None,
-                responsable_id: None,
-            })
+            .create(
+                CreatePersonne {
+                    nom: "Dupont".into(),
+                    prenom: "Adulte".into(),
+                    date_naissance: date("1985-07-20"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 
         let result = service
-            .creer(CreatePersonne {
-                nom: "Martin".into(),
-                prenom: "Lucas".into(),
-                date_naissance: date("2010-06-01"),
-                email: None,
-                telephone: None,
-                responsable_id: Some(responsable.id),
-            })
+            .creer(
+                "alice",
+                CreatePersonne {
+                    nom: "Martin".into(),
+                    prenom: "Lucas".into(),
+                    date_naissance: date("2010-06-01"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: Some(responsable.id),
+                },
+            )
             .await;
         assert!(result.is_ok());
     }
@@ -326,14 +365,17 @@ mod tests {
         let service = make_service();
         let p = service
             .personne_repo
-            .create(CreatePersonne {
-                nom: "Durand".into(),
-                prenom: "Sophie".into(),
-                date_naissance: date("1992-11-03"),
-                email: None,
-                telephone: None,
-                responsable_id: None,
-            })
+            .create(
+                CreatePersonne {
+                    nom: "Durand".into(),
+                    prenom: "Sophie".into(),
+                    date_naissance: date("1992-11-03"),
+                    email: None,
+                    telephone: None,
+                    responsable_id: None,
+                },
+                "alice",
+            )
             .await
             .unwrap();
 

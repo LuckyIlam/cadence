@@ -2,8 +2,8 @@ use tauri::State;
 
 use crate::domain::parametre::valider_creneau_dans_plage;
 use crate::domain::planning::{
-    est_lundi, valider_creneau, CreateCreneau, CreateSemaineBanalisee, CreneauActivite,
-    PlanningCreneau, SemaineBanalisee,
+    est_lundi, format_conflit_plage, valider_creneau, CreateCreneau, CreateSemaineBanalisee,
+    CreneauActivite, PlanningCreneau, SemaineBanalisee,
 };
 use crate::error::AppError;
 use crate::infrastructure::db::AppState;
@@ -12,20 +12,31 @@ use crate::repositories::{ActiviteRepository, ParametreRepository, PlanningRepos
 #[tauri::command]
 pub async fn ajouter_creneau(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateCreneau,
 ) -> Result<CreneauActivite, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     valider_creneau(&input)?;
     valider_creneau_dans_plage_global(&state, &input).await?;
 
+    // BEGIN IMMEDIATE : les contrôles (existence activité, conflit) et l'insertion
+    // sont atomiques, pour éviter un conflit non détecté entre deux utilisateurs
+    // en mode multi.
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let _activite = state
         .activite_repo
-        .find_by_id(input.activite_id)
+        .find_by_id_tx(&mut tx, input.activite_id)
         .await?
         .ok_or(AppError::NotFound("Activité introuvable".into()))?;
 
     let conflits = state
         .planning_repo
-        .verifier_conflit_creneaux(
+        .verifier_conflit_creneaux_tx(
+            &mut tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -38,15 +49,18 @@ pub async fn ajouter_creneau(
     if !conflits.is_empty() {
         let c = &conflits[0];
         return Err(AppError::Conflict(format!(
-            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
-            c.jour_semaine,
-            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
-            c.heure_debut,
-            c.heure_fin,
+            "Conflit d'horaire avec un créneau existant : {}.",
+            format_conflit_plage(c.jour_semaine, &c.heure_debut, &c.heure_fin),
         )));
     }
 
-    state.planning_repo.creer_creneau(input).await
+    let creneau = state
+        .planning_repo
+        .creer_creneau_tx(&mut tx, input, &utilisateur)
+        .await?;
+
+    tx.commit().await?;
+    Ok(creneau)
 }
 
 /// Vérifie qu'un créneau est entièrement compris dans la plage horaire d'ouverture globale
@@ -67,9 +81,14 @@ pub async fn supprimer_creneau(
     activite_id: i64,
     annee_scolaire: String,
 ) -> Result<(), AppError> {
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let nb = state
         .planning_repo
-        .compter_inscrits_activite(activite_id, &annee_scolaire)
+        .compter_inscrits_activite_tx(&mut tx, activite_id, &annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -78,21 +97,35 @@ pub async fn supprimer_creneau(
         ));
     }
 
-    state.planning_repo.supprimer_creneau(id).await
+    state
+        .planning_repo
+        .supprimer_creneau_tx(&mut tx, id)
+        .await?;
+
+    tx.commit().await?;
+    Ok(())
 }
 
 #[tauri::command]
 pub async fn modifier_creneau(
     state: State<'_, AppState>,
     id: i64,
+    utilisateur: String,
     input: CreateCreneau,
+    version: i64,
 ) -> Result<CreneauActivite, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     valider_creneau(&input)?;
     valider_creneau_dans_plage_global(&state, &input).await?;
 
+    let mut tx = state
+        .conn
+        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
+        .await?;
+
     let nb = state
         .planning_repo
-        .compter_inscrits_activite(input.activite_id, &input.annee_scolaire)
+        .compter_inscrits_activite_tx(&mut tx, input.activite_id, &input.annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -103,7 +136,8 @@ pub async fn modifier_creneau(
 
     let conflits = state
         .planning_repo
-        .verifier_conflit_creneaux(
+        .verifier_conflit_creneaux_tx(
+            &mut tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -116,15 +150,18 @@ pub async fn modifier_creneau(
     if !conflits.is_empty() {
         let c = &conflits[0];
         return Err(AppError::Conflict(format!(
-            "Conflit d'horaire avec un créneau existant : jour {} ({}), {}–{}.",
-            c.jour_semaine,
-            crate::domain::planning::jour_semaine_texte(c.jour_semaine),
-            c.heure_debut,
-            c.heure_fin,
+            "Conflit d'horaire avec un créneau existant : {}.",
+            format_conflit_plage(c.jour_semaine, &c.heure_debut, &c.heure_fin),
         )));
     }
 
-    state.planning_repo.modifier_creneau(id, input).await
+    let creneau = state
+        .planning_repo
+        .modifier_creneau_tx(&mut tx, id, input, version, &utilisateur)
+        .await?;
+
+    tx.commit().await?;
+    Ok(creneau)
 }
 
 #[tauri::command]
@@ -142,11 +179,16 @@ pub async fn lister_creneaux(
 #[tauri::command]
 pub async fn ajouter_semaine_banalisee(
     state: State<'_, AppState>,
+    utilisateur: String,
     input: CreateSemaineBanalisee,
 ) -> Result<SemaineBanalisee, AppError> {
+    let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     est_lundi(&input.date_debut)?;
 
-    state.planning_repo.ajouter_semaine_banalisee(input).await
+    state
+        .planning_repo
+        .ajouter_semaine_banalisee(input, &utilisateur)
+        .await
 }
 
 #[tauri::command]
@@ -200,61 +242,63 @@ mod tests {
     use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
     use crate::infrastructure::db::{init_app_state, AppState};
-    use sqlx::SqlitePool;
+    use libsql::Connection;
     use tauri::Manager;
 
-    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, SqlitePool) {
+    async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, Connection) {
         let app = tauri::test::mock_app();
-        let pool = sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(1)
-            .connect("sqlite::memory:")
+        let conn = libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool");
-        sqlx::migrate!("./migrations")
-            .run(&pool)
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db");
+        crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        app.manage(init_app_state(pool.clone()));
-        (app, pool)
+        app.manage(init_app_state(conn.clone()));
+        (app, conn)
     }
 
-    async fn seed_activite(pool: &SqlitePool, nom: &str) -> i64 {
-        let row = sqlx::query_as::<_, crate::domain::activite::Activite>(
-            "INSERT INTO activites (nom, description, capacite_max)
-             VALUES (?, ?, ?) RETURNING *",
-        )
-        .bind(nom)
-        .bind(None::<String>)
-        .bind(None::<i64>)
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed activite");
-        row.id
+    async fn seed_activite(conn: &Connection, nom: &str) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO activites (nom, description, capacite_max) VALUES (?, ?, ?) RETURNING id",
+                libsql::params![nom, None::<String>, None::<i64>],
+            )
+            .await
+            .expect("failed to seed activite");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<crate::infrastructure::db::IdRow>(&row)
+            .expect("failed to read activite")
+            .id
     }
 
-    async fn seed_personne(pool: &SqlitePool) -> i64 {
-        sqlx::query_scalar::<_, i64>(
-            "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
-             VALUES (?, ?, ?) RETURNING id",
-        )
-        .bind("Test")
-        .bind("User")
-        .bind("2000-01-15")
-        .fetch_one(pool)
-        .await
-        .expect("failed to seed personne")
+    async fn seed_personne(conn: &Connection) -> i64 {
+        let mut rows = conn
+            .query(
+                "INSERT INTO personnes_physiques (nom, prenom, date_naissance) VALUES (?, ?, ?) RETURNING id",
+                libsql::params!["Test", "User", "2000-01-15"],
+            )
+            .await
+            .expect("failed to seed personne");
+        let row = rows.next().await.expect("no row").expect("no row");
+        libsql::de::from_row::<crate::infrastructure::db::IdRow>(&row)
+            .expect("failed to read personne")
+            .id
     }
 
-    async fn seed_inscrit(pool: &SqlitePool, activite_id: i64, personne_id: i64, annee: &str) {
-        sqlx::query(
+    async fn seed_inscrit(conn: &Connection, activite_id: i64, personne_id: i64, annee: &str) {
+        conn.execute(
             "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
              VALUES (?, ?, ?, ?)",
+            libsql::params![
+                activite_id,
+                personne_id,
+                annee,
+                Role::Participant.to_string()
+            ],
         )
-        .bind(activite_id)
-        .bind(personne_id)
-        .bind(annee)
-        .bind(Role::Participant)
-        .execute(pool)
         .await
         .expect("failed to seed inscrit");
     }
@@ -268,6 +312,7 @@ mod tests {
 
         let result = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -291,6 +336,7 @@ mod tests {
 
         let err = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -312,6 +358,7 @@ mod tests {
 
         let err = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -333,6 +380,7 @@ mod tests {
 
         let c = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -354,6 +402,7 @@ mod tests {
 
         let result = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: 99999,
                 jour_semaine: 1,
@@ -374,6 +423,7 @@ mod tests {
 
         let result = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: 1,
                 jour_semaine: 1,
@@ -394,6 +444,7 @@ mod tests {
 
         ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -407,6 +458,7 @@ mod tests {
 
         let err = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -428,6 +480,7 @@ mod tests {
 
         ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -441,6 +494,7 @@ mod tests {
 
         let err = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -462,6 +516,7 @@ mod tests {
 
         ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -475,6 +530,7 @@ mod tests {
 
         let c = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -496,6 +552,7 @@ mod tests {
 
         ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -509,6 +566,7 @@ mod tests {
 
         let c = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -531,6 +589,7 @@ mod tests {
 
         ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a1,
                 jour_semaine: 1,
@@ -544,6 +603,7 @@ mod tests {
 
         let c = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a2,
                 jour_semaine: 1,
@@ -564,6 +624,7 @@ mod tests {
 
         let result = ajouter_creneau(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: 1,
                 jour_semaine: 0,
@@ -587,13 +648,16 @@ mod tests {
         let c = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -611,13 +675,16 @@ mod tests {
         let c = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -639,19 +706,23 @@ mod tests {
         let c = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let updated = modifier_creneau(
             app.state::<AppState>(),
             c.id,
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 3,
@@ -659,6 +730,7 @@ mod tests {
                 heure_fin: "12:00".to_string(),
                 annee_scolaire: "2025-2026".to_string(),
             },
+            c.version,
         )
         .await
         .expect("modifier devrait réussir");
@@ -676,13 +748,16 @@ mod tests {
         let c = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -691,6 +766,7 @@ mod tests {
         let err = modifier_creneau(
             app.state::<AppState>(),
             c.id,
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 3,
@@ -698,6 +774,7 @@ mod tests {
                 heure_fin: "12:00".to_string(),
                 annee_scolaire: "2025-2026".to_string(),
             },
+            c.version,
         )
         .await
         .expect_err("devrait être bloqué");
@@ -712,32 +789,39 @@ mod tests {
         let c1 = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let _c2 = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "10:00".to_string(),
-                heure_fin: "12:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "10:00".to_string(),
+                    heure_fin: "12:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let err = modifier_creneau(
             app.state::<AppState>(),
             c1.id,
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -745,6 +829,7 @@ mod tests {
                 heure_fin: "13:00".to_string(),
                 annee_scolaire: "2025-2026".to_string(),
             },
+            c1.version,
         )
         .await
         .expect_err("conflit refusé");
@@ -760,32 +845,39 @@ mod tests {
         let c1 = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let _c2 = app
             .state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 3,
-                heure_debut: "10:00".to_string(),
-                heure_fin: "12:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 3,
+                    heure_debut: "10:00".to_string(),
+                    heure_fin: "12:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         let updated = modifier_creneau(
             app.state::<AppState>(),
             c1.id,
+            "alice".to_string(),
             CreateCreneau {
                 activite_id: a,
                 jour_semaine: 1,
@@ -793,6 +885,7 @@ mod tests {
                 heure_fin: "18:00".to_string(),
                 annee_scolaire: "2025-2026".to_string(),
             },
+            c1.version,
         )
         .await
         .expect("modification sans conflit OK");
@@ -810,13 +903,16 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -847,6 +943,7 @@ mod tests {
 
         let sb = ajouter_semaine_banalisee(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateSemaineBanalisee {
                 activite_id: a,
                 date_debut: "2025-12-22".to_string(),
@@ -869,6 +966,7 @@ mod tests {
 
         let err = ajouter_semaine_banalisee(
             app.state::<AppState>(),
+            "alice".to_string(),
             CreateSemaineBanalisee {
                 activite_id: a,
                 date_debut: "2025-12-23".to_string(),
@@ -891,12 +989,15 @@ mod tests {
         let sb = app
             .state::<AppState>()
             .planning_repo
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id: a,
-                date_debut: "2025-12-22".to_string(),
-                motif: None,
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id: a,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: None,
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -921,12 +1022,15 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .ajouter_semaine_banalisee(CreateSemaineBanalisee {
-                activite_id: a,
-                date_debut: "2025-12-22".to_string(),
-                motif: None,
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .ajouter_semaine_banalisee(
+                CreateSemaineBanalisee {
+                    activite_id: a,
+                    date_debut: "2025-12-22".to_string(),
+                    motif: None,
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -958,13 +1062,16 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1010,25 +1117,31 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a1,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a1,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a2,
-                jour_semaine: 1,
-                heure_debut: "15:00".to_string(),
-                heure_fin: "17:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a2,
+                    jour_semaine: 1,
+                    heure_debut: "15:00".to_string(),
+                    heure_fin: "17:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1049,25 +1162,31 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a1,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a1,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a2,
-                jour_semaine: 3,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a2,
+                    jour_semaine: 3,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 
@@ -1087,13 +1206,16 @@ mod tests {
 
         app.state::<AppState>()
             .planning_repo
-            .creer_creneau(CreateCreneau {
-                activite_id: a,
-                jour_semaine: 1,
-                heure_debut: "14:00".to_string(),
-                heure_fin: "16:00".to_string(),
-                annee_scolaire: "2025-2026".to_string(),
-            })
+            .creer_creneau(
+                CreateCreneau {
+                    activite_id: a,
+                    jour_semaine: 1,
+                    heure_debut: "14:00".to_string(),
+                    heure_fin: "16:00".to_string(),
+                    annee_scolaire: "2025-2026".to_string(),
+                },
+                "test",
+            )
             .await
             .unwrap();
 

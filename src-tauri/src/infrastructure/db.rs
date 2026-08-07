@@ -1,38 +1,151 @@
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::SqlitePool;
+use std::path::Path;
 
+use libsql::Connection;
+
+use super::config::{ConnexionConfig, ModeConnexion};
+use super::migrations::cadence_migrations;
+use crate::error::AppError;
 use crate::repositories::{
-    SqliteActiviteRepository, SqliteAdhesionRepository, SqliteParametreRepository,
-    SqlitePersonneRepository, SqlitePlanningRepository,
+    LibsqlActiviteRepository, LibsqlAdhesionRepository, LibsqlParametreRepository,
+    LibsqlPersonneRepository, LibsqlPlanningRepository,
 };
 
 pub struct AppState {
-    pub pool: SqlitePool,
-    pub personne_repo: SqlitePersonneRepository,
-    pub activite_repo: SqliteActiviteRepository,
-    pub adhesion_repo: SqliteAdhesionRepository,
-    pub planning_repo: SqlitePlanningRepository,
-    pub param_repo: SqliteParametreRepository,
+    pub conn: Connection,
+    pub personne_repo: LibsqlPersonneRepository,
+    pub activite_repo: LibsqlActiviteRepository,
+    pub adhesion_repo: LibsqlAdhesionRepository,
+    pub planning_repo: LibsqlPlanningRepository,
+    pub param_repo: LibsqlParametreRepository,
 }
 
-pub async fn init_pool(database_url: &str) -> Result<SqlitePool, sqlx::Error> {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect(database_url)
-        .await?;
-
-    sqlx::migrate!("./migrations").run(&pool).await?;
-
-    Ok(pool)
+#[derive(Debug, Clone, serde::Deserialize)]
+#[allow(dead_code)]
+pub struct IdRow {
+    pub id: i64,
 }
 
-pub fn init_app_state(pool: SqlitePool) -> AppState {
+pub async fn init_connection(
+    config: &ConnexionConfig,
+    app_dir: &Path,
+) -> Result<Connection, AppError> {
+    let database = match config.mode {
+        ModeConnexion::Mono => {
+            libsql::Builder::new_local(app_dir.join("cadence.db"))
+                .build()
+                .await?
+        }
+        ModeConnexion::Multi => {
+            let url = config.url.clone().ok_or_else(|| {
+                AppError::Validation("L'URL de la base distante est requise en mode multi".into())
+            })?;
+            let token = config.token.clone().ok_or_else(|| {
+                AppError::Validation("La clé d'accès est requise en mode multi".into())
+            })?;
+            libsql::Builder::new_remote(url, token).build().await?
+        }
+    };
+
+    let conn = database.connect()?;
+
+    // SQLite (et libsql) désactive l'application des clés étrangères par défaut
+    // par connexion : sans ce pragma, les FOREIGN KEY des migrations ne sont que
+    // documentaires. À activer explicitement hors transaction.
+    conn.execute_batch("PRAGMA foreign_keys = ON;")
+        .await
+        .map_err(AppError::from)?;
+
+    cadence_migrations(&conn).await?;
+
+    Ok(conn)
+}
+
+pub fn init_app_state(conn: Connection) -> AppState {
     AppState {
-        personne_repo: SqlitePersonneRepository::new(pool.clone()),
-        activite_repo: SqliteActiviteRepository::new(pool.clone()),
-        adhesion_repo: SqliteAdhesionRepository::new(pool.clone()),
-        planning_repo: SqlitePlanningRepository::new(pool.clone()),
-        param_repo: SqliteParametreRepository::new(pool.clone()),
-        pool,
+        personne_repo: LibsqlPersonneRepository::new(conn.clone()),
+        activite_repo: LibsqlActiviteRepository::new(conn.clone()),
+        adhesion_repo: LibsqlAdhesionRepository::new(conn.clone()),
+        planning_repo: LibsqlPlanningRepository::new(conn.clone()),
+        param_repo: LibsqlParametreRepository::new(conn.clone()),
+        conn,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    async fn local_conn() -> Connection {
+        let database = libsql::Builder::new_local(":memory:")
+            .build()
+            .await
+            .expect("base en mémoire");
+        let conn = database.connect().expect("connexion");
+        conn.execute_batch("PRAGMA foreign_keys = ON;")
+            .await
+            .expect("pragma");
+        cadence_migrations(&conn).await.expect("migrations");
+        conn
+    }
+
+    fn est_erreur_foreign_key(err: &libsql::Error) -> bool {
+        let m = err.to_string().to_lowercase();
+        m.contains("foreign key") || m.contains("constraint failed")
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_adhesion_personne_inexistante() {
+        let conn = local_conn().await;
+        let err = conn
+            .execute(
+                "INSERT INTO adhesions (personne_id, annee_scolaire) VALUES (?, ?)",
+                libsql::params![99999, "2025-2026"],
+            )
+            .await
+            .expect_err("la clé étrangère doit bloquer l'insertion");
+        assert!(est_erreur_foreign_key(&err));
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_liaison_personne_inexistante() {
+        let conn = local_conn().await;
+        conn.execute(
+            "INSERT INTO activites (nom) VALUES (?)",
+            libsql::params!["Poterie"],
+        )
+        .await
+        .expect("activité insérée");
+        let err = conn
+            .execute(
+                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role)
+                 VALUES (?, ?, ?, ?)",
+                libsql::params![1, 99999, "2025-2026", "participant"],
+            )
+            .await
+            .expect_err("la clé étrangère personne doit bloquer l'insertion");
+        assert!(est_erreur_foreign_key(&err));
+    }
+
+    #[tokio::test]
+    async fn fk_refuse_suppression_activite_referencee() {
+        let conn = local_conn().await;
+        conn.execute(
+            "INSERT INTO activites (nom) VALUES (?)",
+            libsql::params!["Poterie"],
+        )
+        .await
+        .expect("activité insérée");
+        conn.execute(
+            "INSERT INTO creneaux_activite (activite_id, jour_semaine, heure_debut, heure_fin, annee_scolaire)
+             VALUES (1, 1, '14:00', '16:00', '2025-2026')",
+            libsql::params![],
+        )
+        .await
+        .expect("créneau inséré");
+        let err = conn
+            .execute("DELETE FROM activites WHERE id = 1", libsql::params![])
+            .await
+            .expect_err("la clé étrangère doit bloquer la suppression");
+        assert!(est_erreur_foreign_key(&err));
     }
 }

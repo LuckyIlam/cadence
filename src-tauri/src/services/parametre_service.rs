@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sqlx::SqlitePool;
+use libsql::Connection;
 
 use crate::domain::parametre::{
     trouver_place_deplacement, valider_plage_horaire, ImpactAction, ImpactCreneau,
@@ -15,15 +15,15 @@ use crate::repositories::{ParametreRepository, PlanningRepository};
 pub struct ParametreService<'a, R: ParametreRepository, P: PlanningRepository> {
     param_repo: &'a R,
     planning_repo: &'a P,
-    pool: SqlitePool,
+    conn: Connection,
 }
 
 impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, P> {
-    pub fn new(param_repo: &'a R, planning_repo: &'a P, pool: SqlitePool) -> Self {
+    pub fn new(param_repo: &'a R, planning_repo: &'a P, conn: Connection) -> Self {
         Self {
             param_repo,
             planning_repo,
-            pool,
+            conn,
         }
     }
 
@@ -247,6 +247,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
     /// inscrits ne peut pas être déplacé.
     pub async fn appliquer_plage(
         &self,
+        utilisateur: &str,
         heure_ouverture: &str,
         heure_fermeture: &str,
         confirmer_suppression: bool,
@@ -296,7 +297,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
             )));
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.conn.transaction().await?;
 
         for imp in &impacts {
             match imp.action {
@@ -308,7 +309,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
                 ImpactAction::Deplace => {
                     if let (Some(d), Some(f)) = (&imp.nouveau_debut, &imp.nouveau_fin) {
                         self.planning_repo
-                            .deplacer_creneau_tx(&mut tx, imp.creneau_id, d, f)
+                            .deplacer_creneau_tx(&mut tx, imp.creneau_id, d, f, utilisateur)
                             .await?;
                     }
                 }
@@ -323,7 +324,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
 
         let params = self
             .param_repo
-            .mettre_a_jour_plage_horaire_tx(&mut tx, heure_ouverture, heure_fermeture)
+            .mettre_a_jour_plage_horaire_tx(&mut tx, heure_ouverture, heure_fermeture, utilisateur)
             .await?;
 
         tx.commit().await?;
@@ -366,9 +367,10 @@ mod tests {
 
         async fn mettre_a_jour_plage_horaire_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             heure_ouverture: &str,
             heure_fermeture: &str,
+            _utilisateur: &str,
         ) -> Result<ParametresPlanning, AppError> {
             let mut params = self.params.lock().unwrap();
             params.heure_ouverture = heure_ouverture.to_string();
@@ -430,7 +432,11 @@ mod tests {
 
     #[async_trait]
     impl PlanningRepository for MockPlanningRepository {
-        async fn creer_creneau(&self, _input: CreateCreneau) -> Result<CreneauActivite, AppError> {
+        async fn creer_creneau(
+            &self,
+            _input: CreateCreneau,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
             unimplemented!()
         }
 
@@ -442,6 +448,8 @@ mod tests {
             &self,
             _id: i64,
             _input: CreateCreneau,
+            _version: i64,
+            _utilisateur: &str,
         ) -> Result<CreneauActivite, AppError> {
             unimplemented!()
         }
@@ -467,6 +475,7 @@ mod tests {
                     heure_debut: h.heure_debut.clone(),
                     heure_fin: h.heure_fin.clone(),
                     annee_scolaire: h.annee_scolaire.clone(),
+                    version: 1,
                 })
                 .collect())
         }
@@ -497,7 +506,7 @@ mod tests {
 
         async fn supprimer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             id: i64,
         ) -> Result<(), AppError> {
             self.suppressions.lock().unwrap().push(id);
@@ -507,10 +516,11 @@ mod tests {
 
         async fn deplacer_creneau_tx(
             &self,
-            _tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+            _tx: &mut libsql::Transaction,
             id: i64,
             heure_debut: &str,
             heure_fin: &str,
+            _utilisateur: &str,
         ) -> Result<CreneauActivite, AppError> {
             self.deplacements.lock().unwrap().push((
                 id,
@@ -531,12 +541,34 @@ mod tests {
                 heure_debut: c.heure_debut.clone(),
                 heure_fin: c.heure_fin.clone(),
                 annee_scolaire: c.annee_scolaire.clone(),
+                version: 1,
             })
+        }
+
+        async fn creer_creneau_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _input: CreateCreneau,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
+            unimplemented!()
+        }
+
+        async fn modifier_creneau_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _id: i64,
+            _input: CreateCreneau,
+            _version: i64,
+            _utilisateur: &str,
+        ) -> Result<CreneauActivite, AppError> {
+            unimplemented!()
         }
 
         async fn ajouter_semaine_banalisee(
             &self,
             _input: CreateSemaineBanalisee,
+            _utilisateur: &str,
         ) -> Result<SemaineBanalisee, AppError> {
             unimplemented!()
         }
@@ -564,8 +596,30 @@ mod tests {
             unimplemented!()
         }
 
+        async fn verifier_conflit_creneaux_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+            _jour_semaine: i64,
+            _heure_debut: &str,
+            _heure_fin: &str,
+            _exclure_id: Option<i64>,
+        ) -> Result<Vec<CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
         async fn compter_inscrits_activite(
             &self,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<i64, AppError> {
+            unimplemented!()
+        }
+
+        async fn compter_inscrits_activite_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<i64, AppError> {
@@ -581,6 +635,25 @@ mod tests {
             unimplemented!()
         }
 
+        async fn verifier_collision_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _personne_id: i64,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Option<crate::domain::planning::Collision>, AppError> {
+            unimplemented!()
+        }
+
+        async fn lister_creneaux_tx(
+            &self,
+            _tx: &mut libsql::Transaction,
+            _activite_id: i64,
+            _annee_scolaire: &str,
+        ) -> Result<Vec<CreneauActivite>, AppError> {
+            unimplemented!()
+        }
+
         async fn planning_personne_semaine(
             &self,
             _personne_id: i64,
@@ -591,18 +664,21 @@ mod tests {
         }
     }
 
-    async fn make_pool() -> SqlitePool {
-        SqlitePool::connect("sqlite::memory:")
+    async fn make_conn() -> Connection {
+        libsql::Builder::new_local(":memory:")
+            .build()
             .await
-            .expect("failed to create test pool")
+            .expect("failed to create test db")
+            .connect()
+            .expect("failed to connect test db")
     }
 
     fn make_service<'a, R: ParametreRepository, P: PlanningRepository>(
         param_repo: &'a R,
         planning_repo: &'a P,
-        pool: SqlitePool,
+        conn: Connection,
     ) -> ParametreService<'a, R, P> {
-        ParametreService::new(param_repo, planning_repo, pool)
+        ParametreService::new(param_repo, planning_repo, conn)
     }
 
     #[tokio::test]
@@ -614,8 +690,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "20:00")
@@ -642,8 +718,8 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "20:00")
@@ -657,8 +733,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "18:00")
@@ -673,8 +749,8 @@ mod tests {
     async fn test_apercu_plage_invalide() {
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(Vec::new());
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
             .apercu_impact_plage("20:00", "08:00")
@@ -688,11 +764,11 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let params = service
-            .appliquer_plage("08:00", "20:00", false)
+            .appliquer_plage("alice", "08:00", "20:00", false)
             .await
             .expect("plage sans impact appliquée sans confirmation");
         assert_eq!(params.heure_ouverture, "08:00");
@@ -707,11 +783,11 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
-            .appliquer_plage("08:00", "20:00", false)
+            .appliquer_plage("alice", "08:00", "20:00", false)
             .await
             .expect_err("refusé sans confirmation");
         assert!(err.to_string().contains("Confirmez"));
@@ -726,11 +802,11 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let params = service
-            .appliquer_plage("08:00", "20:00", true)
+            .appliquer_plage("alice", "08:00", "20:00", true)
             .await
             .expect("application OK");
 
@@ -748,11 +824,11 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let err = service
-            .appliquer_plage("09:00", "18:00", true)
+            .appliquer_plage("alice", "09:00", "18:00", true)
             .await
             .expect_err("bloqué si aucun déplacement possible");
         assert!(err.to_string().contains("aucune place libre"));
@@ -775,8 +851,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -803,8 +879,8 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -826,8 +902,8 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -850,8 +926,8 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("08:00", "19:00")
@@ -876,8 +952,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 2)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "20:00")
@@ -900,8 +976,8 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 0)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let pool = make_pool().await;
-        let service = make_service(&param, &planning, pool);
+        let conn = make_conn().await;
+        let service = make_service(&param, &planning, conn);
 
         let impacts = service
             .apercu_impact_plage("09:00", "20:00")
