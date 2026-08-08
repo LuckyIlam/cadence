@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/db-driver-abstraction/design.md": {
-    "mtime": 1786201072.7095723,
-    "ast_hash": "b00f6a4bebdaa00533839c64cb1bf06a",
+    "mtime": 1786202083.5708058,
+    "ast_hash": "2e3d43041358ef8cd0f6e714e1bf7e5e",
     "semantic_hash": ""
   },
   "openspec/specs/audit-modifications/spec.md": {
@@ -970,8 +970,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/mod.rs": {
-    "mtime": 1786200266.175053,
-    "ast_hash": "1572ed8f161860deae1be23976e9e545",
+    "mtime": 1786203804.2520776,
+    "ast_hash": "494b7e27e39d6e6ec6e1f417d14112f2",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/retry.rs": {
@@ -1030,8 +1030,13 @@
     "semantic_hash": ""
   },
   "openspec/changes/db-driver-abstraction/tasks.md": {
-    "mtime": 1786201078.6125784,
-    "ast_hash": "d449d80f487ddd078ce8dedd8de9edfe",
+    "mtime": 1786202047.283811,
+    "ast_hash": "ddff258319fe180c6b42b14e60e46982",
+    "semantic_hash": ""
+  },
+  "src-tauri/src/drivers/libsql/db.rs": {
+    "mtime": 1786203878.7862709,
+    "ast_hash": "c842d128af1fffc4deb881fd044a3c2c",
     "semantic_hash": ""
   }
 }

@@ -20,7 +20,7 @@ pub use params::{DbParams, DbValue, IntoParams, ToDbValue};
 #[allow(unused_imports)]
 pub use row::{DbRow, DeserializeRow, RowView};
 #[allow(unused_imports)]
-pub use transaction::DbTransaction;
+pub use transaction::{DbTransaction, DbTransactionExt};
 
 use std::path::Path;
 

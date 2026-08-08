@@ -29,7 +29,7 @@
       `begin`/`begin_immediate` enveloppent la transaction libsql ;
       conversions `DbParams → libsql::Params` (`Vec<Value>` positionnel) et
       `libsql::Row → DbRow` (`column_count()` + `get_value(idx)`)
-- [ ] 2.2 Créer `DbTransactionExt` (symétrique de `DbExt`, blanket
+- [x] 2.2 Créer `DbTransactionExt` (symétrique de `DbExt`, blanket
       `impl<D: DbTransaction + ?Sized>`) : `fetch_one<T>` / `fetch_optional<T>`
       / `fetch_all<T>` ; tests unitaires dans `db/transaction.rs`
 - [ ] 2.3 Déplacer les `*_repo.rs` vers `drivers/libsql/repositories/`

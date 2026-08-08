@@ -1330,7 +1330,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands",
-      "community": 124,
+      "community": 37,
       "norm_label": "parametre_commands.rs"
     },
     {
@@ -1340,7 +1340,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_obtenir_parametres_planning",
-      "community": 124,
+      "community": 37,
       "norm_label": "obtenir_parametres_planning()"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_state",
-      "community": 124,
+      "community": 37,
       "norm_label": "state"
     },
     {
@@ -1360,7 +1360,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_result",
-      "community": 124,
+      "community": 37,
       "norm_label": "result"
     },
     {
@@ -1370,7 +1370,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_parametresplanning",
-      "community": 124,
+      "community": 37,
       "norm_label": "parametresplanning"
     },
     {
@@ -1380,7 +1380,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_apercu_creneaux_hors_plage",
-      "community": 124,
+      "community": 37,
       "norm_label": "apercu_creneaux_hors_plage()"
     },
     {
@@ -1390,7 +1390,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_vec",
-      "community": 124,
+      "community": 37,
       "norm_label": "vec"
     },
     {
@@ -1400,7 +1400,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_impactcreneau",
-      "community": 124,
+      "community": 37,
       "norm_label": "impactcreneau"
     },
     {
@@ -1410,7 +1410,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_modifier_plage_horaire",
-      "community": 124,
+      "community": 37,
       "norm_label": "modifier_plage_horaire()"
     },
     {
@@ -1420,7 +1420,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_setup_app",
-      "community": 124,
+      "community": 37,
       "norm_label": "setup_app()"
     },
     {
@@ -1430,7 +1430,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_app",
-      "community": 124,
+      "community": 37,
       "norm_label": "app"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_mockruntime",
-      "community": 124,
+      "community": 37,
       "norm_label": "mockruntime"
     },
     {
@@ -1450,7 +1450,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_rs_connection",
-      "community": 124,
+      "community": 37,
       "norm_label": "connection"
     },
     {
@@ -1460,7 +1460,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_seed_activite",
-      "community": 124,
+      "community": 37,
       "norm_label": "seed_activite()"
     },
     {
@@ -1470,7 +1470,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_obtenir_parametres_planning_defaut",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_obtenir_parametres_planning_defaut()"
     },
     {
@@ -1480,7 +1480,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_modifier_plage_horaire_ok",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_modifier_plage_horaire_ok()"
     },
     {
@@ -1490,7 +1490,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_modifier_plage_horaire_invalide",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_modifier_plage_horaire_invalide()"
     },
     {
@@ -1500,7 +1500,7 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_modifier_plage_horaire_reduction_sans_confirmation_refusee",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_modifier_plage_horaire_reduction_sans_confirmation_refusee()"
     },
     {
@@ -1510,7 +1510,7 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_modifier_plage_horaire_reduction_confirmee_supprime_creneau",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_modifier_plage_horaire_reduction_confirmee_supprime_creneau()"
     },
     {
@@ -1520,7 +1520,7 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "src_tauri_src_commands_parametre_commands_test_apercu_creneaux_hors_plage_ok",
-      "community": 124,
+      "community": 37,
       "norm_label": "test_apercu_creneaux_hors_plage_ok()"
     },
     {
@@ -2280,7 +2280,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_role",
-      "community": 123,
+      "community": 7,
       "norm_label": "role"
     },
     {
@@ -2290,7 +2290,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "display",
-      "community": 123,
+      "community": 7,
       "norm_label": "display"
     },
     {
@@ -2910,7 +2910,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne",
-      "community": 8,
+      "community": 135,
       "norm_label": "personne.rs"
     },
     {
@@ -2920,7 +2920,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personne",
-      "community": 8,
+      "community": 135,
       "norm_label": "personne"
     },
     {
@@ -2930,7 +2930,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_naivedate",
-      "community": 8,
+      "community": 135,
       "norm_label": "naivedate"
     },
     {
@@ -2940,7 +2940,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_option",
-      "community": 8,
+      "community": 135,
       "norm_label": "option"
     },
     {
@@ -2950,7 +2950,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_createpersonne",
-      "community": 8,
+      "community": 135,
       "norm_label": "createpersonne"
     },
     {
@@ -2960,7 +2960,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_updatepersonne",
-      "community": 8,
+      "community": 135,
       "norm_label": "updatepersonne"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personnedetail",
-      "community": 8,
+      "community": 135,
       "norm_label": "personnedetail"
     },
     {
@@ -2980,7 +2980,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_vec",
-      "community": 8,
+      "community": 135,
       "norm_label": "vec"
     },
     {
@@ -2990,7 +2990,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_adhesion",
-      "community": 8,
+      "community": 135,
       "norm_label": "adhesion"
     },
     {
@@ -3000,7 +3000,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_criteresrecherchepersonnes",
-      "community": 8,
+      "community": 135,
       "norm_label": "criteresrecherchepersonnes"
     },
     {
@@ -3010,7 +3010,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_pagination",
-      "community": 8,
+      "community": 135,
       "norm_label": "pagination"
     },
     {
@@ -3020,7 +3020,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_resultatrecherchepersonnes",
-      "community": 8,
+      "community": 135,
       "norm_label": "resultatrecherchepersonnes"
     },
     {
@@ -3030,7 +3030,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_current_annee_scolaire",
-      "community": 8,
+      "community": 135,
       "norm_label": "current_annee_scolaire()"
     },
     {
@@ -3040,7 +3040,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_annee_scolaire_from_date",
-      "community": 8,
+      "community": 135,
       "norm_label": "annee_scolaire_from_date()"
     },
     {
@@ -3050,7 +3050,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_age_from_date_naissance",
-      "community": 8,
+      "community": 135,
       "norm_label": "age_from_date_naissance()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_est_mineur",
-      "community": 8,
+      "community": 135,
       "norm_label": "est_mineur()"
     },
     {
@@ -3070,7 +3070,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_valider_date_naissance",
-      "community": 8,
+      "community": 135,
       "norm_label": "valider_date_naissance()"
     },
     {
@@ -3080,7 +3080,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_result",
-      "community": 8,
+      "community": 135,
       "norm_label": "result"
     },
     {
@@ -3090,7 +3090,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_janvier",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_janvier()"
     },
     {
@@ -3100,7 +3100,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_aout",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_aout()"
     },
     {
@@ -3110,7 +3110,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_septembre",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_septembre()"
     },
     {
@@ -3120,7 +3120,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_decembre",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_decembre()"
     },
     {
@@ -3130,7 +3130,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_annee_complete",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_annee_complete()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_current_annee_scolaire_returns_valid_format",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_current_annee_scolaire_returns_valid_format()"
     },
     {
@@ -3552,6 +3552,396 @@
       "id": "src_tauri_src_domain_planning_test_valider_heure_limites",
       "community": 17,
       "norm_label": "test_valider_heure_limites()"
+    },
+    {
+      "label": "db.rs",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db",
+      "community": 124,
+      "norm_label": "db.rs"
+    },
+    {
+      "label": "LibsqlDb",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "community": 124,
+      "norm_label": "libsqldb"
+    },
+    {
+      "label": "Connection",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_connection",
+      "community": 124,
+      "norm_label": "connection"
+    },
+    {
+      "label": ".new()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_new",
+      "community": 124,
+      "norm_label": ".new()"
+    },
+    {
+      "label": "Self",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_self",
+      "community": 124,
+      "norm_label": "self"
+    },
+    {
+      "label": "to_libsql_params()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "community": 124,
+      "norm_label": "to_libsql_params()"
+    },
+    {
+      "label": "Vec",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_vec",
+      "community": 124,
+      "norm_label": "vec"
+    },
+    {
+      "label": "Value",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "value",
+      "community": 124,
+      "norm_label": "value"
+    },
+    {
+      "label": "to_libsql_value()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_to_libsql_value",
+      "community": 124,
+      "norm_label": "to_libsql_value()"
+    },
+    {
+      "label": "row_to_dbrow()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "community": 124,
+      "norm_label": "row_to_dbrow()"
+    },
+    {
+      "label": "Row",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "row",
+      "community": 121,
+      "norm_label": "row"
+    },
+    {
+      "label": "Result",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_result",
+      "community": 124,
+      "norm_label": "result"
+    },
+    {
+      "label": "to_db_value()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "community": 124,
+      "norm_label": "to_db_value()"
+    },
+    {
+      "label": ".execute()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "community": 124,
+      "norm_label": ".execute()"
+    },
+    {
+      "label": ".fetch_optional_row()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "community": 124,
+      "norm_label": ".fetch_optional_row()"
+    },
+    {
+      "label": "Option",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_option",
+      "community": 124,
+      "norm_label": "option"
+    },
+    {
+      "label": ".fetch_all_rows()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "community": 124,
+      "norm_label": ".fetch_all_rows()"
+    },
+    {
+      "label": ".begin()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "community": 124,
+      "norm_label": ".begin()"
+    },
+    {
+      "label": "Box",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_box",
+      "community": 124,
+      "norm_label": "box"
+    },
+    {
+      "label": ".begin_immediate()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "community": 124,
+      "norm_label": ".begin_immediate()"
+    },
+    {
+      "label": ".execute_batch()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "community": 124,
+      "norm_label": ".execute_batch()"
+    },
+    {
+      "label": ".driver_name()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L138",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldb_driver_name",
+      "community": 124,
+      "norm_label": ".driver_name()"
+    },
+    {
+      "label": "LibsqlDbTransaction",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "community": 124,
+      "norm_label": "libsqldbtransaction"
+    },
+    {
+      "label": "Transaction",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_rs_transaction",
+      "community": 124,
+      "norm_label": "transaction"
+    },
+    {
+      "label": ".new()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L149",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "community": 124,
+      "norm_label": ".new()"
+    },
+    {
+      "label": ".execute()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "community": 124,
+      "norm_label": ".execute()"
+    },
+    {
+      "label": ".fetch_optional_row()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "community": 124,
+      "norm_label": ".fetch_optional_row()"
+    },
+    {
+      "label": ".fetch_all_rows()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "community": 124,
+      "norm_label": ".fetch_all_rows()"
+    },
+    {
+      "label": ".commit()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "community": 124,
+      "norm_label": ".commit()"
+    },
+    {
+      "label": ".rollback()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "community": 124,
+      "norm_label": ".rollback()"
+    },
+    {
+      "label": "test_db()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L203",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_test_db",
+      "community": 124,
+      "norm_label": "test_db()"
+    },
+    {
+      "label": "execute_et_fetch_optional_roundtrip()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L213",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "community": 124,
+      "norm_label": "execute_et_fetch_optional_roundtrip()"
+    },
+    {
+      "label": "fetch_optional_sans_resultat_renvoie_none()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L244",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "community": 124,
+      "norm_label": "fetch_optional_sans_resultat_renvoie_none()"
+    },
+    {
+      "label": "fetch_all_rows_multiple()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L257",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "community": 124,
+      "norm_label": "fetch_all_rows_multiple()"
+    },
+    {
+      "label": "transaction_commit_persiste()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L277",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "community": 124,
+      "norm_label": "transaction_commit_persiste()"
+    },
+    {
+      "label": "transaction_rollback_annule()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L297",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "community": 124,
+      "norm_label": "transaction_rollback_annule()"
+    },
+    {
+      "label": "begin_immediate_commit()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L317",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "community": 124,
+      "norm_label": "begin_immediate_commit()"
+    },
+    {
+      "label": "bool_encode_en_integer_0_1()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L337",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_bool_encode_en_integer_0_1",
+      "community": 124,
+      "norm_label": "bool_encode_en_integer_0_1()"
+    },
+    {
+      "label": "blob_non_supporte()",
+      "file_type": "code",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L349",
+      "_origin": "ast",
+      "id": "src_tauri_src_drivers_libsql_db_blob_non_supporte",
+      "community": 124,
+      "norm_label": "blob_non_supporte()"
     },
     {
       "label": "hrana.rs",
@@ -4170,7 +4560,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_db",
-      "community": 121,
+      "community": 76,
       "norm_label": "db"
     },
     {
@@ -4180,7 +4570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_rs_send",
-      "community": 121,
+      "community": 76,
       "norm_label": "send"
     },
     {
@@ -4190,7 +4580,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_rs_sync",
-      "community": 121,
+      "community": 76,
       "norm_label": "sync"
     },
     {
@@ -4379,7 +4769,7 @@
       "source_file": "",
       "source_location": "",
       "_origin": "ast",
-      "id": "box",
+      "id": "src_tauri_src_infrastructure_db_db_rs_box",
       "community": 121,
       "norm_label": "box"
     },
@@ -4970,7 +5360,7 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_params_dbparams",
-      "community": 121,
+      "community": 124,
       "norm_label": "dbparams"
     },
     {
@@ -4980,7 +5370,7 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_params_dbparams_into_params",
-      "community": 121,
+      "community": 124,
       "norm_label": ".into_params()"
     },
     {
@@ -5090,7 +5480,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rowview",
-      "community": 127,
+      "community": 121,
       "norm_label": "rowview"
     },
     {
@@ -5100,7 +5490,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rs_send",
-      "community": 127,
+      "community": 121,
       "norm_label": "send"
     },
     {
@@ -5110,7 +5500,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rs_sync",
-      "community": 127,
+      "community": 121,
       "norm_label": "sync"
     },
     {
@@ -12630,7 +13020,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "readme",
-      "community": 0,
+      "community": 77,
       "norm_label": "readme.md"
     },
     {
@@ -14917,7 +15307,7 @@
       "label": "D9 \u2014 Strat\u00e9gie RETURNING : repo-sp\u00e9cifique, jamais impos\u00e9e par Db",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L345",
+      "source_location": "L344",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_d9_strat\u00e9gie_returning_repo_sp\u00e9cifique_jamais_impos\u00e9e_par_db",
       "community": 73,
@@ -14927,7 +15317,7 @@
       "label": "D10 \u2014 Compatibilit\u00e9 ascendante pour la CI",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L360",
+      "source_location": "L359",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_d10_compatibilit\u00e9_ascendante_pour_la_ci",
       "community": 73,
@@ -14937,7 +15327,7 @@
       "label": "Risks / Trade-offs",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L369",
+      "source_location": "L368",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "community": 73,
@@ -14947,7 +15337,7 @@
       "label": "R1 \u2014 Compat `refinery` \u2194 `libsql` (\u26a0 bloquant pour PR 3)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L371",
+      "source_location": "L370",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r1_compat_refinery_libsql_bloquant_pour_pr_3",
       "community": 73,
@@ -14957,7 +15347,7 @@
       "label": "R2 \u2014 Performance `dyn Db` vs `libsql::Connection` direct",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L388",
+      "source_location": "L387",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r2_performance_dyn_db_vs_libsql_connection_direct",
       "community": 73,
@@ -14967,7 +15357,7 @@
       "label": "R3 \u2014 `libsql::Value` dans `personne_repo.rs:191-243`",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L395",
+      "source_location": "L394",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r3_libsql_value_dans_personne_repo_rs_191_243",
       "community": 73,
@@ -14977,7 +15367,7 @@
       "label": "R4 \u2014 Erreurs `AppError::Database` masque le type r\u00e9el",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L402",
+      "source_location": "L401",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r4_erreurs_apperror_database_masque_le_type_r\u00e9el",
       "community": 73,
@@ -14987,7 +15377,7 @@
       "label": "R5 \u2014 Cycle complet de feature flags",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L412",
+      "source_location": "L411",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r5_cycle_complet_de_feature_flags",
       "community": 73,
@@ -14997,7 +15387,7 @@
       "label": "R6 \u2014 `Box<dyn DbTransaction>` emp\u00eache l'inlining",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L420",
+      "source_location": "L419",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r6_box_dyn_dbtransaction_emp\u00eache_l_inlining",
       "community": 73,
@@ -15007,7 +15397,7 @@
       "label": "R7 \u2014 `DeserializeRow` par struct : 11 structs \u00d7 15 lignes = ~165 L m\u00e9caniques",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L426",
+      "source_location": "L425",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r7_deserializerow_par_struct_11_structs_15_lignes_165_l_m\u00e9caniques",
       "community": 73,
@@ -15017,7 +15407,7 @@
       "label": "R8 \u2014 Risque de r\u00e9gression E2E",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L431",
+      "source_location": "L430",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r8_risque_de_r\u00e9gression_e2e",
       "community": 73,
@@ -15027,7 +15417,7 @@
       "label": "R9 \u2014 Effort total & batch size",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L442",
+      "source_location": "L441",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r9_effort_total_batch_size",
       "community": 73,
@@ -15037,7 +15427,7 @@
       "label": "R10 \u2014 Pas de garantie que la base soit \u00e0 l'abri d'un lock pendant migration",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L454",
+      "source_location": "L453",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r10_pas_de_garantie_que_la_base_soit_\u00e0_l_abri_d_un_lock_pendant_migration",
       "community": 73,
@@ -15047,7 +15437,7 @@
       "label": "R11 \u2014 Non-atomicit\u00e9 de `cadence_migrations` (pr\u00e9existant, non bloquant)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L461",
+      "source_location": "L460",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_r11_non_atomicit\u00e9_de_cadence_migrations_pr\u00e9existant_non_bloquant",
       "community": 73,
@@ -15057,7 +15447,7 @@
       "label": "Migration Plan",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L472",
+      "source_location": "L471",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_migration_plan",
       "community": 73,
@@ -15067,7 +15457,7 @@
       "label": "PR 1 \u2014 Pose des abstractions (z\u00e9ro changement de comportement)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L476",
+      "source_location": "L488",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_pr_1_pose_des_abstractions_z\u00e9ro_changement_de_comportement",
       "community": 73,
@@ -15077,7 +15467,7 @@
       "label": "PR 2 \u2014 Refactor repositories + services derri\u00e8re `dyn Db`",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L488",
+      "source_location": "L500",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_pr_2_refactor_repositories_services_derri\u00e8re_dyn_db",
       "community": 73,
@@ -15087,7 +15477,7 @@
       "label": "PR 3 \u2014 Adoption `refinery` (optionnelle, d\u00e9pend de R1)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L508",
+      "source_location": "L531",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_pr_3_adoption_refinery_optionnelle_d\u00e9pend_de_r1",
       "community": 73,
@@ -15097,7 +15487,7 @@
       "label": "Rollback",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L518",
+      "source_location": "L541",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_rollback",
       "community": 73,
@@ -15107,7 +15497,7 @@
       "label": "Open Questions",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L527",
+      "source_location": "L550",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_open_questions",
       "community": 73,
@@ -15117,7 +15507,7 @@
       "label": "Effets sur le change OpenSpec en cours",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L541",
+      "source_location": "L564",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_design_effets_sur_le_change_openspec_en_cours",
       "community": 73,
@@ -15257,7 +15647,7 @@
       "label": "3. PR 3 \u2014 Adoption `refinery` (optionnelle, d\u00e9pend du spike R1)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/tasks.md",
-      "source_location": "L39",
+      "source_location": "L64",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_tasks_3_pr_3_adoption_refinery_optionnelle_d\u00e9pend_du_spike_r1",
       "community": 131,
@@ -15267,7 +15657,7 @@
       "label": "4. V\u00e9rifications globales (avant livraison)",
       "file_type": "document",
       "source_file": "openspec/changes/db-driver-abstraction/tasks.md",
-      "source_location": "L51",
+      "source_location": "L76",
       "_origin": "ast",
       "id": "openspec_changes_db_driver_abstraction_tasks_4_v\u00e9rifications_globales_avant_livraison",
       "community": 131,
@@ -24276,17 +24666,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/commands/planning_commands.rs",
-      "source_location": "L244",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_commands_planning_commands",
-      "target": "src_tauri_src_infrastructure_db_db",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/commands/planning_commands.rs",
@@ -24767,6 +25146,17 @@
       "context": "import",
       "source": "src_tauri_src_commands_planning_commands",
       "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/commands/planning_commands.rs",
+      "source_location": "L244",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_commands_planning_commands",
+      "target": "src_tauri_src_infrastructure_db_db_db",
       "confidence_score": 1.0
     },
     {
@@ -29668,6 +30058,1702 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_hrana",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L317",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L349",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_blob_non_supporte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L337",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_bool_encode_en_integer_0_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L213",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L257",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L244",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_rs_connection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L277",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L297",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L18",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_db_db_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L201",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_db_params_dbvalue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L200",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_db_row_rowview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L19",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_retry_retrypolicy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_driver_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L26",
+      "weight": 1.0,
+      "context": "field",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_drivers_libsql_db_rs_connection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "target": "src_tauri_src_infrastructure_db_db_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L203",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_test_db",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L30",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_new",
+      "target": "src_tauri_src_drivers_libsql_db_rs_connection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L30",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_new",
+      "target": "src_tauri_src_drivers_libsql_db_rs_self",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "target": "src_tauri_src_drivers_libsql_db_rs_self",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L149",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "target": "src_tauri_src_drivers_libsql_db_rs_self",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "target": "src_tauri_src_drivers_libsql_db_rs_self",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L180",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L168",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L40",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "target": "src_tauri_src_drivers_libsql_db_rs_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L40",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L40",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_to_libsql_params",
+      "target": "value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_rs_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_rs_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "target": "value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_libsql_value",
+      "target": "value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_libsql_value",
+      "target": "src_tauri_src_infrastructure_db_params_dbvalue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L183",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_row_to_dbrow",
+      "target": "src_tauri_src_infrastructure_db_row_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/infrastructure/db/db.rs",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_infrastructure_db_db",
+      "target": "row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_infrastructure_db_mod",
+      "target": "row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L80",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L122",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L156",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "target": "src_tauri_src_drivers_libsql_db_rs_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_to_db_value",
+      "target": "src_tauri_src_infrastructure_db_params_dbvalue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L80",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L80",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_rs_option",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L84",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_optional_row",
+      "target": "src_tauri_src_infrastructure_db_row_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_drivers_libsql_db_rs_option",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_fetch_all_rows",
+      "target": "src_tauri_src_infrastructure_db_row_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "target": "src_tauri_src_drivers_libsql_db_rs_box",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L109",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L283",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L303",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_begin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "target": "src_tauri_src_drivers_libsql_db_rs_box",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "target": "src_tauri_src_drivers_libsql_db_rs_box",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "target": "src_tauri_src_drivers_libsql_db_rs_box",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L323",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L114",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_begin_immediate",
+      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L319",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L215",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L259",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L246",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L123",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L122",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L279",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L299",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldb_execute_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L156",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L149",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L145",
+      "weight": 1.0,
+      "context": "field",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_drivers_libsql_db_rs_transaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction",
+      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L149",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "target": "src_tauri_src_drivers_libsql_db_rs_transaction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L330",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L268",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L250",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L209",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_test_db",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L310",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L220",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L260",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L156",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L156",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L284",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L304",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L163",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_optional_row",
+      "target": "src_tauri_src_infrastructure_db_row_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L329",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L267",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_infrastructure_db_params_dbparams",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L179",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "target": "src_tauri_src_infrastructure_db_row_dbrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L289",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_fetch_all_rows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L327",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L287",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_commit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "target": "src_tauri_src_error_apperror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L307",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_libsqldbtransaction_rollback",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_begin_immediate_commit",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L214",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_execute_et_fetch_optional_roundtrip",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L258",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_all_rows_multiple",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L245",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_fetch_optional_sans_resultat_renvoie_none",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L278",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_commit_persiste",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L298",
+      "weight": 1.0,
+      "source": "src_tauri_src_drivers_libsql_db_transaction_rollback_annule",
+      "target": "src_tauri_src_drivers_libsql_db_test_db",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/drivers/libsql/hrana.rs",
@@ -30160,17 +32246,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/e2e_mono.rs",
-      "source_location": "L5",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_e2e_mono",
-      "target": "src_tauri_src_infrastructure_db_db",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/e2e_mono.rs",
@@ -30178,6 +32253,17 @@
       "weight": 1.0,
       "source": "src_tauri_src_e2e_mono",
       "target": "src_tauri_src_e2e_mono_e2e_mono_fichier_crud_persiste",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/e2e_mono.rs",
+      "source_location": "L5",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_e2e_mono",
+      "target": "src_tauri_src_infrastructure_db_db_db",
       "confidence_score": 1.0
     },
     {
@@ -30225,17 +32311,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/e2e_multi.rs",
-      "source_location": "L5",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_e2e_multi",
-      "target": "src_tauri_src_infrastructure_db_db",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/e2e_multi.rs",
@@ -30243,6 +32318,17 @@
       "weight": 1.0,
       "source": "src_tauri_src_e2e_multi",
       "target": "src_tauri_src_e2e_multi_e2e_multi_crud",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/e2e_multi.rs",
+      "source_location": "L5",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_e2e_multi",
+      "target": "src_tauri_src_infrastructure_db_db_db",
       "confidence_score": 1.0
     },
     {
@@ -32944,17 +35030,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/db.rs",
-      "source_location": "L6",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_db",
-      "target": "src_tauri_src_infrastructure_db_row",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/db.rs",
@@ -33110,28 +35185,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
-      "source_location": "L17",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_mod",
-      "target": "src_tauri_src_infrastructure_db_db",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/lib.rs",
-      "source_location": "L16",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_lib",
-      "target": "src_tauri_src_infrastructure_db_db",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/db.rs",
@@ -33168,6 +35221,28 @@
       "source_location": "L133",
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_db_db_faussedb",
+      "target": "src_tauri_src_infrastructure_db_db_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_infrastructure_db_mod",
+      "target": "src_tauri_src_infrastructure_db_db_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/lib.rs",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_lib",
       "target": "src_tauri_src_infrastructure_db_db_db",
       "confidence_score": 1.0
     },
@@ -33760,7 +35835,7 @@
       "weight": 1.0,
       "context": "generic_arg",
       "source": "src_tauri_src_infrastructure_db_db_faussedb_begin",
-      "target": "box",
+      "target": "src_tauri_src_infrastructure_db_db_rs_box",
       "confidence_score": 1.0
     },
     {
@@ -33782,7 +35857,7 @@
       "weight": 1.0,
       "context": "generic_arg",
       "source": "src_tauri_src_infrastructure_db_db_faussedb_begin_immediate",
-      "target": "box",
+      "target": "src_tauri_src_infrastructure_db_db_rs_box",
       "confidence_score": 1.0
     },
     {
@@ -33838,17 +35913,6 @@
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_db_db_fetch_optional_typed",
       "target": "src_tauri_src_infrastructure_db_db_fausse_db",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
-      "source_location": "L21",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_mod",
-      "target": "src_tauri_src_infrastructure_db_row",
       "confidence_score": 1.0
     },
     {
@@ -33961,17 +36025,6 @@
       "context": "import",
       "source": "src_tauri_src_infrastructure_db_mod",
       "target": "src_tauri_src_infrastructure_db_mod_rs_path",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
-      "source_location": "L23",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_mod",
-      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
       "confidence_score": 1.0
     },
     {
@@ -35023,17 +37076,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L5",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/params.rs",
@@ -35314,17 +37356,6 @@
       "context": "field",
       "source": "src_tauri_src_infrastructure_db_row_dbrow",
       "target": "src_tauri_src_infrastructure_db_row_rs_vec",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L6",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_row_dbrow",
       "confidence_score": 1.0
     },
     {
@@ -57647,7 +59678,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L541",
+      "source_location": "L564",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_change_db_driver_abstraction_design",
       "target": "openspec_changes_db_driver_abstraction_design_effets_sur_le_change_openspec_en_cours",
@@ -57667,7 +59698,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L472",
+      "source_location": "L471",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_change_db_driver_abstraction_design",
       "target": "openspec_changes_db_driver_abstraction_design_migration_plan",
@@ -57677,7 +59708,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L527",
+      "source_location": "L550",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_change_db_driver_abstraction_design",
       "target": "openspec_changes_db_driver_abstraction_design_open_questions",
@@ -57687,7 +59718,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L369",
+      "source_location": "L368",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_change_db_driver_abstraction_design",
       "target": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
@@ -57717,7 +59748,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L360",
+      "source_location": "L359",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_decisions",
       "target": "openspec_changes_db_driver_abstraction_design_d10_compatibilit\u00e9_ascendante_pour_la_ci",
@@ -57807,7 +59838,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L345",
+      "source_location": "L344",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_decisions",
       "target": "openspec_changes_db_driver_abstraction_design_d9_strat\u00e9gie_returning_repo_sp\u00e9cifique_jamais_impos\u00e9e_par_db",
@@ -57817,7 +59848,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L454",
+      "source_location": "L453",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r10_pas_de_garantie_que_la_base_soit_\u00e0_l_abri_d_un_lock_pendant_migration",
@@ -57827,7 +59858,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L461",
+      "source_location": "L460",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r11_non_atomicit\u00e9_de_cadence_migrations_pr\u00e9existant_non_bloquant",
@@ -57837,7 +59868,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L371",
+      "source_location": "L370",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r1_compat_refinery_libsql_bloquant_pour_pr_3",
@@ -57847,7 +59878,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L388",
+      "source_location": "L387",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r2_performance_dyn_db_vs_libsql_connection_direct",
@@ -57857,7 +59888,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L395",
+      "source_location": "L394",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r3_libsql_value_dans_personne_repo_rs_191_243",
@@ -57867,7 +59898,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L402",
+      "source_location": "L401",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r4_erreurs_apperror_database_masque_le_type_r\u00e9el",
@@ -57877,7 +59908,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L412",
+      "source_location": "L411",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r5_cycle_complet_de_feature_flags",
@@ -57887,7 +59918,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L420",
+      "source_location": "L419",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r6_box_dyn_dbtransaction_emp\u00eache_l_inlining",
@@ -57897,7 +59928,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L426",
+      "source_location": "L425",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r7_deserializerow_par_struct_11_structs_15_lignes_165_l_m\u00e9caniques",
@@ -57907,7 +59938,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L431",
+      "source_location": "L430",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r8_risque_de_r\u00e9gression_e2e",
@@ -57917,7 +59948,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L442",
+      "source_location": "L441",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_risks_trade_offs",
       "target": "openspec_changes_db_driver_abstraction_design_r9_effort_total_batch_size",
@@ -57927,7 +59958,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L476",
+      "source_location": "L488",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_migration_plan",
       "target": "openspec_changes_db_driver_abstraction_design_pr_1_pose_des_abstractions_z\u00e9ro_changement_de_comportement",
@@ -57937,7 +59968,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L488",
+      "source_location": "L500",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_migration_plan",
       "target": "openspec_changes_db_driver_abstraction_design_pr_2_refactor_repositories_services_derri\u00e8re_dyn_db",
@@ -57947,7 +59978,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L508",
+      "source_location": "L531",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_migration_plan",
       "target": "openspec_changes_db_driver_abstraction_design_pr_3_adoption_refinery_optionnelle_d\u00e9pend_de_r1",
@@ -57957,7 +59988,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/design.md",
-      "source_location": "L518",
+      "source_location": "L541",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_design_migration_plan",
       "target": "openspec_changes_db_driver_abstraction_design_rollback",
@@ -58067,7 +60098,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/tasks.md",
-      "source_location": "L39",
+      "source_location": "L64",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_tasks_change_db_driver_abstraction_tasks",
       "target": "openspec_changes_db_driver_abstraction_tasks_3_pr_3_adoption_refinery_optionnelle_d\u00e9pend_du_spike_r1",
@@ -58077,7 +60108,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "openspec/changes/db-driver-abstraction/tasks.md",
-      "source_location": "L51",
+      "source_location": "L76",
       "weight": 1.0,
       "source": "openspec_changes_db_driver_abstraction_tasks_change_db_driver_abstraction_tasks",
       "target": "openspec_changes_db_driver_abstraction_tasks_4_v\u00e9rifications_globales_avant_livraison",
@@ -62705,5 +64736,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1d2af51de0ffbc585f6fa963c1f36183870e9d2b"
+  "built_at_commit": "51b59f375bd3cde26b33589ced0f61ec3bb52e9a"
 }
