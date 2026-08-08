@@ -23,11 +23,11 @@ pub use row::{DbRow, DeserializeRow, RowView};
 pub use transaction::{DbTransaction, DbTransactionExt};
 
 use std::path::Path;
-
-use libsql::Connection;
+use std::sync::Arc;
 
 use super::config::{ConnexionConfig, Driver, ModeConnexion};
 use super::migrations::cadence_migrations;
+use crate::drivers::libsql::db::LibsqlDb;
 use crate::error::AppError;
 use crate::repositories::{
     LibsqlActiviteRepository, LibsqlAdhesionRepository, LibsqlParametreRepository,
@@ -35,7 +35,7 @@ use crate::repositories::{
 };
 
 pub struct AppState {
-    pub conn: Connection,
+    pub db: Arc<dyn Db>,
     pub personne_repo: LibsqlPersonneRepository,
     pub activite_repo: LibsqlActiviteRepository,
     pub adhesion_repo: LibsqlAdhesionRepository,
@@ -52,7 +52,7 @@ pub struct IdRow {
 pub async fn init_connection(
     config: &ConnexionConfig,
     app_dir: &Path,
-) -> Result<Connection, AppError> {
+) -> Result<Arc<dyn Db>, AppError> {
     match config.driver {
         Driver::Sqlite => {}
         Driver::Postgres => {
@@ -91,17 +91,17 @@ pub async fn init_connection(
 
     cadence_migrations(&conn).await?;
 
-    Ok(conn)
+    Ok(Arc::new(LibsqlDb::new(conn)))
 }
 
-pub fn init_app_state(conn: Connection) -> AppState {
+pub fn init_app_state(db: Arc<dyn Db>) -> AppState {
     AppState {
-        personne_repo: LibsqlPersonneRepository::new(conn.clone()),
-        activite_repo: LibsqlActiviteRepository::new(conn.clone()),
-        adhesion_repo: LibsqlAdhesionRepository::new(conn.clone()),
-        planning_repo: LibsqlPlanningRepository::new(conn.clone()),
-        param_repo: LibsqlParametreRepository::new(conn.clone()),
-        conn,
+        db: db.clone(),
+        personne_repo: LibsqlPersonneRepository::new(db.clone()),
+        activite_repo: LibsqlActiviteRepository::new(db.clone()),
+        adhesion_repo: LibsqlAdhesionRepository::new(db.clone()),
+        planning_repo: LibsqlPlanningRepository::new(db.clone()),
+        param_repo: LibsqlParametreRepository::new(db),
     }
 }
 
@@ -109,7 +109,7 @@ pub fn init_app_state(conn: Connection) -> AppState {
 mod tests {
     use super::*;
 
-    async fn local_conn() -> Connection {
+    async fn local_conn() -> libsql::Connection {
         let database = libsql::Builder::new_local(":memory:")
             .build()
             .await

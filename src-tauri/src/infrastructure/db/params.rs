@@ -243,13 +243,11 @@ macro_rules! params {
     () => {
         $crate::infrastructure::db::params::DbParams::new()
     };
-    ($($arg:expr),+ $(,)?) => {{
-        let mut __db_params = $crate::infrastructure::db::params::DbParams::new();
-        $(
-            __db_params.push($crate::infrastructure::db::params::ToDbValue::to_db_value($arg));
-        )+
-        __db_params
-    }};
+    ($($arg:expr),+ $(,)?) => {
+        vec![
+            $($crate::infrastructure::db::params::ToDbValue::to_db_value($arg)),+
+        ]
+    };
 }
 
 /// Convertit une `DbParams` en message d'erreur lisible (debug).

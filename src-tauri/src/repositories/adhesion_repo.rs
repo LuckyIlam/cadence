@@ -1,9 +1,10 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
-use libsql::Connection;
 
 use crate::domain::adhesion::{Adhesion, CreateAdhesion, UpdateAdhesion};
 use crate::error::AppError;
-use crate::infrastructure::hrana_guard;
+use crate::infrastructure::db::{Db, DbExt, DeserializeRow, RowView};
 
 #[async_trait]
 pub trait AdhesionRepository: Send + Sync {
@@ -18,12 +19,38 @@ pub trait AdhesionRepository: Send + Sync {
 }
 
 pub struct LibsqlAdhesionRepository {
-    pub(crate) conn: Connection,
+    db: Arc<dyn Db>,
 }
 
 impl LibsqlAdhesionRepository {
-    pub fn new(conn: Connection) -> Self {
-        Self { conn }
+    pub fn new(db: Arc<dyn Db>) -> Self {
+        Self { db }
+    }
+}
+
+impl DeserializeRow for Adhesion {
+    fn from_row(row: &dyn RowView) -> Result<Self, AppError> {
+        Ok(Adhesion {
+            id: row.get_i64(0)?,
+            personne_id: row.get_i64(1)?,
+            annee_scolaire: row.get_str(2)?.to_string(),
+            reglee: row.get_bool(3)?,
+            note_paiement: row.get_opt_str(4)?.map(String::from),
+            version: row.get_i64(5)?,
+        })
+    }
+}
+
+struct IdRow {
+    #[allow(dead_code)]
+    id: i64,
+}
+
+impl DeserializeRow for IdRow {
+    fn from_row(row: &dyn RowView) -> Result<Self, AppError> {
+        Ok(IdRow {
+            id: row.get_i64(0)?,
+        })
     }
 }
 
@@ -31,29 +58,21 @@ impl LibsqlAdhesionRepository {
 impl AdhesionRepository for LibsqlAdhesionRepository {
     async fn create(&self, input: CreateAdhesion, utilisateur: &str) -> Result<Adhesion, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement, modifie_par, modifie_le)
+        self.db
+            .fetch_one(
+                "INSERT INTO adhesions (personne_id, annee_scolaire, reglee, note_paiement, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?)
                  RETURNING id, personne_id, annee_scolaire, reglee, note_paiement, version",
-            libsql::params![
-                input.personne_id,
-                input.annee_scolaire,
-                input.reglee,
-                input.note_paiement,
-                utilisateur,
-                maintenant
-            ],
-        )
-        .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Adhésion introuvable".into()))?;
-        let valeur = libsql::de::from_row::<Adhesion>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+                crate::params![
+                    input.personne_id,
+                    input.annee_scolaire,
+                    input.reglee,
+                    input.note_paiement,
+                    utilisateur,
+                    maintenant
+                ],
+            )
+            .await
     }
 
     async fn update(
@@ -63,30 +82,31 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
         utilisateur: &str,
     ) -> Result<Adhesion, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let affected = hrana_guard::execute_avec_retry(
-            &self.conn,
-            "UPDATE adhesions
+        let affected = self
+            .db
+            .execute(
+                "UPDATE adhesions
                  SET reglee = ?, note_paiement = ?, modifie_par = ?, modifie_le = ?, version = version + 1
                  WHERE id = ? AND version = ?",
-            libsql::params![
-                input.reglee,
-                input.note_paiement,
-                utilisateur,
-                maintenant,
-                id,
-                input.version
-            ],
-        )
-        .await?;
-        if affected == 0 {
-            let mut existe_rows = hrana_guard::query_avec_retry(
-                &self.conn,
-                "SELECT id FROM adhesions WHERE id = ?",
-                libsql::params![id],
+                crate::params![
+                    input.reglee,
+                    input.note_paiement,
+                    utilisateur,
+                    maintenant,
+                    id,
+                    input.version
+                ],
             )
             .await?;
-            let existe = existe_rows.next().await?.is_some();
-            hrana_guard::vider_cursor(&mut existe_rows).await?;
+        if affected == 0 {
+            let existe = self
+                .db
+                .fetch_optional::<IdRow>(
+                    "SELECT id FROM adhesions WHERE id = ?",
+                    crate::params![id],
+                )
+                .await?
+                .is_some();
             if existe {
                 return Err(AppError::Conflict(
                     crate::infrastructure::audit::MESSAGE_CONFLIT.to_string(),
@@ -94,37 +114,23 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
             }
             return Err(AppError::NotFound("Adhésion introuvable".into()));
         }
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+        self.db
+            .fetch_one(
+                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
                  FROM adhesions WHERE id = ?",
-            libsql::params![id],
-        )
-        .await?;
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Adhésion introuvable".into()))?;
-        let valeur = libsql::de::from_row::<Adhesion>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+                crate::params![id],
+            )
+            .await
     }
 
     async fn list_by_personne(&self, personne_id: i64) -> Result<Vec<Adhesion>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
+        self.db
+            .fetch_all(
+                "SELECT id, personne_id, annee_scolaire, reglee, note_paiement, version
                  FROM adhesions WHERE personne_id = ? ORDER BY annee_scolaire DESC",
-            libsql::params![personne_id],
-        )
-        .await?;
-
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            donnees.push(libsql::de::from_row::<Adhesion>(&row)?);
-        }
-
-        Ok(donnees)
+                crate::params![personne_id],
+            )
+            .await
     }
 }
 
@@ -132,7 +138,9 @@ impl AdhesionRepository for LibsqlAdhesionRepository {
 mod tests {
     use super::*;
 
-    async fn setup_db() -> Connection {
+    use crate::drivers::libsql::db::LibsqlDb;
+
+    async fn setup_db() -> Arc<dyn Db> {
         let conn = libsql::Builder::new_local(":memory:")
             .build()
             .await
@@ -142,29 +150,29 @@ mod tests {
         crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        conn
+        Arc::new(LibsqlDb::new(conn))
     }
 
-    async fn seed_personne(conn: &Connection) -> i64 {
-        conn.execute(
+    async fn seed_personne(db: &dyn Db) -> i64 {
+        db.execute(
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
              VALUES ('Test', 'User', '2000-01-15')",
-            libsql::params![],
+            crate::params![],
         )
         .await
         .expect("failed to seed personne");
         1
     }
 
-    fn repo(conn: Connection) -> LibsqlAdhesionRepository {
-        LibsqlAdhesionRepository::new(conn)
+    fn repo(db: Arc<dyn Db>) -> LibsqlAdhesionRepository {
+        LibsqlAdhesionRepository::new(db)
     }
 
     #[tokio::test]
     async fn test_create_adhesion() {
-        let conn = setup_db().await;
-        seed_personne(&conn).await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        seed_personne(db.as_ref()).await;
+        let r = repo(db);
 
         let a = r
             .create(
@@ -186,9 +194,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_list_by_personne() {
-        let conn = setup_db().await;
-        seed_personne(&conn).await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        seed_personne(db.as_ref()).await;
+        let r = repo(db.clone());
 
         r.create(
             CreateAdhesion {
@@ -220,9 +228,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_adhesion() {
-        let conn = setup_db().await;
-        seed_personne(&conn).await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        seed_personne(db.as_ref()).await;
+        let r = repo(db.clone());
 
         let a = r
             .create(
@@ -257,9 +265,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_adhesion_version_obsolete_conflit() {
-        let conn = setup_db().await;
-        seed_personne(&conn).await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        seed_personne(db.as_ref()).await;
+        let r = repo(db.clone());
 
         let a = r
             .create(
@@ -304,9 +312,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_adhesion_inexistante_not_found() {
-        let conn = setup_db().await;
-        seed_personne(&conn).await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        seed_personne(db.as_ref()).await;
+        let r = repo(db);
 
         let err = r
             .update(

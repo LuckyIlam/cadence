@@ -35,28 +35,28 @@
 - [ ] 2.3 Déplacer les `*_repo.rs` vers `drivers/libsql/repositories/`
       (impls `Libsql*Repository`) ; `repositories/mod.rs` ne réexporte que les
       traits (D6)
-- [ ] 2.4 Refactorer les 5 repos : champ `conn: Connection` → `db: Arc<dyn Db>` ;
+- [x] 2.4 Refactorer les 5 repos : champ `conn: Connection` → `db: Arc<dyn Db>` ;
       `hrana_guard::query_avec_retry`/`execute_avec_retry` +
       `libsql::de::from_row` → `db.fetch_one::<T>` / `fetch_optional::<T>` /
       `fetch_all::<T>` ; méthodes `_tx` : `&mut libsql::Transaction` →
       `&mut dyn DbTransaction` via `DbTransactionExt`
-- [ ] 2.5 Remplacer `libsql::params![…]` par `params![…]` sur tous les sites
+- [x] 2.5 Remplacer `libsql::params![…]` par `params![…]` sur tous les sites
       (sauf tests e2e) ; adapter les helpers dynamiques `Vec<libsql::Value>` →
       `Vec<DbValue>` (R3, `personne_repo.rs` recherche paginée)
-- [ ] 2.6 Faire prendre aux services `PersonneService`, `ActiviteService`,
+- [x] 2.6 Faire prendre aux services `PersonneService`, `ActiviteService`,
       `ParametreService` un `&dyn Db` au lieu de `Connection` ;
       `transaction_with_behavior(Immediate)` → `db.begin_immediate()` ;
       `transaction()` → `db.begin()` (`activite_service.rs:195-198`,
       `parametre_service.rs:300`)
-- [ ] 2.7 `AppState` : champ `conn` → `db: Arc<dyn Db>` ; `init_connection`
+- [x] 2.7 `AppState` : champ `conn` → `db: Arc<dyn Db>` ; `init_connection`
       renvoie `Arc<dyn Db>` ; `init_app_state` construit les repos avec le
       même `Arc` ; mise à jour `commands/*.rs` : `state.conn.clone()` →
       `state.db.clone()` (`activite_commands.rs` ×10, `parametre_commands.rs`
       ×3) ; `transaction_with_behavior(Immediate)` → `db.begin_immediate()`
       (`planning_commands.rs:27,86,123`)
-- [ ] 2.8 Adapter `e2e_mono` / `e2e_multi` à `init_connection` → `Arc<dyn Db>`
+- [x] 2.8 Adapter `e2e_mono` / `e2e_multi` à `init_connection` → `Arc<dyn Db>`
       ; `e2e_stream.rs` **inchangé** (libsql brut, test bas-niveau driver)
-- [ ] 2.9 Réécrire les tests repository (mécanique : `libsql::params!` →
+- [x] 2.9 Réécrire les tests repository (mécanique : `libsql::params!` →
       `params!`, `new(conn)` → `new(db)`) ; implémenter `DeserializeRow` pour
       les ~20 types lus par requête ; vérifier tous tests verts +
       `cargo clippy -D warnings`

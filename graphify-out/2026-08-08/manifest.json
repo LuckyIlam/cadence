@@ -990,8 +990,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db/mod.rs": {
-    "mtime": 1786200641.8929844,
-    "ast_hash": "5c2d2da1685c8d730b17dc6b56841dac",
+    "mtime": 1786204375.667665,
+    "ast_hash": "50443761e5282f7169d4593aa2f200be",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db/params.rs": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db/transaction.rs": {
-    "mtime": 1786200529.4400344,
-    "ast_hash": "22db8bc93dc550cb47276f2e8e543177",
+    "mtime": 1786204369.6430683,
+    "ast_hash": "40b5b5d293c9d60a05c468dc244af423",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/retry.rs": {
@@ -1030,8 +1030,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/db-driver-abstraction/tasks.md": {
-    "mtime": 1786202047.283811,
-    "ast_hash": "ddff258319fe180c6b42b14e60e46982",
+    "mtime": 1786204410.608667,
+    "ast_hash": "b2255d14122f6c000dc9d8405e8e1414",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/db.rs": {

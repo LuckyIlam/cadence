@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 
-use libsql::Connection;
-
 use crate::domain::parametre::{
     trouver_place_deplacement, valider_plage_horaire, ImpactAction, ImpactCreneau,
     ParametresPlanning,
 };
 use crate::domain::planning::jour_semaine_texte;
 use crate::error::AppError;
+use crate::infrastructure::db::Db;
 use crate::repositories::{ParametreRepository, PlanningRepository};
 
 /// Service métier des paramètres de planning : gestion de la plage horaire d'ouverture
@@ -15,15 +14,15 @@ use crate::repositories::{ParametreRepository, PlanningRepository};
 pub struct ParametreService<'a, R: ParametreRepository, P: PlanningRepository> {
     param_repo: &'a R,
     planning_repo: &'a P,
-    conn: Connection,
+    db: &'a dyn Db,
 }
 
 impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, P> {
-    pub fn new(param_repo: &'a R, planning_repo: &'a P, conn: Connection) -> Self {
+    pub fn new(param_repo: &'a R, planning_repo: &'a P, db: &'a dyn Db) -> Self {
         Self {
             param_repo,
             planning_repo,
-            conn,
+            db,
         }
     }
 
@@ -297,19 +296,19 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
             )));
         }
 
-        let mut tx = self.conn.transaction().await?;
+        let mut tx = self.db.begin().await?;
 
         for imp in &impacts {
             match imp.action {
                 ImpactAction::Supprime => {
                     self.planning_repo
-                        .supprimer_creneau_tx(&mut tx, imp.creneau_id)
+                        .supprimer_creneau_tx(&mut *tx, imp.creneau_id)
                         .await?;
                 }
                 ImpactAction::Deplace => {
                     if let (Some(d), Some(f)) = (&imp.nouveau_debut, &imp.nouveau_fin) {
                         self.planning_repo
-                            .deplacer_creneau_tx(&mut tx, imp.creneau_id, d, f, utilisateur)
+                            .deplacer_creneau_tx(&mut *tx, imp.creneau_id, d, f, utilisateur)
                             .await?;
                     }
                 }
@@ -324,7 +323,7 @@ impl<'a, R: ParametreRepository, P: PlanningRepository> ParametreService<'a, R, 
 
         let params = self
             .param_repo
-            .mettre_a_jour_plage_horaire_tx(&mut tx, heure_ouverture, heure_fermeture, utilisateur)
+            .mettre_a_jour_plage_horaire_tx(&mut *tx, heure_ouverture, heure_fermeture, utilisateur)
             .await?;
 
         tx.commit().await?;
@@ -342,6 +341,8 @@ mod tests {
         CreateCreneau, CreateSemaineBanalisee, CreneauActivite, CreneauHorsPlage, Inscription,
     };
     use crate::domain::planning::{PlanningCreneau, SemaineBanalisee};
+    use crate::drivers::libsql::db::LibsqlDb;
+    use crate::infrastructure::db::DbTransaction;
 
     struct MockParametreRepository {
         params: Mutex<ParametresPlanning>,
@@ -367,7 +368,7 @@ mod tests {
 
         async fn mettre_a_jour_plage_horaire_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             heure_ouverture: &str,
             heure_fermeture: &str,
             _utilisateur: &str,
@@ -506,7 +507,7 @@ mod tests {
 
         async fn supprimer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             id: i64,
         ) -> Result<(), AppError> {
             self.suppressions.lock().unwrap().push(id);
@@ -516,7 +517,7 @@ mod tests {
 
         async fn deplacer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             id: i64,
             heure_debut: &str,
             heure_fin: &str,
@@ -547,7 +548,7 @@ mod tests {
 
         async fn creer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _input: CreateCreneau,
             _utilisateur: &str,
         ) -> Result<CreneauActivite, AppError> {
@@ -556,7 +557,7 @@ mod tests {
 
         async fn modifier_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _id: i64,
             _input: CreateCreneau,
             _version: i64,
@@ -598,7 +599,7 @@ mod tests {
 
         async fn verifier_conflit_creneaux_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
             _jour_semaine: i64,
@@ -619,7 +620,7 @@ mod tests {
 
         async fn compter_inscrits_activite_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<i64, AppError> {
@@ -637,7 +638,7 @@ mod tests {
 
         async fn verifier_collision_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _personne_id: i64,
             _activite_id: i64,
             _annee_scolaire: &str,
@@ -647,7 +648,7 @@ mod tests {
 
         async fn lister_creneaux_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<Vec<CreneauActivite>, AppError> {
@@ -664,21 +665,22 @@ mod tests {
         }
     }
 
-    async fn make_conn() -> Connection {
-        libsql::Builder::new_local(":memory:")
+    async fn make_db() -> LibsqlDb {
+        let database = libsql::Builder::new_local(":memory:")
             .build()
             .await
-            .expect("failed to create test db")
-            .connect()
-            .expect("failed to connect test db")
+            .expect("failed to create test db");
+        let conn = database.connect().expect("failed to connect test db");
+        LibsqlDb::new(conn)
     }
 
     fn make_service<'a, R: ParametreRepository, P: PlanningRepository>(
         param_repo: &'a R,
         planning_repo: &'a P,
-        conn: Connection,
+        db: LibsqlDb,
     ) -> ParametreService<'a, R, P> {
-        ParametreService::new(param_repo, planning_repo, conn)
+        let db: &'a dyn crate::infrastructure::db::Db = Box::leak(Box::new(db));
+        ParametreService::new(param_repo, planning_repo, db)
     }
 
     #[tokio::test]
@@ -690,7 +692,7 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -718,7 +720,7 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -733,7 +735,7 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -749,7 +751,7 @@ mod tests {
     async fn test_apercu_plage_invalide() {
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(Vec::new());
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let err = service
@@ -764,7 +766,7 @@ mod tests {
         let creneaux = vec![hors_plage(3, 1, "Poterie", 1, "09:00", "11:00", 1)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let params = service
@@ -783,7 +785,7 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let err = service
@@ -802,7 +804,7 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let params = service
@@ -824,7 +826,7 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "19:00", 3)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let err = service
@@ -851,7 +853,7 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -879,7 +881,7 @@ mod tests {
         ];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -902,7 +904,7 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -926,7 +928,7 @@ mod tests {
         let inscrits = vec![inscription(1, 7, "Poterie"), inscription(2, 7, "Théâtre")];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::avec_inscriptions(creneaux, inscrits);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -952,7 +954,7 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 2)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service
@@ -976,7 +978,7 @@ mod tests {
         let creneaux = vec![hors_plage(1, 1, "Poterie", 1, "08:00", "09:00", 0)];
         let param = MockParametreRepository::new();
         let planning = MockPlanningRepository::new(creneaux);
-        let conn = make_conn().await;
+        let conn = make_db().await;
         let service = make_service(&param, &planning, conn);
 
         let impacts = service

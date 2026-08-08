@@ -49,12 +49,12 @@ mod tests {
                     let state = init_app_state(conn);
 
                     // SELECT 1 direct (équivalent tester_connexion).
-                    let mut rows = state
-                        .conn
-                        .query("SELECT 1", libsql::params![])
+                    let _ = state
+                        .db
+                        .fetch_optional_row("SELECT 1", crate::infrastructure::db::DbParams::new())
                         .await
-                        .expect("SELECT 1");
-                    rows.next().await.expect("row").expect("row");
+                        .expect("SELECT 1")
+                        .expect("ligne");
 
                     // CRUD via le vrai repository.
                     let nom = format!("E2E {}", std::process::id());
@@ -112,10 +112,10 @@ mod tests {
 
                     // Nettoyage direct (aucune commande de suppression personne).
                     state
-                        .conn
+                        .db
                         .execute(
                             "DELETE FROM personnes_physiques WHERE id = ?",
-                            libsql::params![personne.id],
+                            crate::params![personne.id],
                         )
                         .await
                         .expect("nettoyage");

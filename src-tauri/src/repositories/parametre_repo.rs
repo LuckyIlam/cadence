@@ -1,16 +1,19 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
-use libsql::Connection;
 
 use crate::domain::parametre::ParametresPlanning;
 use crate::error::AppError;
-use crate::infrastructure::hrana_guard;
+use crate::infrastructure::db::{
+    Db, DbExt, DbTransaction, DbTransactionExt, DeserializeRow, RowView,
+};
 
 #[async_trait]
 pub trait ParametreRepository: Send + Sync {
     async fn obtenir_parametres_planning(&self) -> Result<ParametresPlanning, AppError>;
     async fn mettre_a_jour_plage_horaire_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         heure_ouverture: &str,
         heure_fermeture: &str,
         utilisateur: &str,
@@ -18,59 +21,52 @@ pub trait ParametreRepository: Send + Sync {
 }
 
 pub struct LibsqlParametreRepository {
-    pub(crate) conn: Connection,
+    db: Arc<dyn Db>,
 }
 
 impl LibsqlParametreRepository {
-    pub fn new(conn: Connection) -> Self {
-        Self { conn }
+    pub fn new(db: Arc<dyn Db>) -> Self {
+        Self { db }
+    }
+}
+
+impl DeserializeRow for ParametresPlanning {
+    fn from_row(row: &dyn RowView) -> Result<Self, AppError> {
+        Ok(ParametresPlanning {
+            id: row.get_i64(0)?,
+            heure_ouverture: row.get_str(1)?.to_string(),
+            heure_fermeture: row.get_str(2)?.to_string(),
+        })
     }
 }
 
 #[async_trait]
 impl ParametreRepository for LibsqlParametreRepository {
     async fn obtenir_parametres_planning(&self) -> Result<ParametresPlanning, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT id, heure_ouverture, heure_fermeture FROM parametres WHERE id = 1",
-            libsql::params![],
-        )
-        .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Paramètres introuvables".into()))?;
-        let valeur = libsql::de::from_row::<ParametresPlanning>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+        self.db
+            .fetch_one(
+                "SELECT id, heure_ouverture, heure_fermeture FROM parametres WHERE id = 1",
+                crate::params![],
+            )
+            .await
     }
 
     async fn mettre_a_jour_plage_horaire_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         heure_ouverture: &str,
         heure_fermeture: &str,
         utilisateur: &str,
     ) -> Result<ParametresPlanning, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = tx
-            .query(
-                "UPDATE parametres
-                 SET heure_ouverture = ?, heure_fermeture = ?, modifie_par = ?, modifie_le = ?
-                 WHERE id = 1
-                 RETURNING id, heure_ouverture, heure_fermeture",
-                libsql::params![heure_ouverture, heure_fermeture, utilisateur, maintenant],
-            )
-            .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Paramètres introuvables".into()))?;
-        let valeur = libsql::de::from_row::<ParametresPlanning>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+        tx.fetch_one(
+            "UPDATE parametres
+             SET heure_ouverture = ?, heure_fermeture = ?, modifie_par = ?, modifie_le = ?
+             WHERE id = 1
+             RETURNING id, heure_ouverture, heure_fermeture",
+            crate::params![heure_ouverture, heure_fermeture, utilisateur, maintenant],
+        )
+        .await
     }
 }
 
@@ -78,7 +74,9 @@ impl ParametreRepository for LibsqlParametreRepository {
 mod tests {
     use super::*;
 
-    async fn setup_db() -> Connection {
+    use crate::drivers::libsql::db::LibsqlDb;
+
+    async fn setup_db() -> Arc<dyn Db> {
         let conn = libsql::Builder::new_local(":memory:")
             .build()
             .await
@@ -88,13 +86,13 @@ mod tests {
         crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        conn
+        Arc::new(LibsqlDb::new(conn))
     }
 
     #[tokio::test]
     async fn test_obtenir_parametres_defaut() {
-        let conn = setup_db().await;
-        let r = LibsqlParametreRepository::new(conn);
+        let db = setup_db().await;
+        let r = LibsqlParametreRepository::new(db);
 
         let params = r.obtenir_parametres_planning().await.unwrap();
         assert_eq!(params.heure_ouverture, "08:00");
@@ -103,12 +101,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_mettre_a_jour_plage_horaire() {
-        let conn = setup_db().await;
-        let r = LibsqlParametreRepository::new(conn.clone());
+        let db = setup_db().await;
+        let r = LibsqlParametreRepository::new(db.clone());
 
-        let mut tx = conn.transaction().await.unwrap();
+        let mut tx = db.begin().await.unwrap();
         let params = r
-            .mettre_a_jour_plage_horaire_tx(&mut tx, "09:00", "18:00", "alice")
+            .mettre_a_jour_plage_horaire_tx(&mut *tx, "09:00", "18:00", "alice")
             .await
             .unwrap();
         tx.commit().await.unwrap();

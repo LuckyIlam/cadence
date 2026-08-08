@@ -197,6 +197,18 @@ Chaque struct domain implémente `DeserializeRow` (mécanique, ~15 lignes
 par struct). Les helpers `fetch_one` / `fetch_optional` déjà présents
 dans `personne_repo.rs:41-78` deviennent la norme.
 
+> **Écart d'implémentation (PR 2, tâches 2.4-2.5)** : les impls
+> `DeserializeRow` sont placées dans les fichiers repository (près des
+> requêtes qui les lisent), et non dans les fichiers domain ni dans
+> `drivers/libsql/row.rs` (cf. layout ci-dessous). Raison : ces impls
+> sont mécaniques (grain SQL) et dépendent de `RowView`/`AppError` ; les
+> garder près des requêtes évite d'éparpiller la connaissance de la forme
+> des colonnes entre domain et infra. Les structs purement techniques
+> (`TotalRow`, `IdRow`, `AuditRow`, `ModifieParRow`, `ActiviteCreneauRow`,
+> …) sont définies directement dans les repos. Seul le parsing `Role`
+> transite par le domaine via `domain::activite::role_from_str` (pur, testé),
+> chaque repo le consommant via un helper local `role_from_row(row, idx)`.
+
 **Alternative écartée** : typage générique par colonne (`Personne::FIELDS: &[FieldSpec; 7]`).
 Très propre, mais ajoute une indirection runtime ou un proc-macro ; trop
 lourd pour le gain.
