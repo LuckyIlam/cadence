@@ -336,11 +336,10 @@ remplace par refinery.
 
 ### D8 — Couper le test mock `e2e_stream` du runner
 
-`e2e_stream.rs` injecte aujourd'hui une `Connection` directe (ligne 41-45).
-À refactorer pour passer par `LibsqlDb::connect(...)`. Légère régression
-de la valeur du test (moins de fidélité au cas Hrana réel) compensée par
-la généralité. *Décision : acceptable* car le test E2E reste valide pour
-la garde retry.
+`e2e_stream.rs` teste le comportement **bas-niveau du driver** (reset du
+stream Hrana après un curseur abandonné), pas l'abstraction. *Décision PR 2
+(validée) : inchangé*, il reste sur `libsql::Connection` brute et ne passe
+ni par `LibsqlDb` ni par `Arc<dyn Db>`. Pas de régression de valeur du test.
 
 ### D9 — Stratégie RETURNING : repo-spécifique, jamais imposée par Db
 
@@ -471,6 +470,19 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
 
 ## Migration Plan
 
+> **Décisions PR 2 (validées)** :
+> - **Retry internalisé dans `LibsqlDb`** (et non porté par les repos comme
+>   le sketch D4) : `impl Db for LibsqlDb` applique `HranaRetryPolicy` sur
+>   `execute` / `fetch_*_row` / `execute_batch` ; les repos appellent
+>   simplement `db.fetch_all(…)`. Le grain requête-only est respecté.
+> - **`DbTransactionExt` créé en PR 2** : symétrique de `DbExt`
+>   (`fetch_one<T>` / `fetch_optional<T>` / `fetch_all<T>`) pour
+>   `&mut dyn DbTransaction`, consommé par les 16 méthodes `_tx` des repos.
+> - **`e2e_stream.rs` reste sur libsql brut** (D8, cf. ci-dessus).
+> - **Déplacement D6 en fin de PR 2** : refactor fonctionnel
+>   (`conn → Arc<dyn Db>`, `params!`, `_tx` → `dyn DbTransaction`) d'abord,
+>   puis déplacement des impls vers `drivers/libsql/repositories/`.
+
 Trois PRs séquentielles.
 
 ### PR 1 — Pose des abstractions (zéro changement de comportement)
@@ -487,11 +499,21 @@ Trois PRs séquentielles.
 
 ### PR 2 — Refactor repositories + services derrière `dyn Db`
 
-- Déplacement des `*_repo.rs` vers `drivers/libsql/repositories/`.
+- Création de `drivers/libsql/db.rs` : `LibsqlDb` implémente `Db` (retry
+  `HranaRetryPolicy` internalisé) + conversions `DbParams`/`DbRow`.
+  ~250 lignes nouvelles.
+- Création de `DbTransactionExt` (`db/transaction.rs`). ~60 lignes.
+- Déplacement des `*_repo.rs` vers `drivers/libsql/repositories/`
+  (**en fin de PR 2**, après refactor fonctionnel validé).
 - `PersonneService`, `ActiviteService`, `ParametreService` prennent
-  `&dyn Db` au lieu de `Connection`.
+  `&dyn Db` au lieu de `Connection` ; `begin_immediate()` remplace
+  `transaction_with_behavior(Immediate)` (`activite_service.rs:195-198`),
+  `begin()` remplace `transaction()` (`parametre_service.rs:300`).
 - Macro `params![…]` remplace `libsql::params![…]` sur tous les sites
-  (sauf tests e2e).
+  (sauf tests e2e) ; helpers dynamiques `Vec<libsql::Value>` →
+  `Vec<DbValue>` (R3, `personne_repo.rs` recherche paginée).
+- Implémentation de `DeserializeRow` pour les ~20 types lus par requête
+  (11 domain + helpers : `CompteurRow`, `TotalRow`, `AnneeRow`, …).
 - `AppState` contient `Arc<dyn Db>` (au lieu de `Connection` cloné
   × 5) ; le champ `pub conn` disparaît. **Périmètre `commands/*.rs`**
   (angle mort de la version précédente du plan) :
@@ -500,8 +522,9 @@ Trois PRs séquentielles.
   - `planning_commands.rs:27,86,123` :
     `transaction_with_behavior(Immediate)` → `db.begin_immediate()`
     (garantie d'atomicité conservée).
-- `e2e_mono.rs` / `e2e_multi.rs` / `e2e_stream.rs` : `init_connection`
-  renvoie `Arc<dyn Db>`. ~150 lignes touchées.
+- `e2e_mono.rs` / `e2e_multi.rs` : `init_connection` renvoie
+  `Arc<dyn Db>`. **`e2e_stream.rs` inchangé** (libsql brut, D8).
+  ~150 lignes touchées.
 - Critère : tous les tests existants passent, `cargo clippy -D warnings`
   reste vert.
 
