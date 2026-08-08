@@ -28,11 +28,11 @@ use std::sync::Arc;
 use super::config::{ConnexionConfig, Driver, ModeConnexion};
 use super::migrations::cadence_migrations;
 use crate::drivers::libsql::db::LibsqlDb;
-use crate::error::AppError;
-use crate::repositories::{
+use crate::drivers::libsql::repositories::{
     LibsqlActiviteRepository, LibsqlAdhesionRepository, LibsqlParametreRepository,
     LibsqlPersonneRepository, LibsqlPlanningRepository,
 };
+use crate::error::AppError;
 
 pub struct AppState {
     pub db: Arc<dyn Db>,

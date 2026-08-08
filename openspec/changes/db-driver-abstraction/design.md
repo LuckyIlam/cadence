@@ -313,6 +313,17 @@ drivers/
 `repositories/mod.rs` ne réexporte plus que les traits. Les `Libsql*Repository`
 proviennent de `drivers::libsql::repositories::*`.
 
+> **Écart d'implémentation (PR 2, tâche 2.3)** : les fichiers sont déplacés
+> **en bloc** (trait + `Libsql*Repository` + `DeserializeRow` + tests) vers
+> `drivers/libsql/repositories/`, renommés sans suffixe `_repo`
+> (`personne.rs`, `activite.rs`, …). Conséquence : les traits sont définis
+> physiquement dans `drivers::libsql::repositories` et **réexportés** par
+> `repositories/mod.rs` (qui ne réexporte effectivement que les traits). Les
+> `Libsql*Repository` sont réexportés par `drivers::libsql::repositories`
+> directement. Aucun appelant (services, commands, e2e) n'importe plus les
+> modules `*_repo` internes — ils consomment `crate::repositories::{Trait}` ou
+> `crate::drivers::libsql::repositories::{Libsql*Repository}`.
+
 **Alternative écartée** : laisser `repositories/*.rs` mais avec `&dyn Db`
 au lieu de `&Connection` — minimiserait le déplacement mais entretiendrait
 la confusion driver ↔ domaine. Refusé.

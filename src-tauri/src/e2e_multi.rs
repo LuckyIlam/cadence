@@ -3,7 +3,7 @@ mod tests {
     use crate::domain::personne::{CreatePersonne, UpdatePersonne};
     use crate::infrastructure::config::{ConnexionConfig, Driver, ModeConnexion};
     use crate::infrastructure::db::{init_app_state, init_connection};
-    use crate::repositories::personne_repo::PersonneRepository;
+    use crate::repositories::PersonneRepository;
 
     // Test de validation end-to-end : mode multi-utilisateurs sur la base de test
     // Turso `cadence-dev`. Nécessite les variables d'environnement TURSO_URL et

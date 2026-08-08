@@ -32,9 +32,9 @@
 - [x] 2.2 Créer `DbTransactionExt` (symétrique de `DbExt`, blanket
       `impl<D: DbTransaction + ?Sized>`) : `fetch_one<T>` / `fetch_optional<T>`
       / `fetch_all<T>` ; tests unitaires dans `db/transaction.rs`
-- [ ] 2.3 Déplacer les `*_repo.rs` vers `drivers/libsql/repositories/`
-      (impls `Libsql*Repository`) ; `repositories/mod.rs` ne réexporte que les
-      traits (D6)
+- [x] 2.3 Déplacer les `*_repo.rs` vers `drivers/libsql/repositories/`
+      (impls `Libsql*Repository`, fichiers renommés sans suffixe `_repo`) ;
+      `repositories/mod.rs` ne réexporte que les traits (D6)
 - [x] 2.4 Refactorer les 5 repos : champ `conn: Connection` → `db: Arc<dyn Db>` ;
       `hrana_guard::query_avec_retry`/`execute_avec_retry` +
       `libsql::de::from_row` → `db.fetch_one::<T>` / `fetch_optional::<T>` /
