@@ -83,6 +83,14 @@ jobs:
         with:
           name: coverage-report
           path: src-tauri/lcov.info
+      - name: Upload coverage to Codecov
+        if: github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v7
+        with:
+          files: src-tauri/lcov.info
+          flags: rust
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     name: Test

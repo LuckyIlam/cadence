@@ -1,5 +1,7 @@
 # Cadence
 
+[![codecov](https://codecov.io/github/LuckyIlam/cadence/branch/main/graph/badge.svg)](https://app.codecov.io/gh/LuckyIlam/cadence)
+
 Application de bureau pour gérer les adhérents et les activités d'une association.
 
 ## Stack
