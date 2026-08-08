@@ -1,8 +1,32 @@
+// PR 1 : le nouveau contrat DB est posé mais encore inutilisé en interne
+// (consommé par les repositories en PR 2). `dead_code` est volontairement
+// neutralisé sur tout le module jusqu'à cette adoption.
+#![allow(dead_code)]
+
+#[allow(clippy::module_inception)]
+// db::db : nommage du design D1 (db/{db,params,row,transaction}.rs)
+pub mod db;
+pub mod params;
+pub mod row;
+pub mod transaction;
+
+// Re-exports publics du nouveau contrat DB, consommés à partir de la PR 2
+// (repositories derrière `dyn Db`). Non utilisés en interne dans cette PR :
+// `unused_imports` est donc volontairement neutralisé ici.
+#[allow(unused_imports)]
+pub use db::{Db, DbExt};
+#[allow(unused_imports)]
+pub use params::{DbParams, DbValue, IntoParams, ToDbValue};
+#[allow(unused_imports)]
+pub use row::{DbRow, DeserializeRow, RowView};
+#[allow(unused_imports)]
+pub use transaction::DbTransaction;
+
 use std::path::Path;
 
 use libsql::Connection;
 
-use super::config::{ConnexionConfig, ModeConnexion};
+use super::config::{ConnexionConfig, Driver, ModeConnexion};
 use super::migrations::cadence_migrations;
 use crate::error::AppError;
 use crate::repositories::{
@@ -29,6 +53,16 @@ pub async fn init_connection(
     config: &ConnexionConfig,
     app_dir: &Path,
 ) -> Result<Connection, AppError> {
+    match config.driver {
+        Driver::Sqlite => {}
+        Driver::Postgres => {
+            unimplemented!("Driver Postgres : prévu dans un change dédié (db-driver-abstraction)")
+        }
+        Driver::Mysql => {
+            unimplemented!("Driver Mysql : prévu dans un change dédié (db-driver-abstraction)")
+        }
+    }
+
     let database = match config.mode {
         ModeConnexion::Mono => {
             libsql::Builder::new_local(app_dir.join("cadence.db"))

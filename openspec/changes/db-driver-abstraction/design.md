@@ -8,11 +8,18 @@
 - Le passage `sqlx → libsql` a touché ~3 100 lignes de Rust parce que **le type du
   driver a été utilisé comme contrat commun** dans 5 repositories, 11 structs
   domain, 2 services et le runner de migrations. Preuves :
-  - `use libsql::Connection` / `use libsql::Transaction` dans 9 fichiers
+  - `use libsql::Connection` / `use libsql::Transaction` dans 11 fichiers
     (`infrastructure/{db,hrana_guard,migrations}.rs`, 5 `repositories/*.rs`,
-    `services/parametre_service.rs`).
-  - `&mut libsql::Transaction` fuit dans **2 signatures de traits**
-    (`planning_repo.rs:38-46`, `parametre_repo.rs:13,51`).
+    `services/{activite,parametre}_service.rs`,
+    `commands/planning_commands.rs`).
+  - `&mut libsql::Transaction` fuit dans **3 signatures de traits**
+    (`planning_repo.rs:38-46`, `parametre_repo.rs:13,51`,
+    `activite_repo.rs:62-85`), mais aussi dans les **services**
+    (`activite_service.rs` ~12 occurrences, `parametre_service.rs` ~9)
+    et dans **commands/** : `planning_commands.rs:27,86,123` appelle
+    directement `state.conn.transaction_with_behavior(Immediate)`, et
+    `state.conn` (champ `pub` de `AppState`) est consommé dans
+    `activite_commands.rs` (10 sites) et `parametre_commands.rs` (3 sites).
   - `libsql::de::from_row` utilisé dans 11 structs + 2 helpers `fetch_one` /
     `fetch_optional` (`personne_repo.rs:51,67`, `activite_repo.rs` etc.).
   - `libsql::params!` et `libsql::Value` utilisés ~80 fois dans les repositories,
@@ -64,7 +71,10 @@
 
 ### D1 — Trait `Db` central, transactions `Box<dyn DbTransaction>`
 
-Définit l'interface du driver. La couche `commands/` ignore tout du driver.
+Définit l'interface du driver. Objectif : rendre la couche `commands/`
+agnostique — aujourd'hui elle touche directement le driver
+(`planning_commands.rs:27,86,123` appelle
+`state.conn.transaction_with_behavior(Immediate)`).
 
 ```rust
 // infrastructure/db.rs
@@ -84,6 +94,10 @@ pub trait Db: Send + Sync {
 
     async fn begin(&self) -> Result<Box<dyn DbTransaction + '_>, AppError>;
 
+    async fn begin_immediate(&self) -> Result<Box<dyn DbTransaction + '_>, AppError>;
+
+    async fn execute_batch(&self, sql: &str) -> Result<(), AppError>;
+
     fn driver_name(&self) -> &'static str;
 }
 
@@ -102,6 +116,31 @@ Justification : un trait object `dyn Db` est moins rapide qu'un type
 statique mais la différence est négligeable face au coût IPC d'un Tauri
 command (mesurable). Les repositories deviennent polymorphes sans
 template hell.
+
+> **Écart d'implémentation (PR 1) — object-safety.** Le sketch ci-dessus
+> (méthodes génériques `P: IntoParams`, `T: DeserializeRow`) n'est **pas**
+> object-safe : `Arc<dyn Db>` (PR 2, tâche 2.4) ne peut pas l'utiliser.
+> Le code livré en PR 1 scinde donc en deux :
+> - **`Db` object-safe** — `execute(&self, sql, params: DbParams)`,
+>   `fetch_one_row` / `fetch_optional_row` / `fetch_all_rows` (retournent
+>   `Option<DbRow>` / `Vec<DbRow>` neutres), `begin`, `begin_immediate`,
+>   `execute_batch`, `driver_name`.
+> - **`DbExt`** — trait d'extension générique (`impl<D: Db + ?Sized> DbExt for D`)
+>   portant les méthodes typées `fetch_one<T: DeserializeRow>`, `fetch_optional<T>`,
+>   `fetch_all<T>`, implémentées via les méthodes object-safe de `Db` +
+>   `DeserializeRow::from_row`.
+>
+> Conséquence : `params!` produit directement `DbParams` (concret), le
+> générique `P: IntoParams` n'existe plus sur `Db`/`DbTransaction`.
+> Les repositories (PR 2) gardent le même appel : `db.fetch_one::<T>(...)`
+> via `DbExt`.
+
+`begin_immediate` préserve la garantie d'atomicité documentée dans
+`planning_commands.rs` (« BEGIN IMMEDIATE… pour éviter un conflit non
+détecté ») : libsql → `BEGIN IMMEDIATE`, Postgres/MySQL → équivalent du
+BEGIN simple (déjà immédiat). `execute_batch` est requis par
+`cadence_migrations` (migrations.rs:59,73) si le runner doit rester
+derrière `&dyn Db` (mitigation R1).
 
 **Alternatives écartées** :
 - `enum DbKind { Libsql(LibsqlDb), Postgres(...), Mysql(...) }` — plus rapide,
@@ -183,6 +222,22 @@ Les repositories appellent `self.policy.run(|| async { db.fetch_one(…) }).awai
 Les tests unitaires `hrana_guard::est_stream_perdu` migrent vers
 `HranaRetryPolicy::matches`.
 
+> **Écart d'implémentation (PR 1)** : `run` prend `F: FnMut()` (et non
+> `FnOnce()`) — la politique doit pouvoir ré-invoquer l'opération à chaque
+> tentative ; `#[async_trait]` est remplacé par un `async fn` déclaré
+> directement dans le trait.
+
+**Grain du retry (requête vs transaction)** : `RetryPolicy` opère au niveau
+*requête isolée*. C'est sûr pour `HranaRetryPolicy` car l'échec « stream not
+found » survient au `prepare`/describe, avant toute exécution côté serveur
+(commentaire `hrana_guard.rs:14-15`) — rejouer la requête est sans effet de
+bord. Ce n'est **pas** sûr pour un retry aveugle sur `serialization_failure` /
+`deadlock` en Postgres : la requête a déjà été (partiellement) exécutée, seule
+la **transaction entière** doit être rejouée. → le replay transaction-level est
+porté par les appels à `DbTransaction` dans les services, hors `RetryPolicy`.
+`RetryPolicy` reste une politique requête-only ; `SqlxRetryPolicy` sera
+introduit dans le change dédié Postgres avec cette contrainte.
+
 **Alternative écartée** : embeddings d'un middleware via `tower` —
 excessif pour deux politiques. Refusé.
 
@@ -202,10 +257,18 @@ pub struct ConnexionConfig {
     pub utilisateur: String,
 }
 ```
-
-Aucun appel à `init_connection` n'utilise encore `Driver::Postgres` /
+Aucun appel à `init_connection` n'utilise encore 
+`Driver::Postgres` /
 `Mysql` ; ces branches sont `unimplemented!()` avec un message clair vers
 la PR d'ajout. Le frontend ne le voit pas encore.
+
+> **Écart d'implémentation (PR 1) — `Mode` reporté.** L'`enum Mode { Local,
+> Distant }` est **reporté** à une PR ultérieure : renommer
+> `ModeConnexion` → `Mode` changerait la signature publique de la commande
+> `sauvegarder_config` (critère 1.6 : aucune signature publique ne change).
+> PR 1 ne pose donc que l'`enum Driver` + le champ `driver`
+> (`#[serde(default)]`, rétro-compatible) ; `mode` conserve son type
+> `ModeConnexion` actuel.
 
 **Alternative écartée** : étendre maintenant le front avec choix SQLite /
 Postgres / MySQL. Risque UX énorme pour un usage nul. Refusé.
@@ -316,6 +379,10 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   factorisé derrière `&dyn Db` (driver-agnostique) avec une variante
   `RefineryDriver::migrations(SqliteMigrations)`. Le coût marginal est
   nul pour cette PR.
+- Prérequis de cette mitigation : `cadence_migrations` repose sur
+  `execute_batch` (migrations.rs:59,73). Le trait `Db` expose donc
+  `execute_batch` dès PR 1 (D1), sinon le runner ne peut pas rester
+  derrière `&dyn Db`.
 - Action concrète : programmer le spike avant la PR 3.
 
 ### R2 — Performance `dyn Db` vs `libsql::Connection` direct
@@ -378,6 +445,9 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   d'engagement précédent). Soit ~1 400 lignes nettes, **en dessous de
   la cible 2 200** posée dans l'analyse initiale (les drivers à venir
   consommeront la différence).
+- Ce chiffrage était établi sans le périmètre `commands/*.rs` (angle mort
+  découvert en relecture, cf. Context). L'ajout de `commands/*.rs` en PR 2
+  (~150 lignes de plus) conserve un total sous la cible.
 - 3 PRs : 1 par étape majeure (cf. découpage validé). Risque cumulé
   acceptable.
 
@@ -387,6 +457,17 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   thread BDD 512 MiB. C'est un single-connection check + execute_batch
   séquentiel. Si refinery impose un autre modèle, vérifier la
   compatibilité. *À investiguer dans le spike de R1.*
+
+### R11 — Non-atomicité de `cadence_migrations` (préexistant, non bloquant)
+
+- `cadence_migrations` exécute `execute_batch("BEGIN; …; COMMIT;")` puis,
+  dans un **appel séparé**, l'INSERT du tracker (migrations.rs:72-79). Un
+  crash entre les deux rejoue la migration au prochain boot : inoffensif
+  pour les `CREATE TABLE IF NOT EXISTS`, mais pas forcément pour les
+  `ALTER TABLE` (ex. `add_audit.sql`).
+- Préexistant, indépendant du driver. PR 3 (refinery) est le bon moment
+  pour le traiter : écrire le tracker dans la même transaction que la
+  migration.
 
 ## Migration Plan
 
@@ -412,7 +493,13 @@ Trois PRs séquentielles.
 - Macro `params![…]` remplace `libsql::params![…]` sur tous les sites
   (sauf tests e2e).
 - `AppState` contient `Arc<dyn Db>` (au lieu de `Connection` cloné
-  × 5).
+  × 5) ; le champ `pub conn` disparaît. **Périmètre `commands/*.rs`**
+  (angle mort de la version précédente du plan) :
+  - `activite_commands.rs` (10 sites) et `parametre_commands.rs`
+    (3 sites) : `state.conn.clone()` → `state.db.clone()` ;
+  - `planning_commands.rs:27,86,123` :
+    `transaction_with_behavior(Immediate)` → `db.begin_immediate()`
+    (garantie d'atomicité conservée).
 - `e2e_mono.rs` / `e2e_multi.rs` / `e2e_stream.rs` : `init_connection`
   renvoie `Arc<dyn Db>`. ~150 lignes touchées.
 - Critère : tous les tests existants passent, `cargo clippy -D warnings`

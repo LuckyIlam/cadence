@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::domain::personne::{CreatePersonne, UpdatePersonne};
-    use crate::infrastructure::config::{ConnexionConfig, ModeConnexion};
+    use crate::infrastructure::config::{ConnexionConfig, Driver, ModeConnexion};
     use crate::infrastructure::db::{init_app_state, init_connection};
     use crate::repositories::personne_repo::PersonneRepository;
 
@@ -34,6 +34,7 @@ mod tests {
                         .map(|reste| format!("libsql://{reste}"))
                         .unwrap_or(url);
                     let config = ConnexionConfig {
+                        driver: Driver::Sqlite,
                         mode: ModeConnexion::Multi,
                         url: Some(url),
                         token: Some(token),
