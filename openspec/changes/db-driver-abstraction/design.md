@@ -197,17 +197,17 @@ Chaque struct domain implémente `DeserializeRow` (mécanique, ~15 lignes
 par struct). Les helpers `fetch_one` / `fetch_optional` déjà présents
 dans `personne_repo.rs:41-78` deviennent la norme.
 
-> **Écart d'implémentation (PR 2, tâches 2.4-2.5)** : les impls
-> `DeserializeRow` sont placées dans les fichiers repository (près des
-> requêtes qui les lisent), et non dans les fichiers domain ni dans
-> `drivers/libsql/row.rs` (cf. layout ci-dessous). Raison : ces impls
-> sont mécaniques (grain SQL) et dépendent de `RowView`/`AppError` ; les
-> garder près des requêtes évite d'éparpiller la connaissance de la forme
-> des colonnes entre domain et infra. Les structs purement techniques
-> (`TotalRow`, `IdRow`, `AuditRow`, `ModifieParRow`, `ActiviteCreneauRow`,
-> …) sont définies directement dans les repos. Seul le parsing `Role`
-> transite par le domaine via `domain::activite::role_from_str` (pur, testé),
-> chaque repo le consommant via un helper local `role_from_row(row, idx)`.
+> **Écart d'implémentation (PR 2, tâches 2.4-2.5, révisé 2.3)** : les impls
+> `DeserializeRow` sont placées dans `repositories/*.rs` (à côté des traits)
+> et non dans les fichiers domain ni dans `drivers/libsql/`. Raison : ces
+> impls sont mécaniques (grain colonnes) et ne dépendent que de
+> `RowView`/`AppError` — elles sont **neutres** et réutilisables par tout
+> driver. Les structs de projection de requête (`TotalRow`, `IdRow`,
+> `CompteurRow`, `ActiviteCreneauRow`, …) vivent dans `repositories/rows/`
+> (champs `pub`) ; `AuditRow`/`ModifieParRow` (test-only) restent dans les
+> tests driver. Seul le parsing `Role` transite par le domaine via
+> `domain::activite::role_from_str` (pur, testé), consommé par un helper
+> partagé `role_from_row` dans `repositories/rows/mod.rs`.
 
 **Alternative écartée** : typage générique par colonne (`Personne::FIELDS: &[FieldSpec; 7]`).
 Très propre, mais ajoute une indirection runtime ou un proc-macro ; trop
@@ -287,21 +287,29 @@ Postgres / MySQL. Risque UX énorme pour un usage nul. Refusé.
 
 ### D6 — Déplacement des `*_repo.rs` par driver, pas par aggregate
 
-Nouveau layout :
+Nouveau layout (définitif après révision — cf. écart ci-dessous) :
 
 ```
 repositories/
-└── mod.rs                  (réexporte les TRAITS uniquement)
+├── mod.rs                  (déclare les sous-modules + réexporte les TRAITS uniquement)
+├── personne.rs             (trait PersonneRepository + impl DeserializeRow pour les types domain)
+├── activite.rs
+├── adhesion.rs
+├── planning.rs
+├── parametre.rs
+└── rows/                   (projections de requête neutres, réutilisables par tout driver)
+    ├── mod.rs              (sous-modules + helper partagé role_from_row)
+    ├── personne.rs         (TotalRow)
+    ├── activite.rs         (CompteurRow, ActivitePersonneRow, AnneeRow, ActiviteAnneeRow)
+    ├── adhesion.rs         (IdRow)
+    └── planning.rs         (CompteurRow, AutreActiviteRow, NomActiviteRow, IdRow, ActiviteCreneauRow)
 
 drivers/
 ├── libsql/
 │   ├── mod.rs
-│   ├── db.rs               (impl Db for LibsqlDb)
-│   ├── row.rs              (impl RowView for LibsqlRow + impl DeserializeRow pour les 11 structs)
-│   ├── params.rs           (impl IntoParams + ToDbValue)
-│   ├── retry.rs            (HranaRetryPolicy)
-│   ├── transaction.rs
-│   └── repositories/
+│   ├── db.rs               (impl Db for LibsqlDb, impl RowView pour LibsqlRow)
+│   ├── hrana.rs / retry.rs
+│   └── repositories/       (impls concrètes : SQL + tests)
 │       ├── personne.rs     (impl PersonneRepository for LibsqlPersonneRepository)
 │       ├── activite.rs
 │       ├── adhesion.rs
@@ -310,19 +318,22 @@ drivers/
 └── postgres/   (futur change, dossier vide avec README.md)
 ```
 
-`repositories/mod.rs` ne réexporte plus que les traits. Les `Libsql*Repository`
-proviennent de `drivers::libsql::repositories::*`.
+Règle : **le mapping ligne→type (traits + `DeserializeRow`) est neutre et vit
+dans `repositories/` ; le SQL libsql vit dans `drivers/libsql/repositories/`.**
+Les `Libsql*Repository` proviennent de `drivers::libsql::repositories::*`, les
+traits de `repositories::*`.
 
-> **Écart d'implémentation (PR 2, tâche 2.3)** : les fichiers sont déplacés
-> **en bloc** (trait + `Libsql*Repository` + `DeserializeRow` + tests) vers
-> `drivers/libsql/repositories/`, renommés sans suffixe `_repo`
-> (`personne.rs`, `activite.rs`, …). Conséquence : les traits sont définis
-> physiquement dans `drivers::libsql::repositories` et **réexportés** par
-> `repositories/mod.rs` (qui ne réexporte effectivement que les traits). Les
-> `Libsql*Repository` sont réexportés par `drivers::libsql::repositories`
-> directement. Aucun appelant (services, commands, e2e) n'importe plus les
-> modules `*_repo` internes — ils consomment `crate::repositories::{Trait}` ou
-> `crate::drivers::libsql::repositories::{Libsql*Repository}`.
+> **Écart d'implémentation (PR 2, tâche 2.3)** : après une première passe qui
+> déplaçait les `*_repo.rs` **en bloc** dans `drivers/libsql/repositories/`
+> (traits + `DeserializeRow` + impls ensemble), révision pour corriger le
+> couplage driver ↔ contrat : les traits et les `impl DeserializeRow` des
+> types domain sont **neutres** (ils ne dépendent que de `RowView`, abstraction
+> de `infrastructure/db/row.rs`) — ils sont donc remontés dans `repositories/`
+> et réutilisables par un futur driver Postgres/MySQL. Les projections de
+> requête vivent dans `repositories/rows/` (champs `pub`, visibilité crate).
+> `role_from_row` (lecture d'une colonne `Role`) est partagé dans
+> `repositories/rows/mod.rs`. Les fichiers driver ne conservent que
+> `Libsql*Repository` + l'implémentation SQL + leurs tests.
 
 **Alternative écartée** : laisser `repositories/*.rs` mais avec `&dyn Db`
 au lieu de `&Connection` — minimiserait le déplacement mais entretiendrait

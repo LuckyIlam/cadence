@@ -34,7 +34,13 @@
       / `fetch_all<T>` ; tests unitaires dans `db/transaction.rs`
 - [x] 2.3 Déplacer les `*_repo.rs` vers `drivers/libsql/repositories/`
       (impls `Libsql*Repository`, fichiers renommés sans suffixe `_repo`) ;
-      `repositories/mod.rs` ne réexporte que les traits (D6)
+      `repositories/mod.rs` ne réexporte que les traits (D6). **Révision** :
+      traits + `impl DeserializeRow` des types domain remontés dans
+      `repositories/{personne,activite,adhesion,planning,parametre}.rs`
+      (neutres, réutilisables par tout driver) ; projections de requête dans
+      `repositories/rows/` (champs `pub`) ; helper `role_from_row` partagé
+      dans `repositories/rows/mod.rs` ; les fichiers driver ne gardent que
+      l'impl SQL + les tests
 - [x] 2.4 Refactorer les 5 repos : champ `conn: Connection` → `db: Arc<dyn Db>` ;
       `hrana_guard::query_avec_retry`/`execute_avec_retry` +
       `libsql::de::from_row` → `db.fetch_one::<T>` / `fetch_optional::<T>` /

@@ -4,8 +4,8 @@ pub mod parametre;
 pub mod personne;
 pub mod planning;
 
-pub use activite::{ActiviteRepository, LibsqlActiviteRepository};
-pub use adhesion::{AdhesionRepository, LibsqlAdhesionRepository};
-pub use parametre::{LibsqlParametreRepository, ParametreRepository};
-pub use personne::{LibsqlPersonneRepository, PersonneRepository};
-pub use planning::{LibsqlPlanningRepository, PlanningRepository};
+pub use activite::LibsqlActiviteRepository;
+pub use adhesion::LibsqlAdhesionRepository;
+pub use parametre::LibsqlParametreRepository;
+pub use personne::LibsqlPersonneRepository;
+pub use planning::LibsqlPlanningRepository;

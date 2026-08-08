@@ -7,24 +7,9 @@ use crate::domain::personne::{
     UpdatePersonne,
 };
 use crate::error::AppError;
-use crate::infrastructure::db::{Db, DbExt, DbValue, DeserializeRow, RowView};
-
-#[async_trait]
-pub trait PersonneRepository: Send + Sync {
-    async fn create(&self, input: CreatePersonne, utilisateur: &str) -> Result<Personne, AppError>;
-    async fn update(
-        &self,
-        id: i64,
-        input: UpdatePersonne,
-        utilisateur: &str,
-    ) -> Result<Personne, AppError>;
-    async fn find_by_id(&self, id: i64) -> Result<Option<Personne>, AppError>;
-    async fn rechercher(
-        &self,
-        criteres: CriteresRecherchePersonnes,
-        pagination: Pagination,
-    ) -> Result<ResultatRecherchePersonnes, AppError>;
-}
+use crate::infrastructure::db::{Db, DbExt, DbValue};
+use crate::repositories::rows::personne::TotalRow;
+use crate::repositories::PersonneRepository;
 
 pub struct LibsqlPersonneRepository {
     db: Arc<dyn Db>,
@@ -33,33 +18,6 @@ pub struct LibsqlPersonneRepository {
 impl LibsqlPersonneRepository {
     pub fn new(db: Arc<dyn Db>) -> Self {
         Self { db }
-    }
-}
-
-impl DeserializeRow for Personne {
-    fn from_row(row: &dyn RowView) -> Result<Self, AppError> {
-        Ok(Personne {
-            id: row.get_i64(0)?,
-            nom: row.get_str(1)?.to_string(),
-            prenom: row.get_str(2)?.to_string(),
-            date_naissance: row.get_naive_date(3)?,
-            email: row.get_opt_str(4)?.map(String::from),
-            telephone: row.get_opt_str(5)?.map(String::from),
-            responsable_id: row.get_opt_i64(6)?,
-            version: row.get_i64(7)?,
-        })
-    }
-}
-
-struct TotalRow {
-    count: i64,
-}
-
-impl DeserializeRow for TotalRow {
-    fn from_row(row: &dyn RowView) -> Result<Self, AppError> {
-        Ok(TotalRow {
-            count: row.get_i64(0)?,
-        })
     }
 }
 
@@ -252,6 +210,7 @@ mod tests {
     use super::*;
 
     use crate::drivers::libsql::db::LibsqlDb;
+    use crate::infrastructure::db::{DeserializeRow, RowView};
 
     async fn setup_db() -> Arc<dyn Db> {
         let conn = libsql::Builder::new_local(":memory:")
