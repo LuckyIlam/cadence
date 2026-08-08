@@ -1,7 +1,9 @@
 use tauri::Manager;
 
 use crate::error::AppError;
-use crate::infrastructure::config::{load_config, save_config, ConnexionConfig, ModeConnexion};
+use crate::infrastructure::config::{
+    load_config, save_config, ConnexionConfig, Driver, ModeConnexion,
+};
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ConfigAffichee {
@@ -106,6 +108,7 @@ fn appliquer_config(
     };
 
     let config = ConnexionConfig {
+        driver: Driver::Sqlite,
         mode,
         url,
         token,

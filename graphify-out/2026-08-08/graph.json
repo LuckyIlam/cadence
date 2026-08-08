@@ -2370,7 +2370,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_tauri_src_domain_activite_tarifactivite",
-      "community": 7,
+      "community": 12,
       "norm_label": "tarifactivite"
     },
     {
@@ -2520,7 +2520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_adhesion",
-      "community": 17,
+      "community": 63,
       "norm_label": "adhesion.rs"
     },
     {
@@ -2530,7 +2530,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_tauri_src_domain_adhesion_adhesion",
-      "community": 17,
+      "community": 63,
       "norm_label": "adhesion"
     },
     {
@@ -2540,7 +2540,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_adhesion_rs_option",
-      "community": 17,
+      "community": 63,
       "norm_label": "option"
     },
     {
@@ -2550,7 +2550,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_tauri_src_domain_adhesion_createadhesion",
-      "community": 17,
+      "community": 63,
       "norm_label": "createadhesion"
     },
     {
@@ -2560,7 +2560,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_tauri_src_domain_adhesion_updateadhesion",
-      "community": 17,
+      "community": 63,
       "norm_label": "updateadhesion"
     },
     {
@@ -2910,7 +2910,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne",
-      "community": 8,
+      "community": 135,
       "norm_label": "personne.rs"
     },
     {
@@ -2920,7 +2920,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personne",
-      "community": 8,
+      "community": 135,
       "norm_label": "personne"
     },
     {
@@ -2930,7 +2930,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_naivedate",
-      "community": 8,
+      "community": 135,
       "norm_label": "naivedate"
     },
     {
@@ -2940,7 +2940,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_option",
-      "community": 8,
+      "community": 135,
       "norm_label": "option"
     },
     {
@@ -2950,7 +2950,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_createpersonne",
-      "community": 8,
+      "community": 135,
       "norm_label": "createpersonne"
     },
     {
@@ -2960,7 +2960,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_updatepersonne",
-      "community": 8,
+      "community": 135,
       "norm_label": "updatepersonne"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_personnedetail",
-      "community": 8,
+      "community": 135,
       "norm_label": "personnedetail"
     },
     {
@@ -2980,7 +2980,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_vec",
-      "community": 8,
+      "community": 135,
       "norm_label": "vec"
     },
     {
@@ -2990,7 +2990,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_adhesion",
-      "community": 8,
+      "community": 135,
       "norm_label": "adhesion"
     },
     {
@@ -3000,7 +3000,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_criteresrecherchepersonnes",
-      "community": 8,
+      "community": 135,
       "norm_label": "criteresrecherchepersonnes"
     },
     {
@@ -3010,7 +3010,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_pagination",
-      "community": 8,
+      "community": 135,
       "norm_label": "pagination"
     },
     {
@@ -3020,7 +3020,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_resultatrecherchepersonnes",
-      "community": 8,
+      "community": 135,
       "norm_label": "resultatrecherchepersonnes"
     },
     {
@@ -3030,7 +3030,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_current_annee_scolaire",
-      "community": 8,
+      "community": 135,
       "norm_label": "current_annee_scolaire()"
     },
     {
@@ -3040,7 +3040,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_annee_scolaire_from_date",
-      "community": 8,
+      "community": 135,
       "norm_label": "annee_scolaire_from_date()"
     },
     {
@@ -3050,7 +3050,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_age_from_date_naissance",
-      "community": 8,
+      "community": 135,
       "norm_label": "age_from_date_naissance()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_est_mineur",
-      "community": 8,
+      "community": 135,
       "norm_label": "est_mineur()"
     },
     {
@@ -3070,7 +3070,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_valider_date_naissance",
-      "community": 8,
+      "community": 135,
       "norm_label": "valider_date_naissance()"
     },
     {
@@ -3080,7 +3080,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_rs_result",
-      "community": 8,
+      "community": 135,
       "norm_label": "result"
     },
     {
@@ -3090,7 +3090,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_janvier",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_janvier()"
     },
     {
@@ -3100,7 +3100,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_aout",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_aout()"
     },
     {
@@ -3110,7 +3110,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_septembre",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_septembre()"
     },
     {
@@ -3120,7 +3120,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_decembre",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_decembre()"
     },
     {
@@ -3130,7 +3130,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_annee_scolaire_annee_complete",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_annee_scolaire_annee_complete()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "src_tauri_src_domain_personne_test_current_annee_scolaire_returns_valid_format",
-      "community": 8,
+      "community": 135,
       "norm_label": "test_current_annee_scolaire_returns_valid_format()"
     },
     {
@@ -3180,7 +3180,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_tauri_src_domain_planning_semainebanalisee",
-      "community": 17,
+      "community": 63,
       "norm_label": "semainebanalisee"
     },
     {
@@ -3190,7 +3190,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_domain_planning_rs_option",
-      "community": 17,
+      "community": 63,
       "norm_label": "option"
     },
     {
@@ -3200,7 +3200,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_tauri_src_domain_planning_createsemainebanalisee",
-      "community": 17,
+      "community": 63,
       "norm_label": "createsemainebanalisee"
     },
     {
@@ -3300,7 +3300,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_tauri_src_domain_planning_format_conflit_plage",
-      "community": 17,
+      "community": 63,
       "norm_label": "format_conflit_plage()"
     },
     {
@@ -3660,7 +3660,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "row",
-      "community": 63,
+      "community": 121,
       "norm_label": "row"
     },
     {
@@ -4330,7 +4330,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_audit",
-      "community": 17,
+      "community": 63,
       "norm_label": "audit.rs"
     },
     {
@@ -4340,7 +4340,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_audit_maintenant_utc",
-      "community": 17,
+      "community": 63,
       "norm_label": "maintenant_utc()"
     },
     {
@@ -4350,7 +4350,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_audit_verifier_utilisateur",
-      "community": 17,
+      "community": 63,
       "norm_label": "verifier_utilisateur()"
     },
     {
@@ -4360,7 +4360,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_audit_rs_result",
-      "community": 17,
+      "community": 63,
       "norm_label": "result"
     },
     {
@@ -4560,7 +4560,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_db",
-      "community": 121,
+      "community": 76,
       "norm_label": "db"
     },
     {
@@ -4570,7 +4570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_rs_send",
-      "community": 121,
+      "community": 76,
       "norm_label": "send"
     },
     {
@@ -4580,7 +4580,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_rs_sync",
-      "community": 121,
+      "community": 76,
       "norm_label": "sync"
     },
     {
@@ -4680,7 +4680,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_db_echantillon",
-      "community": 127,
+      "community": 121,
       "norm_label": "echantillon"
     },
     {
@@ -5210,7 +5210,7 @@
       "source_location": "L144",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_params_string",
-      "community": 17,
+      "community": 63,
       "norm_label": "string"
     },
     {
@@ -5360,7 +5360,7 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_params_dbparams",
-      "community": 121,
+      "community": 124,
       "norm_label": "dbparams"
     },
     {
@@ -5370,7 +5370,7 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_params_dbparams_into_params",
-      "community": 121,
+      "community": 124,
       "norm_label": ".into_params()"
     },
     {
@@ -5480,7 +5480,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rowview",
-      "community": 127,
+      "community": 121,
       "norm_label": "rowview"
     },
     {
@@ -5490,7 +5490,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rs_send",
-      "community": 127,
+      "community": 121,
       "norm_label": "send"
     },
     {
@@ -5500,7 +5500,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_rs_sync",
-      "community": 127,
+      "community": 121,
       "norm_label": "sync"
     },
     {
@@ -5700,7 +5700,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_row_deserializerow",
-      "community": 127,
+      "community": 121,
       "norm_label": "deserializerow"
     },
     {
@@ -5710,7 +5710,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "sized",
-      "community": 127,
+      "community": 121,
       "norm_label": "sized"
     },
     {
@@ -5770,7 +5770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tauri_src_infrastructure_db_transaction",
-      "community": 63,
+      "community": 121,
       "norm_label": "transaction.rs"
     },
     {
@@ -5802,266 +5802,6 @@
       "id": "src_tauri_src_infrastructure_db_transaction_rs_sync",
       "community": 121,
       "norm_label": "sync"
-    },
-    {
-      "label": "DbTransactionExt",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L36",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_dbtransactionext",
-      "community": 121,
-      "norm_label": "dbtransactionext"
-    },
-    {
-      "label": "D",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L54",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_d",
-      "community": 63,
-      "norm_label": "d"
-    },
-    {
-      "label": ".fetch_one()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "community": 63,
-      "norm_label": ".fetch_one()"
-    },
-    {
-      "label": "Result",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "community": 63,
-      "norm_label": "result"
-    },
-    {
-      "label": "T",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_t",
-      "community": 63,
-      "norm_label": "t"
-    },
-    {
-      "label": ".fetch_optional()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "community": 63,
-      "norm_label": ".fetch_optional()"
-    },
-    {
-      "label": "Option",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_option",
-      "community": 63,
-      "norm_label": "option"
-    },
-    {
-      "label": ".fetch_all()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "community": 63,
-      "norm_label": ".fetch_all()"
-    },
-    {
-      "label": "Vec",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_vec",
-      "community": 63,
-      "norm_label": "vec"
-    },
-    {
-      "label": "Echantillon",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L96",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_echantillon",
-      "community": 127,
-      "norm_label": "echantillon"
-    },
-    {
-      "label": ".from_row()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "community": 63,
-      "norm_label": ".from_row()"
-    },
-    {
-      "label": "Self",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_self",
-      "community": 63,
-      "norm_label": "self"
-    },
-    {
-      "label": "FausseTransaction",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L110",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "community": 63,
-      "norm_label": "faussetransaction"
-    },
-    {
-      "label": "Mutex",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_mutex",
-      "community": 63,
-      "norm_label": "mutex"
-    },
-    {
-      "label": ".nouvelle()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L116",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "community": 63,
-      "norm_label": ".nouvelle()"
-    },
-    {
-      "label": ".execute()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L129",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_execute",
-      "community": 63,
-      "norm_label": ".execute()"
-    },
-    {
-      "label": ".fetch_optional_row()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "community": 63,
-      "norm_label": ".fetch_optional_row()"
-    },
-    {
-      "label": ".fetch_all_rows()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "community": 63,
-      "norm_label": ".fetch_all_rows()"
-    },
-    {
-      "label": ".commit()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "community": 63,
-      "norm_label": ".commit()"
-    },
-    {
-      "label": "Box",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_rs_box",
-      "community": 63,
-      "norm_label": "box"
-    },
-    {
-      "label": ".rollback()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
-      "community": 63,
-      "norm_label": ".rollback()"
-    },
-    {
-      "label": "fetch_one_typed_dans_transaction()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L162",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_fetch_one_typed_dans_transaction",
-      "community": 63,
-      "norm_label": "fetch_one_typed_dans_transaction()"
-    },
-    {
-      "label": "fetch_one_not_found_dans_transaction()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L175",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_fetch_one_not_found_dans_transaction",
-      "community": 63,
-      "norm_label": "fetch_one_not_found_dans_transaction()"
-    },
-    {
-      "label": "fetch_optional_typed_dans_transaction()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L185",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_fetch_optional_typed_dans_transaction",
-      "community": 63,
-      "norm_label": "fetch_optional_typed_dans_transaction()"
-    },
-    {
-      "label": "fetch_all_typed_dans_transaction()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L192",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_fetch_all_typed_dans_transaction",
-      "community": 63,
-      "norm_label": "fetch_all_typed_dans_transaction()"
-    },
-    {
-      "label": "commit_consomme_la_transaction()",
-      "file_type": "code",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L207",
-      "_origin": "ast",
-      "id": "src_tauri_src_infrastructure_db_transaction_commit_consomme_la_transaction",
-      "community": 63,
-      "norm_label": "commit_consomme_la_transaction()"
     },
     {
       "label": "hrana_guard.rs",
@@ -30537,6 +30277,17 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/drivers/libsql/db.rs",
+      "source_location": "L200",
+      "weight": 1.0,
+      "context": "import",
+      "source": "src_tauri_src_drivers_libsql_db",
+      "target": "src_tauri_src_infrastructure_db_row_rowview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src-tauri/src/drivers/libsql/db.rs",
       "source_location": "L19",
       "weight": 1.0,
       "context": "import",
@@ -30994,17 +30745,6 @@
       "weight": 1.0,
       "context": "import",
       "source": "src_tauri_src_infrastructure_db_mod",
-      "target": "row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L6",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
       "target": "row",
       "confidence_score": 1.0
     },
@@ -33023,116 +32763,6 @@
       "weight": 1.0,
       "context": "generic_arg",
       "source": "src_tauri_src_infrastructure_db_row_dbrow_valeur",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L3",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L129",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_execute",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "target": "src_tauri_src_error_apperror",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
       "target": "src_tauri_src_error_apperror",
       "confidence_score": 1.0
     },
@@ -36398,17 +36028,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/mod.rs",
-      "source_location": "L23",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_mod",
-      "target": "src_tauri_src_infrastructure_db_transaction",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/mod.rs",
@@ -36968,28 +36587,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L92",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_params_dbvalue",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L111",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_params_dbvalue",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/params.rs",
@@ -37302,17 +36899,6 @@
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L98",
-      "weight": 1.0,
-      "context": "field",
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon",
-      "target": "src_tauri_src_infrastructure_db_params_string",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/repositories/activite_repo.rs",
       "source_location": "L599",
       "weight": 1.0,
@@ -37490,83 +37076,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L5",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L129",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_execute",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "target": "src_tauri_src_infrastructure_db_params_dbparams",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/params.rs",
@@ -37709,28 +37218,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L93",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_row_rowview",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "target": "src_tauri_src_infrastructure_db_row_rowview",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/row.rs",
@@ -37869,28 +37356,6 @@
       "context": "field",
       "source": "src_tauri_src_infrastructure_db_row_dbrow",
       "target": "src_tauri_src_infrastructure_db_row_rs_vec",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "target": "src_tauri_src_infrastructure_db_row_dbrow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "target": "src_tauri_src_infrastructure_db_row_dbrow",
       "confidence_score": 1.0
     },
     {
@@ -38245,26 +37710,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L101",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon",
-      "target": "src_tauri_src_infrastructure_db_row_deserializerow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L207",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_commit_consomme_la_transaction",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
@@ -38272,87 +37717,6 @@
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_db_transaction",
       "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_dbtransactionext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L96",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_echantillon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L110",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L192",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_fetch_all_typed_dans_transaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L175",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_fetch_one_not_found_dans_transaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L162",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_fetch_one_typed_dans_transaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L185",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_fetch_optional_typed_dans_transaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L90",
-      "weight": 1.0,
-      "context": "import",
-      "source": "src_tauri_src_infrastructure_db_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_mutex",
       "confidence_score": 1.0
     },
     {
@@ -38373,554 +37737,6 @@
       "weight": 1.0,
       "source": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
       "target": "src_tauri_src_infrastructure_db_transaction_rs_sync",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_dbtransactionext",
-      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L128",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_dbtransaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L54",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d",
-      "target": "src_tauri_src_infrastructure_db_transaction_dbtransactionext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L60",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L59",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L55",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_t",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L180",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_one_not_found_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L164",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_one_typed_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_one",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L129",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_execute",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_result",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_t",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_t",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L70",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L69",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_option",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L187",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_optional_typed_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_optional",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_option",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L81",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L80",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L75",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_vec",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L200",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_all_typed_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_d_fetch_all",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L111",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_vec",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_vec",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon",
-      "target": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L102",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_echantillon_from_row",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_self",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_self",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L116",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_self",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "weight": 1.0,
-      "context": "generic_arg",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_self",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L129",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_execute",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L142",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_all_rows",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L133",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_fetch_optional_row",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L116",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L112",
-      "weight": 1.0,
-      "context": "field",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_mutex",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L208",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_commit_consomme_la_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L163",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_one_typed_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L186",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_fetch_optional_typed_dans_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_nouvelle",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L209",
-      "weight": 1.0,
-      "source": "src_tauri_src_infrastructure_db_transaction_commit_consomme_la_transaction",
-      "target": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L151",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_commit",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_box",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src-tauri/src/infrastructure/db/transaction.rs",
-      "source_location": "L156",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "src_tauri_src_infrastructure_db_transaction_faussetransaction_rollback",
-      "target": "src_tauri_src_infrastructure_db_transaction_rs_box",
       "confidence_score": 1.0
     },
     {
@@ -65920,5 +64736,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "08e85bbac348361ea45471faab43af2e4e5998a8"
+  "built_at_commit": "51b59f375bd3cde26b33589ced0f61ec3bb52e9a"
 }
