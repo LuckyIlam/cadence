@@ -9,7 +9,21 @@ import DetailPersonne from "./pages/DetailPersonne";
 import ListePersonnes from "./pages/ListePersonnes";
 import ParametresPage from "./pages/ParametresPage";
 import PlanningPage from "./pages/PlanningPage";
-import type { ConfigAffichee } from "./types";
+import type { Compatibilite, ConfigAffichee } from "./types";
+
+function EcranVersionObsolete({ compat }: { compat: Compatibilite }) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="bg-white rounded-xl shadow-lg border border-red-200 p-8 w-full max-w-lg text-center">
+        <h1 className="text-2xl font-bold text-red-700 mb-3">Version obsolète</h1>
+        <p className="text-sm text-gray-700 leading-relaxed">
+          Votre version de Cadence ({compat.version_installee}) est obsolète. Cette base de données a été mise à jour
+          par une version plus récente de l'application. Mettez à jour Cadence pour continuer à l'utiliser.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function EcranPremierLancement({ onConfigChange }: { onConfigChange: () => void }) {
   const [config, setConfig] = useState<ConfigAffichee | null>(null);
@@ -41,31 +55,34 @@ function EcranPremierLancement({ onConfigChange }: { onConfigChange: () => void 
 }
 
 export default function App() {
-  const [config, setConfig] = useState<ConfigAffichee | null>(null);
-  const [chargement, setChargement] = useState(true);
+  const [etat, setEtat] = useState<{ config: ConfigAffichee; compat: Compatibilite } | null>(null);
 
-  const chargerConfig = useCallback(async () => {
+  const chargerEtat = useCallback(async () => {
     try {
-      const c = await invoke<ConfigAffichee>("obtenir_config");
-      setConfig(c);
+      const [config, compat] = await Promise.all([
+        invoke<ConfigAffichee>("obtenir_config"),
+        invoke<Compatibilite>("obtenir_compatibilite"),
+      ]);
+      setEtat({ config, compat });
     } catch (e) {
-      setConfig(null);
       console.error(e);
-    } finally {
-      setChargement(false);
     }
   }, []);
 
   useEffect(() => {
-    chargerConfig();
-  }, [chargerConfig]);
+    chargerEtat();
+  }, [chargerEtat]);
 
-  if (chargement) {
+  if (!etat) {
     return <p className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">Chargement...</p>;
   }
 
-  if (!config?.configuree) {
-    return <EcranPremierLancement onConfigChange={chargerConfig} />;
+  if (!etat.compat.compatible) {
+    return <EcranVersionObsolete compat={etat.compat} />;
+  }
+
+  if (!etat.config.configuree) {
+    return <EcranPremierLancement onConfigChange={chargerEtat} />;
   }
 
   return (

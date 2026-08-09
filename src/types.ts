@@ -259,6 +259,12 @@ export interface ResultatSauvegarde {
   redemarrage_requis: boolean;
 }
 
+export interface Compatibilite {
+  compatible: boolean;
+  version_installee: string;
+  migrations_inconnues: string[];
+}
+
 const JOURS_SEMAIRE = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] as const;
 
 export function jourSemaineTexte(jour: number): string {
