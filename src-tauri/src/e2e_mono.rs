@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
     use crate::domain::personne::{CreatePersonne, UpdatePersonne};
-    use crate::infrastructure::config::{ConnexionConfig, ModeConnexion};
+    use crate::infrastructure::config::{ConnexionConfig, Driver, ModeConnexion};
     use crate::infrastructure::db::{init_app_state, init_connection};
-    use crate::repositories::personne_repo::PersonneRepository;
+    use crate::repositories::PersonneRepository;
 
     // Validation end-to-end du mode mono-utilisateur sur un vrai fichier local
     // (pas `:memory:`), avec persistance après réouverture.
@@ -20,6 +20,7 @@ mod tests {
             let _ = std::fs::remove_file(&fichier);
 
             let config = ConnexionConfig {
+                driver: Driver::Sqlite,
                 mode: ModeConnexion::Mono,
                 url: None,
                 token: None,

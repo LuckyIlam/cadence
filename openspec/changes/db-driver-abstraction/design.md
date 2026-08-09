@@ -8,11 +8,18 @@
 - Le passage `sqlx → libsql` a touché ~3 100 lignes de Rust parce que **le type du
   driver a été utilisé comme contrat commun** dans 5 repositories, 11 structs
   domain, 2 services et le runner de migrations. Preuves :
-  - `use libsql::Connection` / `use libsql::Transaction` dans 9 fichiers
+  - `use libsql::Connection` / `use libsql::Transaction` dans 11 fichiers
     (`infrastructure/{db,hrana_guard,migrations}.rs`, 5 `repositories/*.rs`,
-    `services/parametre_service.rs`).
-  - `&mut libsql::Transaction` fuit dans **2 signatures de traits**
-    (`planning_repo.rs:38-46`, `parametre_repo.rs:13,51`).
+    `services/{activite,parametre}_service.rs`,
+    `commands/planning_commands.rs`).
+  - `&mut libsql::Transaction` fuit dans **3 signatures de traits**
+    (`planning_repo.rs:38-46`, `parametre_repo.rs:13,51`,
+    `activite_repo.rs:62-85`), mais aussi dans les **services**
+    (`activite_service.rs` ~12 occurrences, `parametre_service.rs` ~9)
+    et dans **commands/** : `planning_commands.rs:27,86,123` appelle
+    directement `state.conn.transaction_with_behavior(Immediate)`, et
+    `state.conn` (champ `pub` de `AppState`) est consommé dans
+    `activite_commands.rs` (10 sites) et `parametre_commands.rs` (3 sites).
   - `libsql::de::from_row` utilisé dans 11 structs + 2 helpers `fetch_one` /
     `fetch_optional` (`personne_repo.rs:51,67`, `activite_repo.rs` etc.).
   - `libsql::params!` et `libsql::Value` utilisés ~80 fois dans les repositories,
@@ -64,7 +71,10 @@
 
 ### D1 — Trait `Db` central, transactions `Box<dyn DbTransaction>`
 
-Définit l'interface du driver. La couche `commands/` ignore tout du driver.
+Définit l'interface du driver. Objectif : rendre la couche `commands/`
+agnostique — aujourd'hui elle touche directement le driver
+(`planning_commands.rs:27,86,123` appelle
+`state.conn.transaction_with_behavior(Immediate)`).
 
 ```rust
 // infrastructure/db.rs
@@ -84,6 +94,10 @@ pub trait Db: Send + Sync {
 
     async fn begin(&self) -> Result<Box<dyn DbTransaction + '_>, AppError>;
 
+    async fn begin_immediate(&self) -> Result<Box<dyn DbTransaction + '_>, AppError>;
+
+    async fn execute_batch(&self, sql: &str) -> Result<(), AppError>;
+
     fn driver_name(&self) -> &'static str;
 }
 
@@ -102,6 +116,31 @@ Justification : un trait object `dyn Db` est moins rapide qu'un type
 statique mais la différence est négligeable face au coût IPC d'un Tauri
 command (mesurable). Les repositories deviennent polymorphes sans
 template hell.
+
+> **Écart d'implémentation (PR 1) — object-safety.** Le sketch ci-dessus
+> (méthodes génériques `P: IntoParams`, `T: DeserializeRow`) n'est **pas**
+> object-safe : `Arc<dyn Db>` (PR 2, tâche 2.4) ne peut pas l'utiliser.
+> Le code livré en PR 1 scinde donc en deux :
+> - **`Db` object-safe** — `execute(&self, sql, params: DbParams)`,
+>   `fetch_one_row` / `fetch_optional_row` / `fetch_all_rows` (retournent
+>   `Option<DbRow>` / `Vec<DbRow>` neutres), `begin`, `begin_immediate`,
+>   `execute_batch`, `driver_name`.
+> - **`DbExt`** — trait d'extension générique (`impl<D: Db + ?Sized> DbExt for D`)
+>   portant les méthodes typées `fetch_one<T: DeserializeRow>`, `fetch_optional<T>`,
+>   `fetch_all<T>`, implémentées via les méthodes object-safe de `Db` +
+>   `DeserializeRow::from_row`.
+>
+> Conséquence : `params!` produit directement `DbParams` (concret), le
+> générique `P: IntoParams` n'existe plus sur `Db`/`DbTransaction`.
+> Les repositories (PR 2) gardent le même appel : `db.fetch_one::<T>(...)`
+> via `DbExt`.
+
+`begin_immediate` préserve la garantie d'atomicité documentée dans
+`planning_commands.rs` (« BEGIN IMMEDIATE… pour éviter un conflit non
+détecté ») : libsql → `BEGIN IMMEDIATE`, Postgres/MySQL → équivalent du
+BEGIN simple (déjà immédiat). `execute_batch` est requis par
+`cadence_migrations` (migrations.rs:59,73) si le runner doit rester
+derrière `&dyn Db` (mitigation R1).
 
 **Alternatives écartées** :
 - `enum DbKind { Libsql(LibsqlDb), Postgres(...), Mysql(...) }` — plus rapide,
@@ -158,6 +197,18 @@ Chaque struct domain implémente `DeserializeRow` (mécanique, ~15 lignes
 par struct). Les helpers `fetch_one` / `fetch_optional` déjà présents
 dans `personne_repo.rs:41-78` deviennent la norme.
 
+> **Écart d'implémentation (PR 2, tâches 2.4-2.5, révisé 2.3)** : les impls
+> `DeserializeRow` sont placées dans `repositories/*.rs` (à côté des traits)
+> et non dans les fichiers domain ni dans `drivers/libsql/`. Raison : ces
+> impls sont mécaniques (grain colonnes) et ne dépendent que de
+> `RowView`/`AppError` — elles sont **neutres** et réutilisables par tout
+> driver. Les structs de projection de requête (`TotalRow`, `IdRow`,
+> `CompteurRow`, `ActiviteCreneauRow`, …) vivent dans `repositories/rows/`
+> (champs `pub`) ; `AuditRow`/`ModifieParRow` (test-only) restent dans les
+> tests driver. Seul le parsing `Role` transite par le domaine via
+> `domain::activite::role_from_str` (pur, testé), consommé par un helper
+> partagé `role_from_row` dans `repositories/rows/mod.rs`.
+
 **Alternative écartée** : typage générique par colonne (`Personne::FIELDS: &[FieldSpec; 7]`).
 Très propre, mais ajoute une indirection runtime ou un proc-macro ; trop
 lourd pour le gain.
@@ -183,6 +234,22 @@ Les repositories appellent `self.policy.run(|| async { db.fetch_one(…) }).awai
 Les tests unitaires `hrana_guard::est_stream_perdu` migrent vers
 `HranaRetryPolicy::matches`.
 
+> **Écart d'implémentation (PR 1)** : `run` prend `F: FnMut()` (et non
+> `FnOnce()`) — la politique doit pouvoir ré-invoquer l'opération à chaque
+> tentative ; `#[async_trait]` est remplacé par un `async fn` déclaré
+> directement dans le trait.
+
+**Grain du retry (requête vs transaction)** : `RetryPolicy` opère au niveau
+*requête isolée*. C'est sûr pour `HranaRetryPolicy` car l'échec « stream not
+found » survient au `prepare`/describe, avant toute exécution côté serveur
+(commentaire `hrana_guard.rs:14-15`) — rejouer la requête est sans effet de
+bord. Ce n'est **pas** sûr pour un retry aveugle sur `serialization_failure` /
+`deadlock` en Postgres : la requête a déjà été (partiellement) exécutée, seule
+la **transaction entière** doit être rejouée. → le replay transaction-level est
+porté par les appels à `DbTransaction` dans les services, hors `RetryPolicy`.
+`RetryPolicy` reste une politique requête-only ; `SqlxRetryPolicy` sera
+introduit dans le change dédié Postgres avec cette contrainte.
+
 **Alternative écartée** : embeddings d'un middleware via `tower` —
 excessif pour deux politiques. Refusé.
 
@@ -202,31 +269,47 @@ pub struct ConnexionConfig {
     pub utilisateur: String,
 }
 ```
-
-Aucun appel à `init_connection` n'utilise encore `Driver::Postgres` /
+Aucun appel à `init_connection` n'utilise encore 
+`Driver::Postgres` /
 `Mysql` ; ces branches sont `unimplemented!()` avec un message clair vers
 la PR d'ajout. Le frontend ne le voit pas encore.
+
+> **Écart d'implémentation (PR 1) — `Mode` reporté.** L'`enum Mode { Local,
+> Distant }` est **reporté** à une PR ultérieure : renommer
+> `ModeConnexion` → `Mode` changerait la signature publique de la commande
+> `sauvegarder_config` (critère 1.6 : aucune signature publique ne change).
+> PR 1 ne pose donc que l'`enum Driver` + le champ `driver`
+> (`#[serde(default)]`, rétro-compatible) ; `mode` conserve son type
+> `ModeConnexion` actuel.
 
 **Alternative écartée** : étendre maintenant le front avec choix SQLite /
 Postgres / MySQL. Risque UX énorme pour un usage nul. Refusé.
 
 ### D6 — Déplacement des `*_repo.rs` par driver, pas par aggregate
 
-Nouveau layout :
+Nouveau layout (définitif après révision — cf. écart ci-dessous) :
 
 ```
 repositories/
-└── mod.rs                  (réexporte les TRAITS uniquement)
+├── mod.rs                  (déclare les sous-modules + réexporte les TRAITS uniquement)
+├── personne.rs             (trait PersonneRepository + impl DeserializeRow pour les types domain)
+├── activite.rs
+├── adhesion.rs
+├── planning.rs
+├── parametre.rs
+└── rows/                   (projections de requête neutres, réutilisables par tout driver)
+    ├── mod.rs              (sous-modules + helper partagé role_from_row)
+    ├── personne.rs         (TotalRow)
+    ├── activite.rs         (CompteurRow, ActivitePersonneRow, AnneeRow, ActiviteAnneeRow)
+    ├── adhesion.rs         (IdRow)
+    └── planning.rs         (CompteurRow, AutreActiviteRow, NomActiviteRow, IdRow, ActiviteCreneauRow)
 
 drivers/
 ├── libsql/
 │   ├── mod.rs
-│   ├── db.rs               (impl Db for LibsqlDb)
-│   ├── row.rs              (impl RowView for LibsqlRow + impl DeserializeRow pour les 11 structs)
-│   ├── params.rs           (impl IntoParams + ToDbValue)
-│   ├── retry.rs            (HranaRetryPolicy)
-│   ├── transaction.rs
-│   └── repositories/
+│   ├── db.rs               (impl Db for LibsqlDb, impl RowView pour LibsqlRow)
+│   ├── hrana.rs / retry.rs
+│   └── repositories/       (impls concrètes : SQL + tests)
 │       ├── personne.rs     (impl PersonneRepository for LibsqlPersonneRepository)
 │       ├── activite.rs
 │       ├── adhesion.rs
@@ -235,8 +318,22 @@ drivers/
 └── postgres/   (futur change, dossier vide avec README.md)
 ```
 
-`repositories/mod.rs` ne réexporte plus que les traits. Les `Libsql*Repository`
-proviennent de `drivers::libsql::repositories::*`.
+Règle : **le mapping ligne→type (traits + `DeserializeRow`) est neutre et vit
+dans `repositories/` ; le SQL libsql vit dans `drivers/libsql/repositories/`.**
+Les `Libsql*Repository` proviennent de `drivers::libsql::repositories::*`, les
+traits de `repositories::*`.
+
+> **Écart d'implémentation (PR 2, tâche 2.3)** : après une première passe qui
+> déplaçait les `*_repo.rs` **en bloc** dans `drivers/libsql/repositories/`
+> (traits + `DeserializeRow` + impls ensemble), révision pour corriger le
+> couplage driver ↔ contrat : les traits et les `impl DeserializeRow` des
+> types domain sont **neutres** (ils ne dépendent que de `RowView`, abstraction
+> de `infrastructure/db/row.rs`) — ils sont donc remontés dans `repositories/`
+> et réutilisables par un futur driver Postgres/MySQL. Les projections de
+> requête vivent dans `repositories/rows/` (champs `pub`, visibilité crate).
+> `role_from_row` (lecture d'une colonne `Role`) est partagé dans
+> `repositories/rows/mod.rs`. Les fichiers driver ne conservent que
+> `Libsql*Repository` + l'implémentation SQL + leurs tests.
 
 **Alternative écartée** : laisser `repositories/*.rs` mais avec `&dyn Db`
 au lieu de `&Connection` — minimiserait le déplacement mais entretiendrait
@@ -273,11 +370,10 @@ remplace par refinery.
 
 ### D8 — Couper le test mock `e2e_stream` du runner
 
-`e2e_stream.rs` injecte aujourd'hui une `Connection` directe (ligne 41-45).
-À refactorer pour passer par `LibsqlDb::connect(...)`. Légère régression
-de la valeur du test (moins de fidélité au cas Hrana réel) compensée par
-la généralité. *Décision : acceptable* car le test E2E reste valide pour
-la garde retry.
+`e2e_stream.rs` teste le comportement **bas-niveau du driver** (reset du
+stream Hrana après un curseur abandonné), pas l'abstraction. *Décision PR 2
+(validée) : inchangé*, il reste sur `libsql::Connection` brute et ne passe
+ni par `LibsqlDb` ni par `Arc<dyn Db>`. Pas de régression de valeur du test.
 
 ### D9 — Stratégie RETURNING : repo-spécifique, jamais imposée par Db
 
@@ -316,6 +412,10 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   factorisé derrière `&dyn Db` (driver-agnostique) avec une variante
   `RefineryDriver::migrations(SqliteMigrations)`. Le coût marginal est
   nul pour cette PR.
+- Prérequis de cette mitigation : `cadence_migrations` repose sur
+  `execute_batch` (migrations.rs:59,73). Le trait `Db` expose donc
+  `execute_batch` dès PR 1 (D1), sinon le runner ne peut pas rester
+  derrière `&dyn Db`.
 - Action concrète : programmer le spike avant la PR 3.
 
 ### R2 — Performance `dyn Db` vs `libsql::Connection` direct
@@ -378,6 +478,9 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   d'engagement précédent). Soit ~1 400 lignes nettes, **en dessous de
   la cible 2 200** posée dans l'analyse initiale (les drivers à venir
   consommeront la différence).
+- Ce chiffrage était établi sans le périmètre `commands/*.rs` (angle mort
+  découvert en relecture, cf. Context). L'ajout de `commands/*.rs` en PR 2
+  (~150 lignes de plus) conserve un total sous la cible.
 - 3 PRs : 1 par étape majeure (cf. découpage validé). Risque cumulé
   acceptable.
 
@@ -388,7 +491,31 @@ le résultat de la discussion précédente (RETURNS spécifique par driver).*
   séquentiel. Si refinery impose un autre modèle, vérifier la
   compatibilité. *À investiguer dans le spike de R1.*
 
+### R11 — Non-atomicité de `cadence_migrations` (préexistant, non bloquant)
+
+- `cadence_migrations` exécute `execute_batch("BEGIN; …; COMMIT;")` puis,
+  dans un **appel séparé**, l'INSERT du tracker (migrations.rs:72-79). Un
+  crash entre les deux rejoue la migration au prochain boot : inoffensif
+  pour les `CREATE TABLE IF NOT EXISTS`, mais pas forcément pour les
+  `ALTER TABLE` (ex. `add_audit.sql`).
+- Préexistant, indépendant du driver. PR 3 (refinery) est le bon moment
+  pour le traiter : écrire le tracker dans la même transaction que la
+  migration.
+
 ## Migration Plan
+
+> **Décisions PR 2 (validées)** :
+> - **Retry internalisé dans `LibsqlDb`** (et non porté par les repos comme
+>   le sketch D4) : `impl Db for LibsqlDb` applique `HranaRetryPolicy` sur
+>   `execute` / `fetch_*_row` / `execute_batch` ; les repos appellent
+>   simplement `db.fetch_all(…)`. Le grain requête-only est respecté.
+> - **`DbTransactionExt` créé en PR 2** : symétrique de `DbExt`
+>   (`fetch_one<T>` / `fetch_optional<T>` / `fetch_all<T>`) pour
+>   `&mut dyn DbTransaction`, consommé par les 16 méthodes `_tx` des repos.
+> - **`e2e_stream.rs` reste sur libsql brut** (D8, cf. ci-dessus).
+> - **Déplacement D6 en fin de PR 2** : refactor fonctionnel
+>   (`conn → Arc<dyn Db>`, `params!`, `_tx` → `dyn DbTransaction`) d'abord,
+>   puis déplacement des impls vers `drivers/libsql/repositories/`.
 
 Trois PRs séquentielles.
 
@@ -406,15 +533,32 @@ Trois PRs séquentielles.
 
 ### PR 2 — Refactor repositories + services derrière `dyn Db`
 
-- Déplacement des `*_repo.rs` vers `drivers/libsql/repositories/`.
+- Création de `drivers/libsql/db.rs` : `LibsqlDb` implémente `Db` (retry
+  `HranaRetryPolicy` internalisé) + conversions `DbParams`/`DbRow`.
+  ~250 lignes nouvelles.
+- Création de `DbTransactionExt` (`db/transaction.rs`). ~60 lignes.
+- Déplacement des `*_repo.rs` vers `drivers/libsql/repositories/`
+  (**en fin de PR 2**, après refactor fonctionnel validé).
 - `PersonneService`, `ActiviteService`, `ParametreService` prennent
-  `&dyn Db` au lieu de `Connection`.
+  `&dyn Db` au lieu de `Connection` ; `begin_immediate()` remplace
+  `transaction_with_behavior(Immediate)` (`activite_service.rs:195-198`),
+  `begin()` remplace `transaction()` (`parametre_service.rs:300`).
 - Macro `params![…]` remplace `libsql::params![…]` sur tous les sites
-  (sauf tests e2e).
+  (sauf tests e2e) ; helpers dynamiques `Vec<libsql::Value>` →
+  `Vec<DbValue>` (R3, `personne_repo.rs` recherche paginée).
+- Implémentation de `DeserializeRow` pour les ~20 types lus par requête
+  (11 domain + helpers : `CompteurRow`, `TotalRow`, `AnneeRow`, …).
 - `AppState` contient `Arc<dyn Db>` (au lieu de `Connection` cloné
-  × 5).
-- `e2e_mono.rs` / `e2e_multi.rs` / `e2e_stream.rs` : `init_connection`
-  renvoie `Arc<dyn Db>`. ~150 lignes touchées.
+  × 5) ; le champ `pub conn` disparaît. **Périmètre `commands/*.rs`**
+  (angle mort de la version précédente du plan) :
+  - `activite_commands.rs` (10 sites) et `parametre_commands.rs`
+    (3 sites) : `state.conn.clone()` → `state.db.clone()` ;
+  - `planning_commands.rs:27,86,123` :
+    `transaction_with_behavior(Immediate)` → `db.begin_immediate()`
+    (garantie d'atomicité conservée).
+- `e2e_mono.rs` / `e2e_multi.rs` : `init_connection` renvoie
+  `Arc<dyn Db>`. **`e2e_stream.rs` inchangé** (libsql brut, D8).
+  ~150 lignes touchées.
 - Critère : tous les tests existants passent, `cargo clippy -D warnings`
   reste vert.
 

@@ -4,6 +4,18 @@ use crate::error::AppError;
 
 const FICHIER_CONFIG: &str = "cadence_config.json";
 
+/// Driver de base de données. `Sqlite` est l'unique valeur active : les
+/// branches `Postgres` / `Mysql` des appels préparent l'arrivée de drivers
+/// alternatifs (change dédié), elles sont `unimplemented!()` en attendant.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Driver {
+    #[default]
+    Sqlite,
+    Postgres,
+    Mysql,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ModeConnexion {
@@ -13,6 +25,10 @@ pub enum ModeConnexion {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConnexionConfig {
+    /// Absent dans les fichiers de config écrits avant ce champ : par défaut
+    /// `Sqlite` (via `#[serde(default)]`), la lecture reste compatible.
+    #[serde(default)]
+    pub driver: Driver,
     pub mode: ModeConnexion,
     pub url: Option<String>,
     pub token: Option<String>,
@@ -22,6 +38,7 @@ pub struct ConnexionConfig {
 impl Default for ConnexionConfig {
     fn default() -> Self {
         Self {
+            driver: Driver::Sqlite,
             mode: ModeConnexion::Mono,
             url: None,
             token: None,
@@ -82,6 +99,7 @@ mod tests {
         let _ = std::fs::remove_file(&path);
 
         let config = ConnexionConfig {
+            driver: Driver::Sqlite,
             mode: ModeConnexion::Mono,
             url: None,
             token: None,
@@ -103,6 +121,7 @@ mod tests {
         let _ = std::fs::remove_file(&path);
 
         let config = ConnexionConfig {
+            driver: Driver::Sqlite,
             mode: ModeConnexion::Multi,
             url: Some("https://example.turso.io".into()),
             token: Some("secret".into()),

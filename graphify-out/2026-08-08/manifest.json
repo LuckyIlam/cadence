@@ -130,8 +130,8 @@
     "semantic_hash": "8805642715ab2bf7eaa1a842bafef526"
   },
   "src-tauri/src/repositories/mod.rs": {
-    "mtime": 1786216504.46503,
-    "ast_hash": "24f4a5920d27eadb3b57371da77a7b78",
+    "mtime": 1786212935.6371236,
+    "ast_hash": "a6c0268a881ec710c6d34341fa211563",
     "semantic_hash": ""
   },
   "src-tauri/tauri.conf.json": {
@@ -895,12 +895,12 @@
     "semantic_hash": ""
   },
   "src-tauri/src/e2e_mono.rs": {
-    "mtime": 1786215497.2159138,
+    "mtime": 1786212955.4501586,
     "ast_hash": "487ae9bd1d810e995bc587a356e6f3d1",
     "semantic_hash": ""
   },
   "src-tauri/src/e2e_multi.rs": {
-    "mtime": 1786215497.2169142,
+    "mtime": 1786212959.9399989,
     "ast_hash": "6931de5f21d01b4852b306e7a5b42f08",
     "semantic_hash": ""
   },
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/db-driver-abstraction/design.md": {
-    "mtime": 1786216687.2072854,
-    "ast_hash": "df102f613e3fc9676457ce82e6c96176",
+    "mtime": 1786213023.0558467,
+    "ast_hash": "7f0c7d0ab0e73cae76ef6a061c62dec1",
     "semantic_hash": ""
   },
   "openspec/specs/audit-modifications/spec.md": {
@@ -945,8 +945,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/mod.rs": {
-    "mtime": 1786215497.2139142,
-    "ast_hash": "81e6922f051323dade46291f20b54ea2",
+    "mtime": 1786212939.581562,
+    "ast_hash": "b8ee00e8a3882078cd395050f91081ea",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/retry.rs": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db/mod.rs": {
-    "mtime": 1786215497.217913,
-    "ast_hash": "920d05385e87f9833f6365c7d7c2ab55",
+    "mtime": 1786212947.514758,
+    "ast_hash": "87c53840e53e6123b9c94fd445ea06e1",
     "semantic_hash": ""
   },
   "src-tauri/src/infrastructure/db/params.rs": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "openspec/changes/db-driver-abstraction/tasks.md": {
-    "mtime": 1786216692.8043606,
-    "ast_hash": "9f7612035c36df8c3d1713d83c9ee922",
+    "mtime": 1786213027.5057075,
+    "ast_hash": "5caff7b351f865d77fb1469c7feb6a9c",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/db.rs": {
@@ -1015,83 +1015,33 @@
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/activite.rs": {
-    "mtime": 1786216562.222739,
-    "ast_hash": "542770864e0bbd555863d225c79651f6",
+    "mtime": 1786211610.800928,
+    "ast_hash": "53a66aa960dd53c480b3995789acac39",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/adhesion.rs": {
-    "mtime": 1786216524.6765697,
-    "ast_hash": "de085502a99782f0f1d1481a92698d9e",
+    "mtime": 1786211450.2616243,
+    "ast_hash": "35f18c819a346cb9c6538c154a631a7c",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/mod.rs": {
-    "mtime": 1786216595.3283353,
-    "ast_hash": "05adc226a78fc99d38e3e8aa48dcdb6b",
+    "mtime": 1786212970.0470438,
+    "ast_hash": "ccb31d007f7519076de32b3abfc962e5",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/parametre.rs": {
-    "mtime": 1786216513.9991713,
-    "ast_hash": "b8d9fa39f8b91f47cc3a3020ca9fd50a",
+    "mtime": 1786211610.803928,
+    "ast_hash": "1b3e4c614f42cac265f89cfaafa3c18f",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/personne.rs": {
-    "mtime": 1786216540.8831491,
-    "ast_hash": "90627fb7008c08c8f4a71ec44d2c4b23",
+    "mtime": 1786211610.809928,
+    "ast_hash": "684c90701c94f8d2253d144e21fec051",
     "semantic_hash": ""
   },
   "src-tauri/src/drivers/libsql/repositories/planning.rs": {
-    "mtime": 1786216581.3734074,
-    "ast_hash": "c94c18c4c40545d3abd3866b0b520075",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/activite.rs": {
-    "mtime": 1786216477.5791078,
-    "ast_hash": "3988d12639734a445d6ed77d4b4393c0",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/adhesion.rs": {
-    "mtime": 1786216482.8045712,
-    "ast_hash": "5bf8037d6e158e3434117863869031d3",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/parametre.rs": {
-    "mtime": 1786216499.9424033,
-    "ast_hash": "c1fbee843dc0e2b0207c72a05a8dd140",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/personne.rs": {
-    "mtime": 1786216467.841556,
-    "ast_hash": "24c820ae683a99531d4efef9f4e07d9b",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/planning.rs": {
-    "mtime": 1786216494.5044613,
-    "ast_hash": "1462f6d3e32cfcfc01661e0667477550",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/rows/activite.rs": {
-    "mtime": 1786216443.7987146,
-    "ast_hash": "d14ae6dc7e943a15b0af5bbdf11da952",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/rows/adhesion.rs": {
-    "mtime": 1786216448.4689374,
-    "ast_hash": "29381afbedd2bfdc22664f677f09f4c9",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/rows/mod.rs": {
-    "mtime": 1786216437.6195967,
-    "ast_hash": "f94c8c946e8399d5752f503cb5a3793e",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/rows/personne.rs": {
-    "mtime": 1786216455.0476775,
-    "ast_hash": "4f192d59796ea97bd6d285ac2908ddc9",
-    "semantic_hash": ""
-  },
-  "src-tauri/src/repositories/rows/planning.rs": {
-    "mtime": 1786216461.8131998,
-    "ast_hash": "8e8317613faed745409f8db2915d0726",
+    "mtime": 1786211610.822383,
+    "ast_hash": "918b0d750db828d5fdd85f012d0b3a70",
     "semantic_hash": ""
   }
 }

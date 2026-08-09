@@ -9,8 +9,7 @@ use crate::services::ParametreService;
 pub async fn obtenir_parametres_planning(
     state: State<'_, AppState>,
 ) -> Result<ParametresPlanning, AppError> {
-    let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
+    let service = ParametreService::new(&state.param_repo, &state.planning_repo, state.db.as_ref());
     service.obtenir_parametres().await
 }
 
@@ -21,8 +20,7 @@ pub async fn apercu_creneaux_hors_plage(
     heure_ouverture: String,
     heure_fermeture: String,
 ) -> Result<Vec<ImpactCreneau>, AppError> {
-    let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
+    let service = ParametreService::new(&state.param_repo, &state.planning_repo, state.db.as_ref());
     service
         .apercu_impact_plage(&heure_ouverture, &heure_fermeture)
         .await
@@ -42,8 +40,7 @@ pub async fn modifier_plage_horaire(
 ) -> Result<ParametresPlanning, AppError> {
     let utilisateur = crate::infrastructure::audit::verifier_utilisateur(&utilisateur)?;
     valider_plage_horaire(&heure_ouverture, &heure_fermeture).map_err(AppError::Validation)?;
-    let service =
-        ParametreService::new(&state.param_repo, &state.planning_repo, state.conn.clone());
+    let service = ParametreService::new(&state.param_repo, &state.planning_repo, state.db.as_ref());
     service
         .appliquer_plage(
             &utilisateur,
@@ -58,9 +55,11 @@ pub async fn modifier_plage_horaire(
 mod tests {
     use super::*;
     use crate::domain::parametre::ImpactAction;
+    use crate::drivers::libsql::db::LibsqlDb;
     use crate::infrastructure::db::init_app_state;
     use crate::repositories::PlanningRepository;
     use libsql::Connection;
+    use std::sync::Arc;
     use tauri::Manager;
 
     async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, Connection) {
@@ -74,7 +73,7 @@ mod tests {
         crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        app.manage(init_app_state(conn.clone()));
+        app.manage(init_app_state(Arc::new(LibsqlDb::new(conn.clone()))));
         (app, conn)
     }
 

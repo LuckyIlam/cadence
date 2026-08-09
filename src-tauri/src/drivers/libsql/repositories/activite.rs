@@ -1,116 +1,25 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
-use libsql::Connection;
 
 use crate::domain::activite::{
     Activite, ActivitePersonne, CreateActivite, CreateLiaisonActivitePersonne, CreateTarifActivite,
-    LiaisonActivitePersonne, PersonneActivite, Role, TarifActivite, UpdateActivite,
+    LiaisonActivitePersonne, PersonneActivite, TarifActivite, UpdateActivite,
 };
 use crate::error::AppError;
-use crate::infrastructure::hrana_guard;
-
-#[async_trait]
-pub trait ActiviteRepository: Send + Sync {
-    #[allow(dead_code)]
-    async fn create(&self, input: CreateActivite, utilisateur: &str) -> Result<Activite, AppError>;
-    async fn creer_avec_tarif(
-        &self,
-        input: CreateActivite,
-        utilisateur: &str,
-    ) -> Result<Activite, AppError>;
-    async fn update(
-        &self,
-        id: i64,
-        input: UpdateActivite,
-        utilisateur: &str,
-    ) -> Result<Activite, AppError>;
-    async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError>;
-    async fn upsert_tarif(
-        &self,
-        input: CreateTarifActivite,
-        utilisateur: &str,
-    ) -> Result<TarifActivite, AppError>;
-    async fn get_tarif(
-        &self,
-        activite_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<Option<TarifActivite>, AppError>;
-    #[allow(dead_code)]
-    async fn ajouter_personne(
-        &self,
-        input: CreateLiaisonActivitePersonne,
-        utilisateur: &str,
-    ) -> Result<LiaisonActivitePersonne, AppError>;
-    async fn retirer_personne(
-        &self,
-        activite_id: i64,
-        personne_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<(), AppError>;
-    #[allow(dead_code)]
-    async fn compter_participants(
-        &self,
-        activite_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<i64, AppError>;
-    #[allow(dead_code)]
-    async fn trouver_liaison(
-        &self,
-        activite_id: i64,
-        personne_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<Option<LiaisonActivitePersonne>, AppError>;
-    async fn trouver_liaison_tx(
-        &self,
-        tx: &mut libsql::Transaction,
-        activite_id: i64,
-        personne_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<Option<LiaisonActivitePersonne>, AppError>;
-    async fn find_by_id_tx(
-        &self,
-        tx: &mut libsql::Transaction,
-        id: i64,
-    ) -> Result<Option<Activite>, AppError>;
-    async fn compter_participants_tx(
-        &self,
-        tx: &mut libsql::Transaction,
-        activite_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<i64, AppError>;
-    async fn ajouter_personne_tx(
-        &self,
-        tx: &mut libsql::Transaction,
-        input: CreateLiaisonActivitePersonne,
-        utilisateur: &str,
-    ) -> Result<LiaisonActivitePersonne, AppError>;
-    async fn lister_encadrants(
-        &self,
-        activite_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<Vec<PersonneActivite>, AppError>;
-    async fn lister_participants(
-        &self,
-        activite_id: i64,
-        annee_scolaire: &str,
-    ) -> Result<Vec<PersonneActivite>, AppError>;
-    async fn lister_activites_personne(
-        &self,
-        personne_id: i64,
-    ) -> Result<Vec<ActivitePersonne>, AppError>;
-    async fn lister_annees_disponibles(&self) -> Result<Vec<String>, AppError>;
-    async fn lister_activites_par_annee(
-        &self,
-        annee_scolaire: &str,
-    ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError>;
-}
+use crate::infrastructure::db::{Db, DbExt, DbTransaction, DbTransactionExt};
+use crate::repositories::rows::activite::{
+    ActiviteAnneeRow, ActivitePersonneRow, AnneeRow, CompteurRow,
+};
+use crate::repositories::ActiviteRepository;
 
 pub struct LibsqlActiviteRepository {
-    pub(crate) conn: Connection,
+    db: Arc<dyn Db>,
 }
 
 impl LibsqlActiviteRepository {
-    pub fn new(conn: Connection) -> Self {
-        Self { conn }
+    pub fn new(db: Arc<dyn Db>) -> Self {
+        Self { db }
     }
 }
 
@@ -118,28 +27,20 @@ impl LibsqlActiviteRepository {
 impl ActiviteRepository for LibsqlActiviteRepository {
     async fn create(&self, input: CreateActivite, utilisateur: &str) -> Result<Activite, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "INSERT INTO activites (nom, description, capacite_max, modifie_par, modifie_le)
+        self.db
+            .fetch_one(
+                "INSERT INTO activites (nom, description, capacite_max, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?)
                  RETURNING id, nom, description, capacite_max, version",
-            libsql::params![
-                input.nom,
-                input.description,
-                input.capacite_max,
-                utilisateur,
-                maintenant
-            ],
-        )
-        .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Activité introuvable".into()))?;
-        let valeur = libsql::de::from_row::<Activite>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+                crate::params![
+                    input.nom,
+                    input.description,
+                    input.capacite_max,
+                    utilisateur,
+                    maintenant
+                ],
+            )
+            .await
     }
 
     async fn creer_avec_tarif(
@@ -151,24 +52,17 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         let tarif = input.tarif;
         let maintenant = crate::infrastructure::audit::maintenant_utc();
 
-        let tx = self.conn.transaction().await?;
+        let tx = self.db.begin().await?;
 
         let activite = {
-            let mut rows = tx
-                .query(
+            let valeur = tx
+                .fetch_one::<Activite>(
                     "INSERT INTO activites (nom, description, capacite_max, modifie_par, modifie_le)
                      VALUES (?, ?, ?, ?, ?)
                      RETURNING id, nom, description, capacite_max, version",
-                    libsql::params![input.nom, input.description, input.capacite_max, utilisateur, maintenant.clone()],
+                    crate::params![input.nom, input.description, input.capacite_max, utilisateur, maintenant.clone()],
                 )
                 .await?;
-
-            let row = rows
-                .next()
-                .await?
-                .ok_or(AppError::NotFound("Activité introuvable".into()))?;
-            let valeur = libsql::de::from_row::<Activite>(&row)?;
-            hrana_guard::vider_cursor(&mut rows).await?;
             valeur
         };
 
@@ -180,7 +74,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                      tarif = excluded.tarif,
                      modifie_par = excluded.modifie_par,
                      modifie_le = excluded.modifie_le",
-                libsql::params![activite.id, annee, tarif.unwrap_or(0.0), utilisateur, maintenant],
+                crate::params![activite.id, annee, tarif.unwrap_or(0.0), utilisateur, maintenant],
             )
             .await?;
         }
@@ -196,12 +90,13 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         utilisateur: &str,
     ) -> Result<Activite, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let affected = hrana_guard::execute_avec_retry(
-            &self.conn,
-            "UPDATE activites
+        let affected = self
+            .db
+            .execute(
+                "UPDATE activites
                  SET nom = ?, description = ?, capacite_max = ?, modifie_par = ?, modifie_le = ?, version = version + 1
                  WHERE id = ? AND version = ?",
-                libsql::params![
+                crate::params![
                     input.nom,
                     input.description,
                     input.capacite_max,
@@ -226,43 +121,24 @@ impl ActiviteRepository for LibsqlActiviteRepository {
     }
 
     async fn find_by_id(&self, id: i64) -> Result<Option<Activite>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
-            libsql::params![id],
-        )
-        .await?;
-
-        match rows.next().await? {
-            Some(row) => {
-                let valeur = libsql::de::from_row::<Activite>(&row)?;
-                hrana_guard::vider_cursor(&mut rows).await?;
-                Ok(Some(valeur))
-            }
-            None => Ok(None),
-        }
+        self.db
+            .fetch_optional(
+                "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
+                crate::params![id],
+            )
+            .await
     }
 
     async fn find_by_id_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         id: i64,
     ) -> Result<Option<Activite>, AppError> {
-        let mut rows = tx
-            .query(
-                "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
-                libsql::params![id],
-            )
-            .await?;
-
-        match rows.next().await? {
-            Some(row) => {
-                let valeur = libsql::de::from_row::<Activite>(&row)?;
-                hrana_guard::vider_cursor(&mut rows).await?;
-                Ok(Some(valeur))
-            }
-            None => Ok(None),
-        }
+        tx.fetch_optional(
+            "SELECT id, nom, description, capacite_max, version FROM activites WHERE id = ?",
+            crate::params![id],
+        )
+        .await
     }
 
     async fn upsert_tarif(
@@ -271,8 +147,8 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         utilisateur: &str,
     ) -> Result<TarifActivite, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
+        self.db
+            .fetch_one(
                 "INSERT INTO tarifs_activite (activite_id, annee_scolaire, tarif, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?)
                  ON CONFLICT(activite_id, annee_scolaire)
@@ -281,7 +157,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                      modifie_par = excluded.modifie_par,
                      modifie_le = excluded.modifie_le
                  RETURNING activite_id, annee_scolaire, tarif",
-                libsql::params![
+                crate::params![
                     input.activite_id,
                     input.annee_scolaire,
                     input.tarif,
@@ -289,15 +165,7 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                     maintenant
                 ],
             )
-            .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Tarif introuvable".into()))?;
-        let valeur = libsql::de::from_row::<TarifActivite>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+            .await
     }
 
     async fn get_tarif(
@@ -305,21 +173,12 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<TarifActivite>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
+        self.db
+            .fetch_optional(
                 "SELECT activite_id, annee_scolaire, tarif FROM tarifs_activite WHERE activite_id = ? AND annee_scolaire = ?",
-                libsql::params![activite_id, annee_scolaire],
+                crate::params![activite_id, annee_scolaire],
             )
-            .await?;
-
-        match rows.next().await? {
-            Some(row) => {
-                let valeur = libsql::de::from_row::<TarifActivite>(&row)?;
-                hrana_guard::vider_cursor(&mut rows).await?;
-                Ok(Some(valeur))
-            }
-            None => Ok(None),
-        }
+            .await
     }
 
     async fn ajouter_personne(
@@ -328,12 +187,12 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         utilisateur: &str,
     ) -> Result<LiaisonActivitePersonne, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
+        self.db
+            .fetch_one(
                 "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role, modifie_par, modifie_le)
                  VALUES (?, ?, ?, ?, ?, ?)
                  RETURNING activite_id, personne_id, annee_scolaire, role",
-                libsql::params![
+                crate::params![
                     input.activite_id,
                     input.personne_id,
                     input.annee_scolaire,
@@ -342,47 +201,30 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                     maintenant
                 ],
             )
-            .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Inscription introuvable".into()))?;
-        let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+            .await
     }
 
     async fn ajouter_personne_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         input: CreateLiaisonActivitePersonne,
         utilisateur: &str,
     ) -> Result<LiaisonActivitePersonne, AppError> {
         let maintenant = crate::infrastructure::audit::maintenant_utc();
-        let mut rows = tx
-            .query(
-                "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role, modifie_par, modifie_le)
-                 VALUES (?, ?, ?, ?, ?, ?)
-                 RETURNING activite_id, personne_id, annee_scolaire, role",
-                libsql::params![
-                    input.activite_id,
-                    input.personne_id,
-                    input.annee_scolaire,
-                    input.role.to_string(),
-                    utilisateur,
-                    maintenant
-                ],
-            )
-            .await?;
-
-        let row = rows
-            .next()
-            .await?
-            .ok_or(AppError::NotFound("Inscription introuvable".into()))?;
-        let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(valeur)
+        tx.fetch_one(
+            "INSERT INTO activite_personnes (activite_id, personne_id, annee_scolaire, role, modifie_par, modifie_le)
+             VALUES (?, ?, ?, ?, ?, ?)
+             RETURNING activite_id, personne_id, annee_scolaire, role",
+            crate::params![
+                input.activite_id,
+                input.personne_id,
+                input.annee_scolaire,
+                input.role.to_string(),
+                utilisateur,
+                maintenant
+            ],
+        )
+        .await
     }
 
     async fn retirer_personne(
@@ -391,12 +233,12 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<(), AppError> {
-        hrana_guard::execute_avec_retry(
-            &self.conn,
-            "DELETE FROM activite_personnes WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
-            libsql::params![activite_id, personne_id, annee_scolaire],
-        )
-        .await?;
+        self.db
+            .execute(
+                "DELETE FROM activite_personnes WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
+                crate::params![activite_id, personne_id, annee_scolaire],
+            )
+            .await?;
 
         Ok(())
     }
@@ -406,54 +248,33 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError> {
-        #[derive(Debug, Clone, serde::Deserialize)]
-        struct CompteurRow {
-            count: i64,
-        }
-
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT COUNT(*) AS count FROM activite_personnes
+        let compteur = self
+            .db
+            .fetch_optional::<CompteurRow>(
+                "SELECT COUNT(*) AS count FROM activite_personnes
                  WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
-            libsql::params![activite_id, annee_scolaire],
-        )
-        .await?;
-
-        let row = rows
-            .next()
+                crate::params![activite_id, annee_scolaire],
+            )
             .await?
-            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
-        let count = libsql::de::from_row::<CompteurRow>(&row)?.count;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(count)
+            .ok_or_else(|| AppError::Database("Aucune ligne de comptage".into()))?;
+        Ok(compteur.count)
     }
 
     async fn compter_participants_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<i64, AppError> {
-        #[derive(Debug, Clone, serde::Deserialize)]
-        struct CompteurRow {
-            count: i64,
-        }
-
-        let mut rows = tx
-            .query(
+        let compteur = tx
+            .fetch_optional::<CompteurRow>(
                 "SELECT COUNT(*) AS count FROM activite_personnes
                  WHERE activite_id = ? AND annee_scolaire = ? AND role = 'participant'",
-                libsql::params![activite_id, annee_scolaire],
+                crate::params![activite_id, annee_scolaire],
             )
-            .await?;
-
-        let row = rows
-            .next()
             .await?
-            .ok_or(AppError::Database("Aucune ligne de comptage".into()))?;
-        let count = libsql::de::from_row::<CompteurRow>(&row)?.count;
-        hrana_guard::vider_cursor(&mut rows).await?;
-        Ok(count)
+            .ok_or_else(|| AppError::Database("Aucune ligne de comptage".into()))?;
+        Ok(compteur.count)
     }
 
     async fn trouver_liaison(
@@ -462,47 +283,28 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<LiaisonActivitePersonne>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
+        self.db
+            .fetch_optional(
+                "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
                  WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
-            libsql::params![activite_id, personne_id, annee_scolaire],
-        )
-        .await?;
-
-        match rows.next().await? {
-            Some(row) => {
-                let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
-                hrana_guard::vider_cursor(&mut rows).await?;
-                Ok(Some(valeur))
-            }
-            None => Ok(None),
-        }
+                crate::params![activite_id, personne_id, annee_scolaire],
+            )
+            .await
     }
 
     async fn trouver_liaison_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         activite_id: i64,
         personne_id: i64,
         annee_scolaire: &str,
     ) -> Result<Option<LiaisonActivitePersonne>, AppError> {
-        let mut rows = tx
-            .query(
-                "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
-                 WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
-                libsql::params![activite_id, personne_id, annee_scolaire],
-            )
-            .await?;
-
-        match rows.next().await? {
-            Some(row) => {
-                let valeur = libsql::de::from_row::<LiaisonActivitePersonne>(&row)?;
-                hrana_guard::vider_cursor(&mut rows).await?;
-                Ok(Some(valeur))
-            }
-            None => Ok(None),
-        }
+        tx.fetch_optional(
+            "SELECT activite_id, personne_id, annee_scolaire, role FROM activite_personnes
+             WHERE activite_id = ? AND personne_id = ? AND annee_scolaire = ?",
+            crate::params![activite_id, personne_id, annee_scolaire],
+        )
+        .await
     }
 
     async fn lister_encadrants(
@@ -510,23 +312,16 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<PersonneActivite>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT pp.id, pp.nom, pp.prenom
+        self.db
+            .fetch_all(
+                "SELECT pp.id, pp.nom, pp.prenom
                  FROM activite_personnes ap
                  JOIN personnes_physiques pp ON pp.id = ap.personne_id
                  WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'encadrant'
                  ORDER BY pp.nom, pp.prenom",
-            libsql::params![activite_id, annee_scolaire],
-        )
-        .await?;
-
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            donnees.push(libsql::de::from_row::<PersonneActivite>(&row)?);
-        }
-
-        Ok(donnees)
+                crate::params![activite_id, annee_scolaire],
+            )
+            .await
     }
 
     async fn lister_participants(
@@ -534,54 +329,37 @@ impl ActiviteRepository for LibsqlActiviteRepository {
         activite_id: i64,
         annee_scolaire: &str,
     ) -> Result<Vec<PersonneActivite>, AppError> {
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT pp.id, pp.nom, pp.prenom
+        self.db
+            .fetch_all(
+                "SELECT pp.id, pp.nom, pp.prenom
                  FROM activite_personnes ap
                  JOIN personnes_physiques pp ON pp.id = ap.personne_id
                  WHERE ap.activite_id = ? AND ap.annee_scolaire = ? AND ap.role = 'participant'
                  ORDER BY pp.nom, pp.prenom",
-            libsql::params![activite_id, annee_scolaire],
-        )
-        .await?;
-
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            donnees.push(libsql::de::from_row::<PersonneActivite>(&row)?);
-        }
-
-        Ok(donnees)
+                crate::params![activite_id, annee_scolaire],
+            )
+            .await
     }
 
     async fn lister_activites_personne(
         &self,
         personne_id: i64,
     ) -> Result<Vec<ActivitePersonne>, AppError> {
-        #[derive(Debug, Clone, serde::Deserialize)]
-        struct ActivitePersonneRow {
-            id: i64,
-            nom: String,
-            description: Option<String>,
-            capacite_max: Option<i64>,
-            version: i64,
-            role: Role,
-        }
-
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT a.id, a.nom, a.description, a.capacite_max, a.version, ap.role
+        let lignes = self
+            .db
+            .fetch_all::<ActivitePersonneRow>(
+                "SELECT a.id, a.nom, a.description, a.capacite_max, a.version, ap.role
                  FROM activite_personnes ap
                  JOIN activites a ON a.id = ap.activite_id
                  WHERE ap.personne_id = ?
                  ORDER BY a.nom",
-            libsql::params![personne_id],
-        )
-        .await?;
+                crate::params![personne_id],
+            )
+            .await?;
 
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            let r = libsql::de::from_row::<ActivitePersonneRow>(&row)?;
-            donnees.push(ActivitePersonne {
+        Ok(lignes
+            .into_iter()
+            .map(|r| ActivitePersonne {
                 activite: Activite {
                     id: r.id,
                     nom: r.nom,
@@ -590,77 +368,55 @@ impl ActiviteRepository for LibsqlActiviteRepository {
                     version: r.version,
                 },
                 role: r.role,
-            });
-        }
-
-        Ok(donnees)
+            })
+            .collect())
     }
 
     async fn lister_annees_disponibles(&self) -> Result<Vec<String>, AppError> {
-        #[derive(Debug, Clone, serde::Deserialize)]
-        struct AnneeRow {
-            annee_scolaire: String,
-        }
+        let lignes = self
+            .db
+            .fetch_all::<AnneeRow>(
+                "SELECT DISTINCT annee_scolaire FROM tarifs_activite ORDER BY annee_scolaire DESC",
+                crate::params![],
+            )
+            .await?;
 
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
-            "SELECT DISTINCT annee_scolaire FROM tarifs_activite ORDER BY annee_scolaire DESC",
-            libsql::params![],
-        )
-        .await?;
-
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            donnees.push(libsql::de::from_row::<AnneeRow>(&row)?.annee_scolaire);
-        }
-
-        Ok(donnees)
+        Ok(lignes.into_iter().map(|r| r.annee_scolaire).collect())
     }
 
     async fn lister_activites_par_annee(
         &self,
         annee_scolaire: &str,
     ) -> Result<Vec<(Activite, Option<f64>, i64)>, AppError> {
-        #[derive(Debug, Clone, serde::Deserialize)]
-        struct ActiviteAnneeRow {
-            id: i64,
-            nom: String,
-            description: Option<String>,
-            capacite_max: Option<i64>,
-            version: i64,
-            tarif: Option<f64>,
-            nb_participants: i64,
-        }
-
-        let mut rows = hrana_guard::query_avec_retry(
-            &self.conn,
+        let lignes = self
+            .db
+            .fetch_all::<ActiviteAnneeRow>(
                 "SELECT a.id, a.nom, a.description, a.capacite_max, a.version, ta.tarif,
                         (SELECT COUNT(*) FROM activite_personnes ap2
                          WHERE ap2.activite_id = a.id AND ap2.annee_scolaire = ? AND ap2.role = 'participant') AS nb_participants
                  FROM activites a
                  JOIN tarifs_activite ta ON ta.activite_id = a.id AND ta.annee_scolaire = ?
                  ORDER BY a.nom",
-                libsql::params![annee_scolaire, annee_scolaire],
+                crate::params![annee_scolaire, annee_scolaire],
             )
             .await?;
 
-        let mut donnees = Vec::new();
-        while let Some(row) = rows.next().await? {
-            let r = libsql::de::from_row::<ActiviteAnneeRow>(&row)?;
-            donnees.push((
-                Activite {
-                    id: r.id,
-                    nom: r.nom,
-                    description: r.description,
-                    capacite_max: r.capacite_max,
-                    version: r.version,
-                },
-                r.tarif,
-                r.nb_participants,
-            ));
-        }
-
-        Ok(donnees)
+        Ok(lignes
+            .into_iter()
+            .map(|r| {
+                (
+                    Activite {
+                        id: r.id,
+                        nom: r.nom,
+                        description: r.description,
+                        capacite_max: r.capacite_max,
+                        version: r.version,
+                    },
+                    r.tarif,
+                    r.nb_participants,
+                )
+            })
+            .collect())
     }
 }
 
@@ -669,8 +425,9 @@ mod tests {
     use super::*;
     use crate::domain::activite::CreateActivite;
     use crate::domain::activite::Role;
+    use crate::drivers::libsql::db::LibsqlDb;
 
-    async fn setup_db() -> Connection {
+    async fn setup_db() -> Arc<dyn Db> {
         let conn = libsql::Builder::new_local(":memory:")
             .build()
             .await
@@ -680,11 +437,11 @@ mod tests {
         crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        conn
+        Arc::new(LibsqlDb::new(conn))
     }
 
-    fn repo(conn: Connection) -> LibsqlActiviteRepository {
-        LibsqlActiviteRepository::new(conn)
+    fn repo(db: Arc<dyn Db>) -> LibsqlActiviteRepository {
+        LibsqlActiviteRepository::new(db)
     }
 
     fn create_activite_input(nom: &str) -> CreateActivite {
@@ -698,18 +455,18 @@ mod tests {
     }
 
     #[allow(dead_code)]
-    async fn seed_activite(conn: &Connection, nom: &str) -> Activite {
-        LibsqlActiviteRepository::new(conn.clone())
+    async fn seed_activite(db: &Arc<dyn Db>, nom: &str) -> Activite {
+        LibsqlActiviteRepository::new(db.clone())
             .create(create_activite_input(nom), "test")
             .await
             .expect("failed to seed activite")
     }
 
-    async fn seed_personne(conn: &Connection) -> i64 {
-        conn.execute(
+    async fn seed_personne(db: &dyn Db) -> i64 {
+        db.execute(
             "INSERT INTO personnes_physiques (nom, prenom, date_naissance)
              VALUES ('Test', 'User', '2000-01-15')",
-            libsql::params![],
+            crate::params![],
         )
         .await
         .expect("failed to seed personne");
@@ -718,8 +475,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_activite() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
@@ -731,8 +488,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_sans_tarif() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let input = CreateActivite {
             nom: "Théâtre".into(),
             description: None,
@@ -746,8 +503,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_avec_tarif() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let input = CreateActivite {
             nom: "Poterie".into(),
             description: None,
@@ -765,8 +522,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_creer_avec_tarif_sans_annee_n_insere_pas_tarif() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let input = CreateActivite {
             nom: "Danse".into(),
             description: None,
@@ -783,8 +540,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_liste_activites_par_annee() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
@@ -808,8 +565,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_tarif_upsert() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
@@ -844,13 +601,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_ajouter_personne() {
-        let conn = setup_db().await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        let r = repo(db.clone());
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
             .unwrap();
-        let pid = seed_personne(&r.conn).await;
+        let pid = seed_personne(r.db.as_ref()).await;
 
         let liaison = r
             .ajouter_personne(
@@ -872,13 +629,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_lister_activites_personne() {
-        let conn = setup_db().await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        let r = repo(db.clone());
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
             .unwrap();
-        let pid = seed_personne(&r.conn).await;
+        let pid = seed_personne(r.db.as_ref()).await;
 
         r.ajouter_personne(
             CreateLiaisonActivitePersonne {
@@ -900,13 +657,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_retirer_personne() {
-        let conn = setup_db().await;
-        let r = repo(conn.clone());
+        let db = setup_db().await;
+        let r = repo(db.clone());
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
             .unwrap();
-        let pid = seed_personne(&r.conn).await;
+        let pid = seed_personne(r.db.as_ref()).await;
 
         r.ajouter_personne(
             CreateLiaisonActivitePersonne {
@@ -928,8 +685,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_activite_version_obsolete_conflit() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
         let a = r
             .create(create_activite_input("Poterie"), "alice")
             .await
@@ -967,8 +724,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_activite_inexistante_not_found() {
-        let conn = setup_db().await;
-        let r = repo(conn);
+        let db = setup_db().await;
+        let r = repo(db);
 
         let err = r
             .update(

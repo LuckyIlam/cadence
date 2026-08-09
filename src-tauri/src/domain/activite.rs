@@ -16,6 +16,16 @@ impl std::fmt::Display for Role {
     }
 }
 
+/// Convertit la représentation textuelle d'un rôle en `Role`.
+/// Valeurs acceptées : `"encadrant"` et `"participant"`.
+pub fn role_from_str(s: &str) -> Result<Role, String> {
+    match s {
+        "encadrant" => Ok(Role::Encadrant),
+        "participant" => Ok(Role::Participant),
+        autre => Err(format!("rôle inconnu « {autre} »")),
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Activite {
     pub id: i64,
@@ -119,6 +129,13 @@ mod tests {
         let r: Role = serde_json::from_str("\"participant\"").unwrap();
         assert_eq!(r, Role::Participant);
         assert!(serde_json::from_str::<Role>("\"admin\"").is_err());
+    }
+
+    #[test]
+    fn test_role_from_str() {
+        assert_eq!(role_from_str("encadrant").unwrap(), Role::Encadrant);
+        assert_eq!(role_from_str("participant").unwrap(), Role::Participant);
+        assert!(role_from_str("admin").is_err());
     }
 
     #[test]

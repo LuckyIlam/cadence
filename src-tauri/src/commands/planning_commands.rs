@@ -22,21 +22,18 @@ pub async fn ajouter_creneau(
     // BEGIN IMMEDIATE : les contrôles (existence activité, conflit) et l'insertion
     // sont atomiques, pour éviter un conflit non détecté entre deux utilisateurs
     // en mode multi.
-    let mut tx = state
-        .conn
-        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
-        .await?;
+    let mut tx = state.db.begin_immediate().await?;
 
     let _activite = state
         .activite_repo
-        .find_by_id_tx(&mut tx, input.activite_id)
+        .find_by_id_tx(&mut *tx, input.activite_id)
         .await?
         .ok_or(AppError::NotFound("Activité introuvable".into()))?;
 
     let conflits = state
         .planning_repo
         .verifier_conflit_creneaux_tx(
-            &mut tx,
+            &mut *tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -56,7 +53,7 @@ pub async fn ajouter_creneau(
 
     let creneau = state
         .planning_repo
-        .creer_creneau_tx(&mut tx, input, &utilisateur)
+        .creer_creneau_tx(&mut *tx, input, &utilisateur)
         .await?;
 
     tx.commit().await?;
@@ -81,14 +78,11 @@ pub async fn supprimer_creneau(
     activite_id: i64,
     annee_scolaire: String,
 ) -> Result<(), AppError> {
-    let mut tx = state
-        .conn
-        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
-        .await?;
+    let mut tx = state.db.begin_immediate().await?;
 
     let nb = state
         .planning_repo
-        .compter_inscrits_activite_tx(&mut tx, activite_id, &annee_scolaire)
+        .compter_inscrits_activite_tx(&mut *tx, activite_id, &annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -99,7 +93,7 @@ pub async fn supprimer_creneau(
 
     state
         .planning_repo
-        .supprimer_creneau_tx(&mut tx, id)
+        .supprimer_creneau_tx(&mut *tx, id)
         .await?;
 
     tx.commit().await?;
@@ -118,14 +112,11 @@ pub async fn modifier_creneau(
     valider_creneau(&input)?;
     valider_creneau_dans_plage_global(&state, &input).await?;
 
-    let mut tx = state
-        .conn
-        .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
-        .await?;
+    let mut tx = state.db.begin_immediate().await?;
 
     let nb = state
         .planning_repo
-        .compter_inscrits_activite_tx(&mut tx, input.activite_id, &input.annee_scolaire)
+        .compter_inscrits_activite_tx(&mut *tx, input.activite_id, &input.annee_scolaire)
         .await?;
 
     if nb > 0 {
@@ -137,7 +128,7 @@ pub async fn modifier_creneau(
     let conflits = state
         .planning_repo
         .verifier_conflit_creneaux_tx(
-            &mut tx,
+            &mut *tx,
             input.activite_id,
             &input.annee_scolaire,
             input.jour_semaine,
@@ -157,7 +148,7 @@ pub async fn modifier_creneau(
 
     let creneau = state
         .planning_repo
-        .modifier_creneau_tx(&mut tx, id, input, version, &utilisateur)
+        .modifier_creneau_tx(&mut *tx, id, input, version, &utilisateur)
         .await?;
 
     tx.commit().await?;
@@ -241,8 +232,10 @@ mod tests {
     use super::*;
     use crate::domain::activite::Role;
     use crate::domain::planning::{CreateCreneau, CreateSemaineBanalisee};
+    use crate::drivers::libsql::db::LibsqlDb;
     use crate::infrastructure::db::{init_app_state, AppState};
     use libsql::Connection;
+    use std::sync::Arc;
     use tauri::Manager;
 
     async fn setup_app() -> (tauri::App<tauri::test::MockRuntime>, Connection) {
@@ -256,7 +249,7 @@ mod tests {
         crate::infrastructure::migrations::cadence_migrations(&conn)
             .await
             .expect("failed to run migrations");
-        app.manage(init_app_state(conn.clone()));
+        app.manage(init_app_state(Arc::new(LibsqlDb::new(conn.clone()))));
         (app, conn)
     }
 

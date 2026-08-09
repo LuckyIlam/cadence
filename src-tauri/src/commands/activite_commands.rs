@@ -18,7 +18,7 @@ pub async fn creer_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.creer(&utilisateur, input).await
 }
@@ -34,7 +34,7 @@ pub async fn modifier_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.modifier(&utilisateur, id, input).await
 }
@@ -47,7 +47,7 @@ pub async fn obtenir_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.obtenir(id).await
 }
@@ -61,7 +61,7 @@ pub async fn obtenir_detail_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.obtenir_detail(id, &annee_scolaire).await
 }
@@ -74,7 +74,7 @@ pub async fn lister_activites(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.lister_activites(&annee_scolaire).await
 }
@@ -89,7 +89,7 @@ pub async fn definir_tarif_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.definir_tarif(&utilisateur, input).await
 }
@@ -104,7 +104,7 @@ pub async fn ajouter_personne_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.ajouter_personne(&utilisateur, input).await
 }
@@ -119,7 +119,7 @@ pub async fn retirer_personne_activite(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service
         .retirer_personne(activite_id, personne_id, &annee_scolaire)
@@ -131,7 +131,7 @@ pub async fn lister_annees_activites(state: State<'_, AppState>) -> Result<Vec<S
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.lister_annees().await
 }
@@ -144,7 +144,7 @@ pub async fn lister_activites_personne(
     let service = ActiviteService::new(
         &state.activite_repo,
         &state.planning_repo,
-        state.conn.clone(),
+        state.db.as_ref(),
     );
     service.lister_activites_personne(personne_id).await
 }

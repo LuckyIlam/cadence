@@ -1,25 +1,24 @@
-use libsql::Connection;
-
 use crate::domain::activite::{
     verifier_capacite_max, Activite, ActivitePersonne, CreateActivite,
     CreateLiaisonActivitePersonne, CreateTarifActivite, DetailActivite, Role, UpdateActivite,
 };
 use crate::domain::planning::format_conflit_plage;
 use crate::error::AppError;
+use crate::infrastructure::db::{Db, DbTransaction};
 use crate::repositories::{ActiviteRepository, PlanningRepository};
 
 pub struct ActiviteService<'a, R: ActiviteRepository, P: PlanningRepository> {
     activite_repo: &'a R,
     planning_repo: &'a P,
-    conn: Connection,
+    db: &'a dyn Db,
 }
 
 impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P> {
-    pub fn new(activite_repo: &'a R, planning_repo: &'a P, conn: Connection) -> Self {
+    pub fn new(activite_repo: &'a R, planning_repo: &'a P, db: &'a dyn Db) -> Self {
         Self {
             activite_repo,
             planning_repo,
-            conn,
+            db,
         }
     }
 
@@ -112,7 +111,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
 
     async fn verifier_liaison_existante_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         activite_id: i64,
         personne_id: i64,
         annee_scolaire: &str,
@@ -137,7 +136,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
 
     async fn verifier_capacite_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         activite_id: i64,
         annee_scolaire: &str,
         role: &Role,
@@ -161,7 +160,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
 
     async fn verifier_collision_planning_tx(
         &self,
-        tx: &mut libsql::Transaction,
+        tx: &mut dyn DbTransaction,
         personne_id: i64,
         activite_id: i64,
         annee_scolaire: &str,
@@ -192,13 +191,10 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         // BEGIN IMMEDIATE : acquiert le verrou d'écriture dès le début pour que
         // les vérifications et l'insertion soient atomiques (pas de TOCTOU entre
         // deux utilisateurs en mode multi).
-        let mut tx = self
-            .conn
-            .transaction_with_behavior(libsql::TransactionBehavior::Immediate)
-            .await?;
+        let mut tx = self.db.begin_immediate().await?;
 
         self.verifier_liaison_existante_tx(
-            &mut tx,
+            &mut *tx,
             input.activite_id,
             input.personne_id,
             &input.annee_scolaire,
@@ -207,7 +203,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         .await?;
 
         self.verifier_capacite_tx(
-            &mut tx,
+            &mut *tx,
             input.activite_id,
             &input.annee_scolaire,
             &input.role,
@@ -215,7 +211,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         .await?;
 
         self.verifier_collision_planning_tx(
-            &mut tx,
+            &mut *tx,
             input.personne_id,
             input.activite_id,
             &input.annee_scolaire,
@@ -223,7 +219,7 @@ impl<'a, R: ActiviteRepository, P: PlanningRepository> ActiviteService<'a, R, P>
         .await?;
 
         self.activite_repo
-            .ajouter_personne_tx(&mut tx, input, utilisateur)
+            .ajouter_personne_tx(&mut *tx, input, utilisateur)
             .await?;
 
         tx.commit().await?;
@@ -263,6 +259,7 @@ mod tests {
 
     use crate::domain::activite::{LiaisonActivitePersonne, TarifActivite};
     use crate::domain::planning::{Collision, PlanningCreneau};
+    use crate::drivers::libsql::db::LibsqlDb;
 
     struct MockActiviteRepository {
         activites: Mutex<Vec<Activite>>,
@@ -345,7 +342,7 @@ mod tests {
 
         async fn find_by_id_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             id: i64,
         ) -> Result<Option<Activite>, AppError> {
             self.find_by_id(id).await
@@ -384,7 +381,7 @@ mod tests {
 
         async fn ajouter_personne_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             input: CreateLiaisonActivitePersonne,
             utilisateur: &str,
         ) -> Result<LiaisonActivitePersonne, AppError> {
@@ -421,7 +418,7 @@ mod tests {
 
         async fn compter_participants_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             activite_id: i64,
             annee_scolaire: &str,
         ) -> Result<i64, AppError> {
@@ -449,7 +446,7 @@ mod tests {
 
         async fn trouver_liaison_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             activite_id: i64,
             personne_id: i64,
             annee_scolaire: &str,
@@ -570,7 +567,7 @@ mod tests {
 
         async fn supprimer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _id: i64,
         ) -> Result<(), AppError> {
             unimplemented!()
@@ -578,7 +575,7 @@ mod tests {
 
         async fn deplacer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _id: i64,
             _heure_debut: &str,
             _heure_fin: &str,
@@ -589,7 +586,7 @@ mod tests {
 
         async fn creer_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _input: crate::domain::planning::CreateCreneau,
             _utilisateur: &str,
         ) -> Result<crate::domain::planning::CreneauActivite, AppError> {
@@ -598,7 +595,7 @@ mod tests {
 
         async fn modifier_creneau_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _id: i64,
             _input: crate::domain::planning::CreateCreneau,
             _version: i64,
@@ -640,7 +637,7 @@ mod tests {
 
         async fn verifier_conflit_creneaux_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
             _jour_semaine: i64,
@@ -661,7 +658,7 @@ mod tests {
 
         async fn compter_inscrits_activite_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<i64, AppError> {
@@ -679,7 +676,7 @@ mod tests {
 
         async fn verifier_collision_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _personne_id: i64,
             _activite_id: i64,
             _annee_scolaire: &str,
@@ -689,7 +686,7 @@ mod tests {
 
         async fn lister_creneaux_tx(
             &self,
-            _tx: &mut libsql::Transaction,
+            _tx: &mut dyn DbTransaction,
             _activite_id: i64,
             _annee_scolaire: &str,
         ) -> Result<Vec<crate::domain::planning::CreneauActivite>, AppError> {
@@ -706,28 +703,29 @@ mod tests {
         }
     }
 
-    async fn make_conn() -> Connection {
-        libsql::Builder::new_local(":memory:")
+    async fn make_db() -> LibsqlDb {
+        let database = libsql::Builder::new_local(":memory:")
             .build()
             .await
-            .expect("failed to create test db")
-            .connect()
-            .expect("failed to connect test db")
+            .expect("failed to create test db");
+        let conn = database.connect().expect("failed to connect test db");
+        LibsqlDb::new(conn)
     }
 
     fn make_service<'a>(
         activite_repo: &'a MockActiviteRepository,
         planning_repo: &'a MockPlanningRepository,
-        conn: Connection,
+        db: LibsqlDb,
     ) -> ActiviteService<'a, MockActiviteRepository, MockPlanningRepository> {
-        ActiviteService::new(activite_repo, planning_repo, conn)
+        let db: &'a dyn crate::infrastructure::db::Db = Box::leak(Box::new(db));
+        ActiviteService::new(activite_repo, planning_repo, db)
     }
 
     #[tokio::test]
     async fn test_ajouter_personne_valide_cree_liaison() {
         let repo = MockActiviteRepository::new();
         let planning = MockPlanningRepository::new();
-        let service = make_service(&repo, &planning, make_conn().await);
+        let service = make_service(&repo, &planning, make_db().await);
 
         let activite = repo
             .create(
@@ -765,7 +763,7 @@ mod tests {
     async fn test_ajouter_personne_avec_liaison_existante_retourne_erreur() {
         let repo = MockActiviteRepository::new();
         let planning = MockPlanningRepository::new();
-        let service = make_service(&repo, &planning, make_conn().await);
+        let service = make_service(&repo, &planning, make_db().await);
 
         let activite = repo
             .create(
@@ -805,7 +803,7 @@ mod tests {
     async fn test_ajouter_personne_capacite_atteinte_retourne_erreur() {
         let repo = MockActiviteRepository::avec_capacite(1);
         let planning = MockPlanningRepository::new();
-        let service = make_service(&repo, &planning, make_conn().await);
+        let service = make_service(&repo, &planning, make_db().await);
 
         let activite = repo
             .create(
@@ -857,7 +855,7 @@ mod tests {
     async fn test_ajouter_personne_avec_collision_planning_retourne_erreur() {
         let repo = MockActiviteRepository::new();
         let planning = MockPlanningRepository::avec_collision();
-        let service = make_service(&repo, &planning, make_conn().await);
+        let service = make_service(&repo, &planning, make_db().await);
 
         let activite = repo
             .create(
