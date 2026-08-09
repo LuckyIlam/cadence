@@ -43,6 +43,11 @@ const MIGRATIONS: &[(&str, &str)] = &[
     ),
 ];
 
+/// Noms des migrations connues du binaire, pour comparaison avec la base.
+pub fn noms_migrations() -> impl Iterator<Item = &'static str> {
+    MIGRATIONS.iter().map(|(nom, _)| *nom)
+}
+
 async fn migration_appliquee(conn: &Connection, nom: &str) -> Result<bool, AppError> {
     let mut rows = hrana_guard::query_avec_retry(
         conn,
