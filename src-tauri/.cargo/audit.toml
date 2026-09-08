@@ -1,5 +1,11 @@
 [advisories]
 ignore = [
+    # h2 0.3.x (via hyper 0.14 <- libsql 0.9.30) : RUSTSEC-2026-0258
+    # (DATA frames vides non bornées, DoS HTTP/2). Pas de correctif sur la
+    # ligne 0.3.x (fix >=0.4.16 = hyper 1.x) : à lever quand libsql stable
+    # migrera sur hyper 1.x (actuellement 0.10 en pré-release).
+    # Exposition limitée : client HTTP/2 vers le serveur Turso configuré.
+    "RUSTSEC-2026-0258",
     # rustls-webpki 0.102: imposé par rustls 0.22 de libsql 0.9.x (hyper-rustls 0.25).
     # Correctifs publiés sur la ligne >=0.103 (rustls 0.23) : à lever quand libsql
     # publie une version stable sur rustls 0.23. Voir deny.toml.
