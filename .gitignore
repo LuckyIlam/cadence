@@ -3,6 +3,11 @@ dist/
 
 src-tauri/target/
 
+# Schémas Tauri générés pour la plateforme hôte (doublons de desktop-schema.json,
+# régénérés à chaque build)
+src-tauri/gen/schemas/linux-schema.json
+src-tauri/gen/schemas/windows-schema.json
+
 .DS_Store
 Thumbs.db
 
