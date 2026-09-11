@@ -1,6 +1,7 @@
 use tauri::Manager;
 
 use crate::error::AppError;
+use crate::infrastructure::compat::Compatibilite;
 use crate::infrastructure::config::{
     load_config, save_config, ConnexionConfig, Driver, ModeConnexion,
 };
@@ -137,6 +138,13 @@ pub async fn obtenir_config<R: tauri::Runtime>(
 ) -> Result<ConfigAffichee, AppError> {
     let dir = app_dir(&app)?;
     lire_config(&dir)
+}
+
+#[tauri::command]
+pub async fn obtenir_compatibilite(
+    state: tauri::State<'_, Compatibilite>,
+) -> Result<Compatibilite, AppError> {
+    Ok(state.inner().clone())
 }
 
 #[tauri::command]
