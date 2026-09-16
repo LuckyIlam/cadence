@@ -1,4 +1,5 @@
 pub mod audit;
+pub mod compat;
 pub mod config;
 pub mod db;
 pub mod hrana_guard;
